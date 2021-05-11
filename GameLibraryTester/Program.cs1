@@ -1,0 +1,154 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+using ACommoner = GameLibrary.Settlement.ACommoner;
+using ASize = CommonPrimitivesLibrary.ASize;
+using APoint = CommonPrimitivesLibrary.APoint;
+
+using GameLibrary;
+using GameLibrary.Map;
+using GameLibrary.Character;
+using GameLibrary.Unit;
+using GameLibrary.Extension;
+using GameLibrary.Settlement.Building;
+
+namespace GameLibraryTester
+{
+    class ProgramOld
+    {
+
+
+        static void Main(string[] args)
+        {
+
+            AGame COTR = new AGame(new List<string>() { "Bobo", "mooDuck" });
+
+            COTR.MapGeneration(new ASize(4, 4));
+            COTR.StartGame();
+
+            bool loop = true;
+            Random random = new Random((int)DateTime.Now.Ticks);
+
+            while (loop)
+            {
+                Console.Write("\n > ");
+                string input = Console.ReadLine();
+                string[] command = input.Split(" ");
+                APoint location;
+                AMapCell mapCell;
+                int id;
+                if (command.Length > 0) switch (command[0])
+                    {
+                        case "build":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            location = new APoint(Convert.ToInt32(command[1]), Convert.ToInt32(command[2]));
+                            mapCell = COTR.GetMapCell(location);
+                            if (mapCell is null) Console.WriteLine("Неверные координаты");
+                            else if (mapCell.IsSettlement) if (mapCell.OwnerId.Equals(COTR.ActivePlayer.Id))
+                                {
+                                    mapCell.Settlement.StartBuilding((ABuildingType)Enum.Parse(typeof(ABuildingType), command[3]));
+                                    Console.WriteLine(" [GAME] > В поселении <" + mapCell.Settlement.Name + "> началось строительство здания <" + GameLocalization.Buildings[mapCell.Settlement.BuildingsInConstruction.Last().BuildingType] + ">");
+                                }
+                                else Console.WriteLine(" [GAME] > Поселение в координатах ( " + location.ToString() + " ) не принадлежит игроку " + COTR.ActivePlayer.Name);
+                            else Console.WriteLine(" [GAME] > Поселение в координатах ( " + location.ToString() + " ) не обнаружено");
+                            break;
+                        case "show":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            foreach (AMapCell cell in COTR.Map.Map.Values)
+                                Console.WriteLine(
+                                    " " + cell.Location +
+                                    "\n Местность: " + GameLocalization.Biomes[cell.BiomeType] +
+                                    "\n Ресурсы: " + GameLocalization.Resources[cell.ResourceType] +
+                                    "\n Население: " + cell.Population.Total +
+                                    "\n Владелец: " + (cell.OwnerId == 0 ? "Незанято" : COTR.Players[cell.OwnerId].Name) +
+                                    "\n " + (cell.IsSettlement ? "Поселение: " + cell.Settlement.Name + "\n  Защита: " + cell.Settlement.Protection + " / Доход: " + cell.Settlement.Income + " / Наука: " + cell.Settlement.Science + " / Культура: " + cell.Settlement.Culture + " / Медицина: " + cell.Settlement.Medicine + " / Религия: " + cell.Settlement.Religion + " / Пища: " + cell.Settlement.Food +
+                                        "\n  Строения: " + string.Join(", ", cell.Settlement.Buildings.Select(x => x.Name)) +
+                                        "\n  Строится: " + string.Join(", ", cell.Settlement.BuildingsInConstruction.Select(x => GameLocalization.Buildings[x.BuildingType] + " (" + x.TimeToComplete + ")")) : "Город не построен") +
+                                    "\n " + (cell.IsUnit ? "Юниты: \n" + string.Join("\n", COTR.GetUnits(cell.Location).Select(x => "  " + x.ToString() + ", " + COTR.Players[x.OwnerId].Name)) : "Юниты отсутствуют") +
+                                    "\n "
+                                    );
+                            Console.WriteLine(
+                                "\n Ход: " + COTR.CurrentTurn +
+                                "\n Активный Игрок: " + COTR.ActivePlayer.Name + " (" + COTR.ActivePlayer.Id + ")"
+                                );
+                            break;
+                        case "next-turn":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            COTR.Turn();
+                            break;
+                        case "add-unit":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            location = new APoint(Convert.ToInt32(command[1]), Convert.ToInt32(command[2]));
+                            mapCell = COTR.GetMapCell(location);
+                            if (mapCell is null) Console.WriteLine("Неверные координаты");
+                            else if (mapCell.IsSettlement) if (mapCell.OwnerId.Equals(COTR.ActivePlayer.Id))
+                                {
+                                    if ((AUnitType)Enum.Parse(typeof(AUnitType), command[3]) is AUnitType unitType && COTR.AddUnit(unitType, location, new List<ACommoner>() { new ACommoner(random.Next(16, 45), random.Next(0, 128)) })) Console.WriteLine(" [GAME] > В поселении <" + mapCell.Settlement.Name + "> собран отряд <" + GameLocalization.UnitName[unitType] + ">");
+                                }
+                                else Console.WriteLine(" [GAME] > Поселение в координатах ( " + location.ToString() + " ) не принадлежит игроку " + COTR.ActivePlayer.Name);
+                            else Console.WriteLine(" [GAME] > Поселение в координатах ( " + location.ToString() + " ) не обнаружено");
+                            break;
+                        case "move-unit":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            id = Convert.ToInt32(command[1]);
+                            location = new APoint(Convert.ToInt32(command[2]), Convert.ToInt32(command[3]));
+                            if (COTR.Units.ContainsKey(id)) if (COTR.ActivePlayer.Id == COTR.Units[id].OwnerId && COTR.MoveUnit(id, location)) Console.WriteLine(" [GAME] > Юнит с идентификатором (" + id + ") успешно перемещен в координаты ( " + location.ToString() + " )");
+                                else Console.WriteLine(" [GAME] > Невозможно переместить, или координаты ( " + location.ToString() + " ) некорректны");
+                            else Console.WriteLine(" [GAME] > Юнит с идентификатором " + id + " не обнаружен");
+                            break;
+                        case "set-unit-owner":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            id = Convert.ToInt32(command[1]);
+                            int ownerId = Convert.ToInt32(command[2]);
+                            if (COTR.Units.ContainsKey(id)) if (COTR.Players.ContainsKey(ownerId)) if (COTR.SetUnitOwner(id, ownerId)) Console.WriteLine(" [GAME] > Юнит с идентификатором (" + id + ") успешно передан в распоряжение игрока <" + COTR.Players[ownerId].Name + ">");
+                                    else Console.WriteLine(" [GAME] > Невозможно передать юнита с идентификтором " + id + " игроку, которому он уже принадлежит");
+                                else Console.WriteLine(" [GAME] > Игрок с идентификтором (" + ownerId + ") не обнаружен");
+                            else Console.WriteLine(" [GAME] > Юнит с идентификатором " + id + " не обнаружен");
+                            break;
+                        case "add-char":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            if (command.Length == 7)
+                            {
+                                string name = command[1];
+                                string familyName = command[2];
+                                ASexType sexType = (ASexType)Enum.Parse(typeof(ASexType), command[3]);
+                                id = Convert.ToInt32(command[4]);
+                                int fatherId = Convert.ToInt32(command[5]);
+                                int motherId = Convert.ToInt32(command[6]);
+                                COTR.AddCharacter(name, familyName, sexType, id, fatherId, motherId);
+                                Console.WriteLine(" [GAME] > Персонаж  <" + name + " " + familyName + "> успешно создан");
+                            }
+                            else Console.WriteLine("Неверное количество аргументов");
+                            break;
+                        case "show-char":
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            Console.WriteLine(" Персонажи:\n" + string.Join("\n\n", COTR.Characters.Values.Select(x => " " + x.Id + ". " + x.ToString(COTR.CurrentTurn) + 
+                            "\n Отец: " + (x.FatherId.Equals(0)? ": Неизвестно": COTR.Characters[x.FatherId].Name + " " + COTR.Characters[x.FatherId].FamilyName) +
+                            "\n Мать: " + (x.MotherId.Equals(0) ? ": Неизвестна" : COTR.Characters[x.MotherId].Name + " " + COTR.Characters[x.MotherId].FamilyName) +
+                            "\n Игрок: " + (x.OwnerId.Equals(0) ? ": Отсутствует" : COTR.Players[x.OwnerId].Name))));
+                            break;
+                        case "exit":
+                            loop = false;
+                            break;
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("\n > " + input + "\n");
+                            Console.WriteLine("Неверная команда, или аргументы");
+                            break;
+                    }
+            }
+
+        }
+
+    }
+}

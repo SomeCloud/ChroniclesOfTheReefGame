@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GraphicsLibrary.Graphics.AButton" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAQCAAAAAAAACAAAAAAIAAAAAAAgAACQ=</HashCode>
+      <FileName>Graphics\AButton.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AContainer" Collapsed="true">
+    <Position X="28" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAgBAAAAAAAAAIARECAAAAAAAAAAAAgAJAEABA=</HashCode>
+      <FileName>Graphics\AContainer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AEmptyPanel" Collapsed="true">
+    <Position X="12" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAiAAAQAAAAAAAAAAAAAIAAIAAAAAgAAAACA=</HashCode>
+      <FileName>Graphics\AEmptyPanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AGraphics" Collapsed="true">
+    <Position X="21" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAwAAAAAAAAAAAAAAAAIAAAAAAAAEACA=</HashCode>
+      <FileName>Graphics\AGraphics.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AHorizontalScrollbar" Collapsed="true">
+    <Position X="16.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAiAAAQAABAAAAAAAAAAIAAIAAAAAyAAggCA=</HashCode>
+      <FileName>Graphics\AHorizontalScrollbar.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.ALabel" Collapsed="true">
+    <Position X="25.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAiAAAQAAAAAAAAAAAAAAAAIAAAAAAAAAACA=</HashCode>
+      <FileName>Graphics\ALabel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AMapCellView" Collapsed="true">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQEiAAAwAAAACAAAAAEACIEAIAAAAAiAAAACI=</HashCode>
+      <FileName>Graphics\AMapCellView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AMapView" Collapsed="true">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAiAAAQAAAAAAAAAAAACIAAIAAAAAgAAAACA=</HashCode>
+      <FileName>Graphics\AMapView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.APanel" Collapsed="true">
+    <Position X="14.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAiAAAQCAAAAAAAACAAAAAAIAAAAAAAgAACQ=</HashCode>
+      <FileName>Graphics\APanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AScrolleredPanel" Collapsed="true">
+    <Position X="23.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAMAAAAQAiAAAQCAgAAABAASAAAAAAIAAEAACAhEACQ=</HashCode>
+      <FileName>Graphics\AScrolleredPanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Graphics.AVerticalScrollbar" Collapsed="true">
+    <Position X="18.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAiAAAQAABAAAAAAAAAAIAAIAAAAAyAAggCA=</HashCode>
+      <FileName>Graphics\AVerticalScrollbar.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.AHexTexture" Collapsed="true">
+    <Position X="2" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAACAAAAAAAACAAAAAAAAAAAAABAABAAAAAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\AHexTexture.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.APrimitiveTexture" Collapsed="true">
+    <Position X="3.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIACAAAgAAAAKAAAACAwCAAAIAiAABAAgAAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\APrimitiveTexture.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.ARectangleTexture" Collapsed="true">
+    <Position X="4.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAACAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ARectangleTexture.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.AScrollbarSlider" Collapsed="true">
+    <Position X="7.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAQAABAAAAAAAAAAIAAIAAAAAiAAkgCA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\AScrollbarSlider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.ATextLabel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="29.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAEAACIBAAAKAAAACAAAAAAAAAAIAAAgCAACAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ATextLabel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="GraphicsLibrary.ATexture" Collapsed="true">
+    <Position X="3.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAgBAAGAAgAAAAgEAAAAAAAAAAAAAAEIAABAAABA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ATexture.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.Game1" Collapsed="true">
+    <Position X="28" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAwAAAAAAAAAAAAAAAAACAIAAAAAAAAQ=</HashCode>
+      <FileName>Game1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GraphicsLibrary.Program" Collapsed="true">
+    <Position X="29.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GraphicsLibrary.StandartGraphicsPrimitives.ACollider" Collapsed="true">
+    <Position X="8.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgBCAAgAAAgAIAAEMAIACAAAAAhAAAAAAAYAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ACollider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.StandartGraphicsPrimitives.AHexCollider" Collapsed="true">
+    <Position X="9.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\AHexCollider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.StandartGraphicsPrimitives.APrimitive" Collapsed="true">
+    <Position X="14.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEIGmBB9DTAgg4BQhwIQRWvAGQGwAQIxKBJkDgBU4CQ=</HashCode>
+      <FileName>StandartGraphicsPrimitives\APrimitive.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.StandartGraphicsPrimitives.ARectangleCollider" Collapsed="true">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ARectangleCollider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="GraphicsLibrary.StandartGraphicsPrimitives.AScrollbar" Collapsed="true">
+    <Position X="17.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABABgAAAAAAAAAAEAABAAIAAAgQAABAgA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\AScrollbar.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Struct Name="GraphicsLibrary.GraphicsExtension" Collapsed="true">
+    <Position X="28" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EEAAAEACCBIIgAAAAAAQYEYkTAIAAAgADQAEAAAAAAA=</HashCode>
+      <FileName>GraphicsExtension.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GraphicsLibrary.TexturePack" Collapsed="true">
+    <Position X="29.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AFViEDYWogBDEBhDoAMgoECAxAAAgDRAS4GGhAgsAGE=</HashCode>
+      <FileName>TexturePack.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="GraphicsLibrary.Interfaces.ICollider" Collapsed="true">
+    <Position X="28" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAgAAAAAIAAEEAIACAAAAABAAAAAAAYAA=</HashCode>
+      <FileName>Interfaces\ICollider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GraphicsLibrary.Interfaces.IPrimitive" Collapsed="true">
+    <Position X="29.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAGAAZDCAAg4AABwIAREEAAACQAAIxAAIkCgBE4CA=</HashCode>
+      <FileName>Interfaces\IPrimitive.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GraphicsLibrary.IPrimitiveTexture" Collapsed="true">
+    <Position X="7" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAACAAAACAgCAAAAAAAABAAgAAAA=</HashCode>
+      <FileName>Interfaces\IPrimitiveTexture.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GraphicsLibrary.ITexture" Collapsed="true">
+    <Position X="7" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAgBAACAAgAAAAgEAAAAAAAAAAAAAAEIEAAAAABA=</HashCode>
+      <FileName>Interfaces\ITexture.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="GraphicsLibrary.ATextHorizontalAlign" Collapsed="true">
+    <Position X="29.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACACAAAAIAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ATextLabel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GraphicsLibrary.ATextVerticalAlign" Collapsed="true">
+    <Position X="28" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAIAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\ATextLabel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAlign" Collapsed="true">
+    <Position X="28" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>StandartGraphicsPrimitives\AScrollbar.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,194 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using GameLibrary;
+using GameLibrary.Map;
+using GameLibrary.Extension;
+using GameLibrary.Settlement;
+using GameLibrary.Character;
+
+using GraphicsLibrary;
+using GraphicsLibrary.Interfaces;
+using GraphicsLibrary.Graphics;
+
+using CommonPrimitivesLibrary;
+
+using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAlign;
+using OnMouseEvent = GraphicsLibrary.StandartGraphicsPrimitives.APrimitive.OnMouseEvent;
+
+namespace ArtemisChroniclesOfTheReefGame.Page
+{
+    public class APageGame: APage, IPage
+    {
+
+        private AGame COTR;
+
+        private APanel MapField;
+
+        private APanel PlayerStatisticPanel;
+        private APanel ButtonsPanel;
+        private APanel ExtraPanel;
+        private APanel GameTimeStatistic;
+
+        private AButton Turn;
+
+        private AMapView MapView;
+
+        private AScrolleredPanel ExtraStatisticPanel;
+        private AScrolleredPanel UnitsPanel;
+
+        private AContainer ButtonsPanelContainer;
+
+        OnMouseEvent OnOverEvent;
+
+        public APageGame(IPrimitive primitive) : base(primitive)
+        {
+
+            int LeftWidth = Convert.ToInt32(Parent.Width * 0.8);
+            int RightWidth = Parent.Width - LeftWidth - 30;
+
+            int ExtraPanelHeight = GraphicsExtension.DefaultButtonSize.Height / 2;
+            int ButtonsPanelHeight = GraphicsExtension.DefaultMiniButtonSize.Height * 3 + 50;
+            int ScrolledPanelHeight = (Parent.Height - ButtonsPanelHeight - GraphicsExtension.DefaultButtonSize.Height - 50) / 2;
+
+            PlayerStatisticPanel = new APanel(new ASize(Convert.ToInt32(Parent.Width * 0.8), GraphicsExtension.DefaultButtonSize.Height));
+            ExtraPanel = new APanel(new ASize(LeftWidth, ExtraPanelHeight)) { Text = "Местность: Равнины | Ресурс: Каменный карьер" };
+            MapField = new APanel(new ASize(Convert.ToInt32(Parent.Width * 0.8), Parent.Height - 40 - PlayerStatisticPanel.Height - ExtraPanel.Height));
+            ExtraStatisticPanel = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(RightWidth, ScrolledPanelHeight));
+            UnitsPanel = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(RightWidth, ScrolledPanelHeight));
+            ButtonsPanel = new APanel(new ASize(RightWidth, ButtonsPanelHeight));
+            GameTimeStatistic = new APanel(new ASize(RightWidth - GraphicsExtension.DefaultMiniButtonSize.Width - 10, GraphicsExtension.DefaultMiniButtonSize.Height));
+            Turn = new AButton(GraphicsExtension.DefaultMiniButtonSize);
+
+            PlayerStatisticPanel.Location = new APoint(10, 10);
+            ExtraPanel.Location = new APoint(10, Parent.Height - ExtraPanel.Height - 10);
+            MapField.Location = PlayerStatisticPanel.Location + new APoint(0, PlayerStatisticPanel.Height + 10);
+            ExtraStatisticPanel.Location = PlayerStatisticPanel.Location + new APoint(PlayerStatisticPanel.Width + 10, 0);
+            UnitsPanel.Location = ExtraStatisticPanel.Location + new APoint(0, ExtraStatisticPanel.Height + 10);
+            ButtonsPanel.Location = UnitsPanel.Location + new APoint(0, UnitsPanel.Height + 10);
+            GameTimeStatistic.Location = ButtonsPanel.Location + new APoint(0, ButtonsPanel.Height + 10);
+            Turn.Location = GameTimeStatistic.Location + new APoint(GameTimeStatistic.Width + 10, 0);
+
+            Add(PlayerStatisticPanel);
+            Add(ExtraPanel);
+            Add(MapField); 
+            Add(ExtraStatisticPanel);
+            Add(UnitsPanel);
+            Add(ButtonsPanel);
+            Add(GameTimeStatistic);
+            Add(Turn);
+
+            MapField.FillColor = GraphicsExtension.DefaultDarkFillColor;
+            MapField.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+
+            OnOverEvent = (state, mstate) => ExtraPanel.Text = "Ничего не выбрано";
+
+            ExtraStatisticPanel.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.DefaultFontFamilyName, 8);
+            ExtraStatisticPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+
+            PlayerStatisticPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+            GameTimeStatistic.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+            ExtraPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+
+            Turn.MouseClickEvent += (state, mstate) =>
+            {
+                COTR.Turn();
+                GameTimeStatistic.Text = "Ход: " + COTR.CurrentTurn;
+                PlayerStatisticPanel.Text = COTR.ActivePlayer.ToString();
+            };
+
+            COTR = new AGame();
+
+        }
+        private ASize CalculateMapViewSize(ASize MapSize)
+        {
+            return new ASize(26 + GraphicsExtension.DefaultMapCellRadius + Convert.ToInt32((MapSize.Width - 1) * GraphicsExtension.DefaultMapCellRadius * 1.55f + (MapSize.Height == 1 ? GraphicsExtension.DefaultMapCellRadius * 0.775f : 0)), GraphicsExtension.DefaultMapCellRadius + Convert.ToInt32((MapSize.Height - 1) * (GraphicsExtension.DefaultMapCellRadius / 2.2f)));
+        }
+
+        private APoint CalculateSpriteVector(APoint point)
+        {
+            return new APoint(13 + Convert.ToInt32(point.X * GraphicsExtension.DefaultMapCellRadius * 1.55f + (point.Y % 2 == 0 ? GraphicsExtension.DefaultMapCellRadius * 0.775f : 0)), Convert.ToInt32(point.Y * (GraphicsExtension.DefaultMapCellRadius / 2.2f)));
+        }
+
+        public void StartGame(List<string> players, List<ICharacter> characters, ASize mapSize)
+        {
+
+            COTR.Initialize(players, characters);
+
+            COTR.StartGame(mapSize);
+
+            PlayerStatisticPanel.Text = COTR.ActivePlayer.ToString();
+            GameTimeStatistic.Text = "Ход: " + COTR.CurrentTurn;
+
+            MapView = new AMapView(CalculateMapViewSize(mapSize)) { Parent = MapField, Location = new APoint(10, 10), DragAndDrop = true };
+
+            MapView.MouseEnterEvent += OnOverEvent;
+
+            for (int y = 0; y < mapSize.Height; y++)
+                for (int x = 0; x < (y % 2 == 0 ? mapSize.Width - 1 : COTR.Size.Width); x++)
+                {
+                    AMapCell mapCell = COTR.GetMapCell(new APoint(x, y));
+                    APrimitiveTexture source = TexturePack.Hex[mapCell.OwnerId];
+                    AMapCellView mapCellView = new AMapCellView(mapCell, source) { Parent = MapView, Location = CalculateSpriteVector(new APoint(x, y)) };
+
+                    mapCellView.MouseClickEvent += (state, mouseState) =>
+                    {
+                        if (mouseState.MouseButton.Equals(AMouseButton.Left))
+                        {
+                            //COTR.SelectMapCell(mapCell.Location);
+                            UpdateMapCellInfo(mapCell.Location);
+                            //UpdateUnitsButtonsInSelectedMaCell();
+                            //UpdateActiveButtons();
+                            //SelectActiveUnitButton(COTR.SelectedUnit);
+                        }
+                        /*else if (mouseState.MouseButton.Equals(AMouseButton.Right))
+                        {
+                            if (COTR.IsSelectedUnit && COTR.MoveUnitToLocation(mapCell.Location))
+                            {
+                                UpdateMapCellInfo(mapCell.Location);
+                                UpdateUnitsButtonsInSelectedMaCell();
+                                UpdateActiveButtons();
+                                SelectActiveUnitButton(COTR.SelectedUnit);
+                            }
+                            else UpdateUnitsButtonsInSelectedMaCell();
+                        }*/
+                    };
+
+                    mapCellView.MouseEnterEvent += (state, mouseState) =>
+                    {
+                        ExtraPanel.Text = GameLocalization.Biomes[mapCell.BiomeType] + ", " + GameLocalization.Resources[mapCell.ResourceType] + (mapCell.IsResource ? " (" + (mapCell.IsMined ? "Добывается" : "Не добывается") + ")" : "") + ", " + (mapCell.OwnerId == 0 ? "Пусто" : COTR.Players[mapCell.OwnerId].Name) + (mapCell.IsSettlement? ", " + mapCell.Settlement.Name: "");
+                    };
+
+                    mapCellView.MouseOverEvent += OnOverEvent;
+                }
+
+            //foreach (IUnit unit in COTR.StartGame()) SetUnitButton(unit);
+
+            //UpdatePlayerStatistic();
+
+        }
+        private void UpdateMapCellInfo(APoint location)
+        {
+            AMapCell mapCell = COTR.GetMapCell(location);
+            string s = "Информация о клетке:" + 
+                            "\nКорординаты: " + mapCell.Location +
+                            "\nВладелец: " + (mapCell.OwnerId == 0 ? "Пусто" : COTR.Players[mapCell.OwnerId].Name) +
+                            "\nМестность: " + GameLocalization.Biomes[mapCell.BiomeType] +
+                            "\nРесурс: " + GameLocalization.Resources[mapCell.ResourceType] + (mapCell.IsResource ? " (" + (mapCell.IsMined ? "Добывается" : "Не добывается") + ")" : "") +
+
+                            "\n\nНаселение: " +
+                            "\nОбщая численность: " + mapCell.Population.Total +
+                            //"\nСмертность: " + (mapCell.Population.DeathRate * 100) + "%" +
+                            //"\nРождаемость: " + (mapCell.Population.FertilityRate * 100) + "%" +
+                            //"\nМиграция: " + (mapCell.Population.MigrationRate * 100) + "%"
+                            (mapCell.IsSettlement ? "\n\nПоселение: " + mapCell.Settlement.Name + "\nЗащита: " + mapCell.Settlement.Protection + "\nДоход: " + mapCell.Settlement.Income + "\nНаука: " + mapCell.Settlement.Science + "\nКультура: " + mapCell.Settlement.Culture + "\nМедицина: " + mapCell.Settlement.Medicine + "\nРелигия: " + mapCell.Settlement.Religion + "\nПища: " + mapCell.Settlement.Food +
+                                        "\n\nСтроения: " + string.Join("", mapCell.Settlement.Buildings.Select(x => "\n- " + x.Name)) +
+                                        "\n\nСтроится: " + (mapCell.Settlement.BuildingsInConstruction.Count > 0 ? string.Join("", mapCell.Settlement.BuildingsInConstruction.Select(x => "\n  " + GameLocalization.Buildings[x.Building.BuildingType] + " (" + x.TimeToComplete + ")")) : "\n  Нет проектов в разработке") : "\nПоселение не обнаружено")
+                            ;
+            ExtraStatisticPanel.ContentSize = new ASize(ExtraStatisticPanel.ContentSize.Width, 40 + (s.Count(x => x == '\n') + 1) * ExtraStatisticPanel.TextLabel.Font.Height);
+            ExtraStatisticPanel.Scrollbar.MaxValue = ExtraStatisticPanel.Height < ExtraStatisticPanel.ContentSize.Height ? ExtraStatisticPanel.ContentSize.Height - ExtraStatisticPanel.Height : 0;
+            ExtraStatisticPanel.Text = s;
+        }
+    }
+}

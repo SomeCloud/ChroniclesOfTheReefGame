@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CommonPrimitivesLibrary.AConvert" Collapsed="true">
+    <Position X="3.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>AConvert.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CommonPrimitivesLibrary.AKeyboardState" Collapsed="true">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAQCAAAAAAggAAAAAAAAAAAACAAAAAAACAAAAAA=</HashCode>
+      <FileName>AKeyboardState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CommonPrimitivesLibrary.AMouseState" Collapsed="true">
+    <Position X="6.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>AMouseState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="CommonPrimitivesLibrary.APoint" Collapsed="true">
+    <Position X="3.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAE4AUAAAAAAAAAAAAAAAAAAAAAYiA=</HashCode>
+      <FileName>APoint.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="CommonPrimitivesLibrary.ARectangle" Collapsed="true">
+    <Position X="5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAwAAAAAIEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ARectangle.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="CommonPrimitivesLibrary.ASize" Collapsed="true">
+    <Position X="6.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAU4A0AAEAAAAAAAIAAAAAAAAAAAiA=</HashCode>
+      <FileName>ASize.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="CommonPrimitivesLibrary.AKeyboardKey" Collapsed="true">
+    <Position X="3.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIABAABAAAAAAMBAAgAAACARCAAABAIoAAAAvv//YUE=</HashCode>
+      <FileName>AKeyboardState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CommonPrimitivesLibrary.AKeyState" Collapsed="true">
+    <Position X="6.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAQAAAAAAAAAAAAAAAAAIAAAAACAACA=</HashCode>
+      <FileName>AKeyboardState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CommonPrimitivesLibrary.AKeyboardLanguage" Collapsed="true">
+    <Position X="5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>AKeyboardState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CommonPrimitivesLibrary.AMouseButtonState" Collapsed="true">
+    <Position X="5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAI=</HashCode>
+      <FileName>AMouseState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CommonPrimitivesLibrary.AMouseButton" Collapsed="true">
+    <Position X="3.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACACQAAEAAAA=</HashCode>
+      <FileName>AMouseState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

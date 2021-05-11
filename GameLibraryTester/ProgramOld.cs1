@@ -1,0 +1,135 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using GameLibrary.Character;
+using APoint = CommonPrimitivesLibrary.APoint;
+
+namespace GameLibraryTester
+{
+    class ProgramOld
+    {
+
+        static List<ICharacter> characters = new List<ICharacter>();
+        static int currentDate = 1;
+
+        static void Main(string[] args)
+        {
+
+            bool loopFlag = true;
+            bool clearFlag = true;
+
+            while (loopFlag)
+            {
+                if (clearFlag)
+                {
+                    Console.Clear();
+
+                    Console.WriteLine(
+                        "\n Персонажей всего: " + characters.Count +
+                        "\n Год: " + currentDate
+                        );
+
+                    clearFlag = false;
+                }
+
+                Console.Write("\n > ");
+                string command = Console.ReadLine();
+
+                List<string> parm = command.Split(' ').ToList();
+
+                command = parm[0];
+                parm.RemoveAt(0);
+
+                int id;
+
+                switch (command)
+                {
+                    case "add":
+                        Console.WriteLine();
+                        AddCharacter();
+                        clearFlag = true;
+                        break;
+                    case "print":
+                        if (parm.Count == 0) PrintCharactersList();
+                        else if (int.TryParse(parm[0], out id)) PrintCharacter(id);
+                        else Console.WriteLine("Персонаж не существует");
+                        break;
+                    case "marry":
+                        int spouse;
+                        if (parm.Count > 0) 
+                            if (int.TryParse(parm[0], out id) && int.TryParse(parm[1], out spouse)) MarryCharacters(id, spouse);
+                            else Console.WriteLine("Введены некорректные параметры");
+                        else Console.WriteLine("Требуется два параметра");
+                        clearFlag = true;
+                        break;
+                    case "exit":
+                        loopFlag = false;
+                        break;
+                }
+
+            }
+                   
+        }
+
+        static void MarryCharacters(int id, int spouse)
+        {
+            characters[id - 1].SetSpouseId(spouse);
+            characters[spouse - 1].SetSpouseId(id);
+        }
+
+        static void Kill(int id)
+        {
+            characters[id - 1].Kill(currentDate);
+        }
+
+        static void AddCharacter()
+        {
+
+            Console.Write(" Имя: ");
+            string name = Console.ReadLine();
+            Console.Write(" Имя рода: ");
+            string familyName = Console.ReadLine();
+            Console.Write(" Пол: \n 1. Женский \n 2. Мужской \n > ");
+            SexType sexType = Convert.ToInt32(Console.ReadLine()) == 1? SexType.Female: SexType.Male;
+            Console.Write(" Id Отца: ");
+            int fatherId = Convert.ToInt32(Console.ReadLine());
+            Console.Write(" Id Матери: ");
+            int motherId = Convert.ToInt32(Console.ReadLine());
+
+            ACharacter character = new ACharacter(name, familyName, sexType, fatherId, motherId, characters.Count + 1, currentDate, new APoint(0, 0));
+
+            if (fatherId > 0) characters[fatherId - 1].SetChild(character.Id);
+            if (motherId > 0) characters[motherId - 1].SetChild(character.Id);
+
+            characters.Add(character);
+
+        }
+
+        static void PrintCharacter(int id)
+        {
+            if (id > 0)
+            {
+                ICharacter character = characters[id - 1];
+                Console.WriteLine(
+                    "\n Персонаж [" + (id - 1) + "]: " +
+                    "\n Имя: " + character.Name +
+                    "\n Имя рода: " + character.FamilyName +
+                    "\n Пол: " + (character.SexType == SexType.Female ? "Женский" : "Мужской") +
+                    "\n Дата рождения: " + character.BirthDate +
+                    "\n " + (character.IsAlive ? "Возраст: " : "Дата смерти: ") + character.Age(currentDate) +
+                    "\n Отец: " + (character.FatherId > 0 ? characters[character.FatherId - 1].Name + " " + characters[character.FatherId - 1].FamilyName : "Неизвестен") +
+                    "\n Мать: " + (character.MotherId > 0 ? characters[character.MotherId - 1].Name + " " + characters[character.MotherId - 1].FamilyName : "Неизвестна") +
+                    "\n Супруг/Супруга: " + (character.SpouseId > 0 ? characters[character.SpouseId - 1].Name + " " + characters[character.SpouseId - 1].FamilyName : "Отсутствует") +
+                    "\n Дети: " + (character.IsChildren()? "\n " + string.Join("\n ", character.ChildrenId.Select(x => characters[x - 1].Name + " " + characters[x - 1].FamilyName)) : "Отсутствуют"));
+            }
+            else Console.WriteLine("Персонаж не существует");
+        }
+
+        static void PrintCharactersList()
+        {
+            foreach (ICharacter character in characters) PrintCharacter(character.Id);
+        }
+
+    }
+}

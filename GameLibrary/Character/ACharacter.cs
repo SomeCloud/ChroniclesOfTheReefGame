@@ -1,0 +1,108 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+using GameLibrary.Extension;
+
+using APoint = CommonPrimitivesLibrary.APoint;
+
+namespace GameLibrary.Character
+{
+    public class ACharacter: ICharacter, ICharacterStats
+    {
+
+        private string _Name;
+        private string _FamilyName;
+
+        private int _Id;
+        private int _OwnerId;
+        private int _FatherId;
+        private int _MotherId;
+        private int _SpouseId;
+
+        private bool _Alive;
+
+        private APoint _Location;
+
+        private int _Attractiveness;
+        private int _Education;
+        private int _MartialSkills;
+        private int _Health;
+        private int _Fertility;
+
+        private int DeathDate;
+
+        private List<int> _ChildId;
+
+        public string Name { get => _Name; }
+        public string FamilyName { get => _FamilyName; }
+        public string FullName { get => _Name + " " + _FamilyName; }
+
+        public ASexType SexType { get; }
+
+        public int Id { get => _Id; }
+        public int OwnerId { get => _OwnerId; }
+        public int FatherId { get => _FatherId; }
+        public int MotherId { get => _MotherId; }
+        public int SpouseId { get => _SpouseId; }
+
+        public IReadOnlyList<int> ChildId { get => _ChildId; }
+
+        public bool IsAlive { get => _Alive; }
+        public bool IsMarried { get => _SpouseId != 0; }
+        public bool IsChild { get => _ChildId.Count > 0; }
+
+        public APoint Location { get => _Location; }
+
+        public int BirthDate { get; }
+
+        public int Attractiveness { get => _Attractiveness; }
+        public int Education { get => _Education; }
+        public int MartialSkills { get => _MartialSkills; }
+        public int Health { get => _Health; }
+        public int Fertility { get => _Fertility; }
+
+        public ACharacter(string name, string familyName, ASexType sexType, int birthDate, int id, int ownerId, int fatherId, int motherId) {
+            _Name = name;
+            _FamilyName = familyName;
+            SexType = sexType;
+            BirthDate = birthDate;
+            _Id = id;
+            _FatherId = fatherId;
+            _MotherId = motherId;
+            _OwnerId = ownerId;
+            _ChildId = new List<int>();
+            _Alive = true;
+            SetRandomStats(GameExtension.PlayerDefautStatsValue);
+        }
+
+        public ACharacter(string name, string familyName, ASexType sexType, int birthDate, int id, int ownerId): this(name, familyName, sexType, birthDate, id, ownerId, 0, 0) { }
+
+        public int Age(int currentDate) => IsAlive? currentDate - BirthDate: DeathDate - BirthDate;
+        public void Kill(int currentDate) => (_Alive, DeathDate) = (false, currentDate);
+        public void SetLocation(APoint location) => _Location = location;
+
+        private void SetRandomStats(int value)
+        {
+
+            Random random = new Random((int)DateTime.Now.Ticks);
+
+            List<string> stats = typeof(ICharacterStats).GetProperties().Select(x => "_" + x.Name).ToList();
+
+            foreach (string stat in stats)
+            {
+                GetType().GetField(stat, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, 1);
+                value--;
+            }
+
+            for (int i = 0; i < value; i++)
+            {
+                string stat = stats[random.Next(stats.Count)];
+                var field = GetType().GetField(stat, BindingFlags.NonPublic | BindingFlags.Instance);
+                field.SetValue(this, Convert.ToInt32(field.GetValue(this)) + 1);
+            }
+        }
+
+    }
+}
