@@ -26,6 +26,8 @@ namespace GameLibrary.Character
         public bool IsAlive { get; }
         public bool IsMarried { get; }
         public bool IsChild { get; }
+        public bool IsOwned { get; }
+        public bool IsMatrilinearMarriage { get; }
 
         public int BirthDate { get; }
 
@@ -34,5 +36,10 @@ namespace GameLibrary.Character
         public int Age(int currentDate);
         public void Kill(int currentDate);
         public void SetLocation(APoint location);
+
+        public void Marry(int spouse, bool isMatrilinearMarriage);
+
+        public void AddChild(int childId);
+
     }
 }

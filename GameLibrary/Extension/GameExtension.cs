@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-using GameLibrary.Unit;
+using GameLibrary.Map;
 using GameLibrary.Character;
 using GameLibrary.Settlement.Building;
+using GameLibrary.Technology;
 
 namespace GameLibrary.Extension
 {
     public struct GameExtension
     {
 
-        public static int PlayerDefautStatsValue = 14;
+        public static int PlayerDefautStatsValue = 33;
         public static int CharactersDefautStartValue = 1;
 
         public static IReadOnlyDictionary<ABuildingType, int> BuildTime = new Dictionary<ABuildingType, int>() {
@@ -272,11 +273,85 @@ namespace GameLibrary.Extension
             "Д'Гримм",
         };
 
+        public static IReadOnlyDictionary<ATechnologyType, int> TechnologiesScienceValue = new Dictionary<ATechnologyType, int>() {
+            { ATechnologyType.PrimitiveSociety, 0 },
+            { ATechnologyType.HuntingAndGathering, 15 },
+            { ATechnologyType.Paganism, 10 },
+            { ATechnologyType.Agriculture, 10 },
+            { ATechnologyType.Fishing, 10 },
+            { ATechnologyType.Masonry, 10 },
+            { ATechnologyType.Phytotherapy, 10 },
+            { ATechnologyType.Priesthood, 10 },
+            { ATechnologyType.WoodProcessing, 10 },
+            { ATechnologyType.StoneProcessing, 10 },
+            { ATechnologyType.Mining, 10 },
+            { ATechnologyType.Medicine, 10 },
+            { ATechnologyType.AnimalHusbandry, 10 },
+            { ATechnologyType.BronzeProcessing, 10 },
+            { ATechnologyType.Writing, 10 },
+            { ATechnologyType.Handicraft, 10 },
+            { ATechnologyType.CastingMetals, 10 },
+            { ATechnologyType.Alphabet, 10 },
+            { ATechnologyType.MilitaryTraditions, 10 },
+            { ATechnologyType.Mathematics, 10 },
+            { ATechnologyType.TheatricalArt, 10 },
+            { ATechnologyType.Сurrency, 10 },
+            { ATechnologyType.Building, 10 },
+            { ATechnologyType.Banking, 10 },
+            { ATechnologyType.CodeOfLaws, 10 },
+            { ATechnologyType.Construction, 10 },
+            { ATechnologyType.Education, 10 }
+        };
+
+        public static IReadOnlyDictionary<ATechnologyType, IEnumerable<ATechnologyType>> TechnologiesRequiredTechnologies = new Dictionary<ATechnologyType, IEnumerable<ATechnologyType>>() {
+            { ATechnologyType.PrimitiveSociety, new ATechnologyType[] { } },
+            { ATechnologyType.HuntingAndGathering, new ATechnologyType[] { ATechnologyType.PrimitiveSociety }  },
+            { ATechnologyType.Paganism, new ATechnologyType[] { ATechnologyType.PrimitiveSociety }  },
+            { ATechnologyType.Agriculture, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.Fishing, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.Masonry, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.Phytotherapy, new ATechnologyType[] { ATechnologyType.Paganism }  },
+            { ATechnologyType.Priesthood, new ATechnologyType[] { ATechnologyType.Paganism }  },
+            { ATechnologyType.WoodProcessing, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.StoneProcessing, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.Mining, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.Medicine, new ATechnologyType[] { ATechnologyType.Phytotherapy, ATechnologyType.Priesthood }  },
+            { ATechnologyType.AnimalHusbandry, new ATechnologyType[] { ATechnologyType.HuntingAndGathering }  },
+            { ATechnologyType.BronzeProcessing, new ATechnologyType[] { ATechnologyType.Mining }  },
+            { ATechnologyType.Writing, new ATechnologyType[] { ATechnologyType.Priesthood }  },
+            { ATechnologyType.Handicraft, new ATechnologyType[] { ATechnologyType.CastingMetals }  },
+            { ATechnologyType.CastingMetals, new ATechnologyType[] { ATechnologyType.BronzeProcessing }  },
+            { ATechnologyType.Alphabet, new ATechnologyType[] { ATechnologyType.Writing }  },
+            { ATechnologyType.MilitaryTraditions, new ATechnologyType[] { ATechnologyType.Handicraft }  },
+            { ATechnologyType.Mathematics, new ATechnologyType[] { ATechnologyType.Writing }  },
+            { ATechnologyType.TheatricalArt, new ATechnologyType[] { ATechnologyType.Alphabet }  },
+            { ATechnologyType.Сurrency, new ATechnologyType[] { ATechnologyType.Mathematics }  },
+            { ATechnologyType.Building, new ATechnologyType[] { ATechnologyType.Mathematics, ATechnologyType.Masonry }  },
+            { ATechnologyType.Banking, new ATechnologyType[] { ATechnologyType.Сurrency }  },
+            { ATechnologyType.CodeOfLaws, new ATechnologyType[] { ATechnologyType.Сurrency }  },
+            { ATechnologyType.Construction, new ATechnologyType[] { ATechnologyType.Building }  },
+            { ATechnologyType.Education, new ATechnologyType[] { ATechnologyType.CodeOfLaws }  }
+        };
+
         public static string CharacterName(ASexType sexType)
         {
             Random random = new Random((int)DateTime.Now.Ticks);
             return sexType.Equals(ASexType.Female)? DefaultFemaleName[random.Next(DefaultFemaleName.Count)]: DefaultMaleName[random.Next(DefaultMaleName.Count)];
         }
+
+        public static IReadOnlyDictionary<AResourceType, ATechnologyType> ResourceRequiredTechnologies = new Dictionary<AResourceType, ATechnologyType>()
+        {
+            { AResourceType.None, ATechnologyType.PrimitiveSociety },
+            { AResourceType.Iron, ATechnologyType.CastingMetals },
+            { AResourceType.Copper, ATechnologyType.Mining },
+            { AResourceType.Gold, ATechnologyType.CastingMetals },
+            { AResourceType.Silver, ATechnologyType.CastingMetals },
+            { AResourceType.Stone, ATechnologyType.HuntingAndGathering },
+            { AResourceType.Marable, ATechnologyType.HuntingAndGathering },
+            { AResourceType.Wood, ATechnologyType.HuntingAndGathering },
+            { AResourceType.Fish, ATechnologyType.Fishing },
+            { AResourceType.Wheat, ATechnologyType.Agriculture }
+        };
 
     }
 }

@@ -96,6 +96,7 @@ namespace ArtemisChroniclesOfTheReefGame
         public static Texture2D MiniButtons_General_Resource_Extraction;
         public static Texture2D MiniButtons_General_Technology_Tree;
         public static Texture2D MiniButtons_General_Turn;
+        public static Texture2D MiniButtons_Message;
 
         public static Texture2D MiniButtons_Unit_Colonist;
         public static Texture2D MiniButtons_Unit_Spearman;
@@ -223,6 +224,7 @@ namespace ArtemisChroniclesOfTheReefGame
             MiniButtons_General_Resource_Extraction = contentManager.Load<Texture2D>("Inteface/MiniButtons_General_Resource_Extraction");
             MiniButtons_General_Technology_Tree = contentManager.Load<Texture2D>("Inteface/MiniButtons_General_Technology_Tree");
             MiniButtons_General_Turn = contentManager.Load<Texture2D>("Inteface/MiniButtons_General_Turn");
+            MiniButtons_Message = contentManager.Load<Texture2D>("Inteface/MiniButtons_Message");
 
             MiniButtons_Unit_Colonist = contentManager.Load<Texture2D>("Inteface/MiniButtons_Unit_Colonist");
             MiniButtons_Unit_Spearman = contentManager.Load<Texture2D>("Inteface/MiniButtons_Unit_Spearman");

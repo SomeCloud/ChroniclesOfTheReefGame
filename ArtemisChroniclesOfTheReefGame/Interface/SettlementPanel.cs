@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
@@ -8,68 +9,176 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
+using AKeyState = CommonPrimitivesLibrary.AKeyState;
 
 using GameLibrary;
-using GameLibrary.Map;
+using GameLibrary.Settlement;
+using GameLibrary.Unit.Main;
 using GameLibrary.Extension;
-using GameLibrary.Settlement.Characteristic;
+using GameLibrary.Technology;
 
 namespace ArtemisChroniclesOfTheReefGame.Interface
 {
-    public class SettlementPanel: APanel
+    public class SettlementPanel : AForm
     {
 
-        public event MapCellPanel.OnUpdate UpdateEvent;
+        public delegate void OnTechnologySelect(ISettlement settlement);
+        public delegate void OnBuildingSelect();
+        public delegate void OnUnitSelect(AUnitType unitType, APoint location);
+        public delegate void OnShow();
 
-        private AGame Game;
+        public event OnUnitSelect UnitSelectEvent;
+        public event OnBuildingSelect BuildingSelectEvent;
+        public event OnTechnologySelect TechnologyTreeSelectEvent;
+        public event OnShow ShowEvent;
 
-        private APanel SettlementCharacteristic;
+        private SettlementInfoPanel SettlementInfoPanel;
+        private BuildingPanel BuildingPanel;
+        private CreateUnitsPanel UnitsPanel;
 
-        private AScrolleredPanel SettlementBuildingsPanel;
-        private AScrolleredPanel SettlementBuildingsInConstructionPanel;
-        private AScrolleredPanel SettlementNewConstructionPanel;
+        private AScrolleredPanel BuildingsInConstruction;
 
-        public SettlementPanel(AGame game, ASize size): base(size)
+        private AButton Main;
+        private AButton Building;
+        private AButton Units;
+
+        private ISettlement Settlement;
+
+        public SettlementPanel(ASize size) : base(size)
         {
-
-            Game = game;
 
         }
 
         public override void Initialize()
         {
+
             base.Initialize();
 
-            int width = (Width - 30) / 2;
+            Main = new AButton(new ASize(250, 50)) { Location = new APoint(1, 1), Text = "Поселение" };
+            Building = new AButton(new ASize(250, 50)) { Location = Main.Location + new APoint(0, Main.Height + 10), Text = "Строительство" };
+            Units = new AButton(new ASize(250, 50)) { Location = Building.Location + new APoint(0, Building.Height + 10), Text = "Юниты" };
 
-            SettlementCharacteristic = new APanel(new ASize(200, 200)) { Parent = this, Location = new APoint(10, 10) };
-            SettlementBuildingsPanel = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(Width - SettlementCharacteristic.Width - 30, SettlementCharacteristic.Height)) { Parent = this, Location = SettlementCharacteristic.Location + new APoint(SettlementCharacteristic.Width + 10, 0) };
+            SettlementInfoPanel = new SettlementInfoPanel(new ASize(Content.Width - Main.Width - 12, Content.Height - 2)) { Location = Main.Location + new APoint(Main.Width + 10, 0) };
 
-            SettlementBuildingsInConstructionPanel = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(width, Height - SettlementCharacteristic.Height - 30)) { Parent = this, Location = SettlementCharacteristic.Location + new APoint(0, SettlementCharacteristic.Height + 10) };
-            SettlementNewConstructionPanel = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(width,Height - SettlementCharacteristic.Height - 30)) { Parent = this, Location = SettlementBuildingsInConstructionPanel.Location + new APoint(SettlementBuildingsInConstructionPanel.Width + 10, 0) };
+            BuildingsInConstruction = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(Content.Width - Main.Width - 12, 200)) { Location = Main.Location + new APoint(Main.Width + 10, 0) };
 
-            SettlementCharacteristic.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
-            SettlementBuildingsPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
-            SettlementBuildingsInConstructionPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+            BuildingPanel = new BuildingPanel(new ASize(Content.Width - Main.Width - 12, Content.Height - 210 - 2)) { Location = BuildingsInConstruction.Location + new APoint(0, BuildingsInConstruction.Height + 10) };
+            UnitsPanel = new CreateUnitsPanel(new ASize(Content.Width - Main.Width - 12, Content.Height - 2)) { Location = Main.Location + new APoint(Main.Width + 10, 0) };
 
-            SettlementBuildingsPanel.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
-            SettlementBuildingsInConstructionPanel.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
+            Add(Main);
+            Add(Building);
+            Add(Units);
 
-            SettlementCharacteristic.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 12);
-            SettlementBuildingsPanel.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 12);
+            Add(SettlementInfoPanel);
+            Add(BuildingsInConstruction);
+            Add(BuildingPanel);
+            Add(UnitsPanel);
+
+            Main.MouseClickEvent += (state, mstate) => {
+                HideChilds();
+
+                Main.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+                Building.BorderColor = GraphicsExtension.DefaultBorderColor;
+                Units.BorderColor = GraphicsExtension.DefaultBorderColor;
+
+                SettlementInfoPanel.Show(Settlement);
+            };
+
+            Building.MouseClickEvent += (state, mstate) =>
+            {
+                HideChilds();
+
+                Main.BorderColor = GraphicsExtension.DefaultBorderColor;
+                Building.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+                Units.BorderColor = GraphicsExtension.DefaultBorderColor;
+
+                BuildingsInConstruction.Enabled = true;
+
+                BuildingPanel.Show(Settlement.Owner, Settlement);
+            };
+
+            Units.MouseClickEvent += (state, mstate) =>
+            {
+                HideChilds();
+
+                Main.BorderColor = GraphicsExtension.DefaultBorderColor;
+                Building.BorderColor = GraphicsExtension.DefaultBorderColor;
+                Units.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+
+                UnitsPanel.Show(Settlement.Owner);
+            };
+
+            SettlementInfoPanel.TechnologySelectEvent += (settlement) =>
+            {
+                TechnologyTreeSelectEvent?.Invoke(settlement);
+                SettlementInfoPanel.Show(Settlement);
+            };
+
+            UnitsPanel.SelectEvent += (unit) =>
+            {
+                UnitSelectEvent?.Invoke(unit, Settlement.Location);
+                UnitsPanel.Show(Settlement.Owner);
+            };
+
+            BuildingPanel.SelectEvent += (building) =>
+            {
+                Settlement.StartBuilding(building);
+                UpdateBuildingsInConstruction(Settlement);
+                BuildingPanel.Show(Settlement.Owner, Settlement);
+                BuildingSelectEvent?.Invoke();
+            };
+
+            BuildingsInConstruction.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+            BuildingsInConstruction.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
+            BuildingsInConstruction.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 10);
+
         }
 
-        public void Update(APoint location)
+        public void Update(ISettlement settlement)
         {
-            AMapCell mapCell = Game.GetMapCell(location);
-            SettlementCharacteristic.Text = string.Join("\n", Enum.GetValues(typeof(ASettlementCharacteristicType)).OfType<ASettlementCharacteristicType>().Select(x => StringPad(GameLocalization.SettlementCharacteristicName[x] + ":", 10) + " " + mapCell.Settlement.GetType().GetProperty(x.ToString()).GetValue(mapCell.Settlement)));
-            SettlementBuildingsPanel.Text = string.Join("\n", mapCell.Settlement.Buildings.Select(x => x.Name));
-            SettlementBuildingsInConstructionPanel.Text = string.Join("\n", mapCell.Settlement.BuildingsInConstruction.Select(x => x.Building.Name));
-            UpdateEvent?.Invoke(mapCell);
+            Settlement = settlement;
+
+            Main.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+            Building.BorderColor = GraphicsExtension.DefaultBorderColor;
+            Units.BorderColor = GraphicsExtension.DefaultBorderColor;
+
+            UpdateBuildingsInConstruction(settlement);
+
+            SettlementInfoPanel.Update(settlement);
+            BuildingPanel.Update(Settlement.Owner, settlement);
+            UnitsPanel.Update(Settlement.Owner);
+
+            HideChilds();
+
+            SettlementInfoPanel.Show(settlement);
         }
 
-        private string StringPad(string value, int width) => value + new String(' ', width - value.Length);
-        private string StringPad(int value, int width) => StringPad(value.ToString(), width);
+        public void Update() => Update(Settlement);
+
+        //private void UpdateBuildingsInConstruction(ISettlement settlement) => BuildingsInConstruction.Text = "Проекты в разработке: \n\n" + string.Join("\n", settlement.BuildingsInConstruction.Select(x => x.Building.Name + " (" + x.TimeToComplete + ")"));
+        private void UpdateBuildingsInConstruction(ISettlement settlement)
+        {
+            
+            if (settlement is object) BuildingsInConstruction.Text = "Проекты в разработке: \n\n" + string.Join("\n", settlement.BuildingsInConstruction.Select(x => x.Building.Name + " (" + x.TimeToComplete + ")"));
+        }
+
+        public void Hide() => Enabled = false;
+
+        private void HideChilds() {
+            BuildingsInConstruction.Enabled = false;
+            SettlementInfoPanel.Enabled = false;
+            BuildingPanel.Enabled = false;
+            UnitsPanel.Enabled = false;
+        }
+        public void Show(ISettlement settlement)
+        {
+            Enabled = true;
+            Update(settlement);
+
+            Text = "Наместник города " + settlement.Name;
+
+            ShowEvent?.Invoke();
+        }
 
     }
 }

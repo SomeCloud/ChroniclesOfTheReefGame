@@ -5,7 +5,7 @@ using GraphicsLibrary.Interfaces;
 
 namespace ArtemisChroniclesOfTheReefGame.Page
 {
-    public class APage: IPage
+    public abstract class APage: IPage
     {
 
         private List<IPrimitive> _Controls;
@@ -42,6 +42,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         }
 
         private void SetVisiable(bool visible) { foreach(IPrimitive primitive in _Controls) primitive.Enabled = visible; }
+
+        public abstract void Update();
 
     }
 }

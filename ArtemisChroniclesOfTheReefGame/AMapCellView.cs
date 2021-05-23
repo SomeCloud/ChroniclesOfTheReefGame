@@ -12,6 +12,7 @@ using GameLibrary;
 using GameLibrary.Map;
 using GameLibrary.Unit.Main;
 using GameLibrary.Extension;
+using GameLibrary.Technology;
 
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
@@ -95,27 +96,37 @@ namespace ArtemisChroniclesOfTheReefGame
 
             bool isUnit = Game.GetUnits(_MapCell.Location) is List<IUnit> units && units.Count > 0;
 
-            if (Enabled) spriteBatch.Draw(IsDarkenedTexture ? TexturePack.Hex[_MapCell.OwnerId].DarkenedTexture : TexturePack.Hex[_MapCell.OwnerId].Texture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
-            if (Enabled) spriteBatch.Draw(TexturePack.Biome(_MapCell.BiomeType, isUnit, _MapCell.IsSettlement), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
-            if (Enabled && _MapCell.IsSettlement) spriteBatch.Draw(TexturePack.Construction(_MapCell.BiomeType, isUnit), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
-            if (Enabled && isUnit)
+            if (MapCell.IsSettlement && !MapCell.Settlement.Name.Equals(Label.Text)) Label.Text = MapCell.Settlement.Name;
+            Enabled = Game.ActivePlayer.ExploredTerritories.Contains(_MapCell.Location);
+
+            _IsDarkenedTexture = Game.IsMapCellSelected && Game.SelectedMapCell.IsSettlement && Game.SelectedMapCell.Settlement.Territories.Contains(_MapCell);
+            
+            if (Enabled)
             {
 
-                if (!(_MapCell.ActiveUnit is null))
+                spriteBatch.Draw(IsDarkenedTexture ? TexturePack.Hex[_MapCell.OwnerId].DarkenedTexture : TexturePack.Hex[_MapCell.OwnerId].Texture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TexturePack.Biome(_MapCell.BiomeType, isUnit, _MapCell.IsSettlement), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
+                if (_MapCell.IsSettlement) spriteBatch.Draw(TexturePack.Construction(_MapCell.BiomeType, isUnit), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
+                if (isUnit)
                 {
-                    spriteBatch.Draw(TexturePack.Unit(_MapCell.ActiveUnit.UnitType), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(TexturePack.Banners[_MapCell.ActiveUnit.Owner.Id], new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+
+                    if (!(_MapCell.ActiveUnit is null))
+                    {
+                        spriteBatch.Draw(TexturePack.Unit(_MapCell.ActiveUnit.UnitType), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(TexturePack.Banners[_MapCell.ActiveUnit.Owner.Id], new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    }
+                }
+
+                if (Game.ActivePlayer.IsResource(MapCell.ResourceType)) spriteBatch.Draw(TexturePack.Resource(_MapCell.ResourceType, _MapCell.IsMined), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextTexture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
+
+                foreach (IPrimitive primitive in Controls.OrderBy(x => x.ZIndex).ToList())
+                {
+                    primitive.Draw(spriteBatch);
                 }
             }
-
-            if (Enabled) spriteBatch.Draw(TexturePack.Resource(_MapCell.ResourceType, _MapCell.IsMined), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
-            if (Enabled) spriteBatch.Draw(TextTexture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
-
-            foreach (IPrimitive primitive in Controls.OrderBy(x => x.ZIndex).ToList())
-            {
-                primitive.Draw(spriteBatch);
-            }
         }
+
         public new bool InCollider(AMouseState mouseState, out IPrimitive activeChild)
         {
             activeChild = null;
@@ -127,7 +138,7 @@ namespace ArtemisChroniclesOfTheReefGame
 
             if (!mouseState.MouseButton.Equals(AMouseButton.Middle))
             {
-                if (Collider.InCollider(mouseState.CursorPosition, points))
+                if (Enabled && Collider.InCollider(mouseState.CursorPosition, points))
                 {
                     if (!ForcedActive) foreach (IPrimitive e in Controls.OrderByDescending(x => x.ZIndex).ToList())
                         {

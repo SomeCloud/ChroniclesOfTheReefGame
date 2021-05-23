@@ -6,6 +6,7 @@ using AUnitType = GameLibrary.Unit.Main.AUnitType;
 using GameLibrary.Map;
 using GameLibrary.Character;
 using GameLibrary.Player;
+using GameLibrary.Technology;
 using GameLibrary.Settlement.Building;
 using GameLibrary.Settlement.Characteristic;
 
@@ -29,11 +30,11 @@ namespace GameLibrary.Extension
             {AResourceType.Copper, "Медная руда" } ,
             {AResourceType.Gold, "Золотая руда" } ,
             {AResourceType.Silver, "Серебрянная руда" } ,
-            {AResourceType.Stone, "Каменный карьер" } ,
-            {AResourceType.Marable, "Мраморный карьер" } ,
+            {AResourceType.Stone, "Камень" } ,
+            {AResourceType.Marable, "Мрамор" } ,
             {AResourceType.Wood, "Древесина" } ,
-            {AResourceType.Fish, "Рыболовные угодья" } ,
-            {AResourceType.Wheat,  "Злаковое поле" } 
+            {AResourceType.Fish, "Рыба" } ,
+            {AResourceType.Wheat,  "Злаки" } 
         };
 
         public static IReadOnlyDictionary<ABuildingType, string> Buildings = new Dictionary<ABuildingType, string>() {
@@ -142,5 +143,34 @@ namespace GameLibrary.Extension
             { ARelationshipType.Union, "Союзнические отношения" },
         };
 
+        public static IReadOnlyDictionary<ATechnologyType, string> Technologies = new Dictionary<ATechnologyType, string>() {
+            { ATechnologyType.PrimitiveSociety, "Первобытное общество" },
+            { ATechnologyType.HuntingAndGathering, "Охота и собирательство" },
+            { ATechnologyType.Paganism, "Язычество" },
+            { ATechnologyType.Agriculture, "Сельское хозяйство" },
+            { ATechnologyType.Fishing, "Рыболовство" },
+            { ATechnologyType.Masonry, "Каменная кладка" },
+            { ATechnologyType.Phytotherapy, "Фитотерапия" },
+            { ATechnologyType.Priesthood, "Духовенство" },
+            { ATechnologyType.WoodProcessing, "Обработка древесины" },
+            { ATechnologyType.StoneProcessing, "Обработка камня" },
+            { ATechnologyType.Mining, "Шахтерство" },
+            { ATechnologyType.Medicine, "Медицина" },
+            { ATechnologyType.AnimalHusbandry, "Животноводство" },
+            { ATechnologyType.BronzeProcessing, "Обработка бронзы" },
+            { ATechnologyType.Writing, "Письменность" },
+            { ATechnologyType.Handicraft, "Ремесленничество" },
+            { ATechnologyType.CastingMetals, "Литье металлов" },
+            { ATechnologyType.Alphabet, "Алфавит" },
+            { ATechnologyType.MilitaryTraditions, "Воинские традиции" },
+            { ATechnologyType.Mathematics, "Математика" },
+            { ATechnologyType.TheatricalArt, "Театральное искусство" },
+            { ATechnologyType.Сurrency, "Деньги" },
+            { ATechnologyType.Building, "Строительство" },
+            { ATechnologyType.Banking, "Банковское дело" },
+            { ATechnologyType.CodeOfLaws, "Свод законов" },
+            { ATechnologyType.Construction, "Конструирование" },
+            { ATechnologyType.Education, "Образование" }
+        };
     }
 }

@@ -32,5 +32,6 @@
     <ProjectReference Include="..\CommonPrimitivesLibrary\CommonPrimitivesLibrary.csproj" />
     <ProjectReference Include="..\GameLibrary\GameLibrary.csproj" />
     <ProjectReference Include="..\GraphicsLibrary\GraphicsLibrary.csproj" />
+    <ProjectReference Include="..\NetLibrary\NetLibrary.csproj" />
   </ItemGroup>
 </Project>

@@ -16,15 +16,9 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
     public abstract class APrimitive : IPrimitive, IDisposable
     {
         
-        public delegate void OnMouseEvent(IPrimitive primitive, AMouseState mouseState);
+        /*public delegate void OnMouseEvent(IPrimitive primitive, AMouseState mouseState);
         public delegate void OnKeyEvent(IPrimitive primitive, AKeyboardState keyboardState);
-        public delegate void OnTimeEvent();
-
-        public event OnKeyEvent KeyUpEvent;
-        public event OnKeyEvent KeyPressEvent;
-        public event OnKeyEvent KeyDownEvent;
-
-        public event OnTimeEvent TimeEvent;
+        public delegate void OnSizeChangeEvent(IPrimitive primitive, ASize size);*/
 
         public event OnMouseEvent MouseClickEvent;
         public event OnMouseEvent MouseEnterEvent;
@@ -39,12 +33,20 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
         private OnMouseEvent MouseOver;
         private OnMouseEvent MouseInto;
 
+        public event OnKeyEvent KeyUpEvent;
+        public event OnKeyEvent KeyPressEvent;
+        public event OnKeyEvent KeyDownEvent;
+
+        public event OnTimeEvent TimeEvent;
+
+        public event OnSizeChangeEvent SizeChangeEvent;
+
         private ATextLabel.OnChangeEvent TextLabelChange;
 
         private ASize _Size;
         private APoint _Location;
 
-        private AKeyboardKey LastKey;
+        private AKeyboardState LastKey;
         private int _Counter;
         protected int Counter => _Counter;
 
@@ -54,7 +56,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
         private bool _ForcedActive;
         private bool _DragAndDrop;
         private bool _IsDarkened;
-        private bool _IsDarkenedTexture;
+        protected bool _IsDarkenedTexture;
 
         private ARectangle _VisibleArea;
 
@@ -78,6 +80,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
                 _Size = value;
                 if (!(Parent is null)) Initialize();
                 UpdateVisibleArea();
+                SizeChangeEvent?.Invoke(this, value);
             }
         }
         public int Width
@@ -88,6 +91,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
                 _Size.Width = value;
                 if (!(Parent is null)) Initialize();
                 UpdateVisibleArea();
+                SizeChangeEvent?.Invoke(this, _Size);
             }
         }
         public int Height
@@ -98,6 +102,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
                 _Size.Height = value;
                 if (!(Parent is null)) Initialize();
                 UpdateVisibleArea();
+                SizeChangeEvent?.Invoke(this, _Size);
             }
         }
 
@@ -303,13 +308,15 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
 
         public void ProcessKey(AKeyboardState keyboardState)
         {
-            if (keyboardState.KeyState.Equals(AKeyState.Undefined)) KeyUpEvent?.Invoke(this, keyboardState);
-            else if (LastKey.Equals(keyboardState.KeyboardKey)) KeyPressEvent?.Invoke(this, keyboardState);
-            else if (!LastKey.Equals(keyboardState.KeyboardKey))
-            {
-                KeyUpEvent?.Invoke(this, keyboardState);
-                KeyDownEvent?.Invoke(this, keyboardState);
-            }
+            if (LastKey is object)
+                if (keyboardState.KeyState.Equals(AKeyState.Undefined)) KeyUpEvent?.Invoke(this, keyboardState);
+                else if (LastKey.KeyState.Equals(AKeyState.Key) && LastKey.KeyboardKey.Equals(keyboardState.KeyboardKey)) KeyPressEvent?.Invoke(this, keyboardState);
+                else if (!LastKey.Equals(keyboardState))
+                {
+                    KeyUpEvent?.Invoke(this, keyboardState);
+                    KeyDownEvent?.Invoke(this, keyboardState);
+                }
+            LastKey = keyboardState.Clone();
         }
 
         public bool InCollider(AMouseState mouseState, out IPrimitive activeChild)
@@ -321,7 +328,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
                 points[i] += GlobalLocation + Collider.Location;
             }
 
-            if (Collider.InCollider(mouseState.CursorPosition, points) || ForcedActive)
+            if (Enabled && Collider.InCollider(mouseState.CursorPosition, points) || ForcedActive)
             {
                 if (!ForcedActive) foreach (IPrimitive e in Controls.Where(e => e.Enabled).OrderByDescending(x => x.ZIndex).ToList())
                     {

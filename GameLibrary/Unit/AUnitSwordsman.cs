@@ -3,7 +3,10 @@
 using APoint = CommonPrimitivesLibrary.APoint;
 
 using GameLibrary.Player;
+
+using AResourceType = GameLibrary.Map.AResourceType;
 using APeople = GameLibrary.Map.APeople;
+
 using GameLibrary.Unit.Main;
 
 namespace GameLibrary.Unit
@@ -15,6 +18,7 @@ namespace GameLibrary.Unit
         public override int ActionMaxValue { get => 1; }
         public override int ContentTax { get => 10; }
         public override int Cost { get => 120; }
+        public override AResourceType RequiredResource { get => AResourceType.Iron; }
         public override AUnitType UnitType { get => AUnitType.Swordsman; }
         public override string UnitTypeName { get => "Мечник"; }
 

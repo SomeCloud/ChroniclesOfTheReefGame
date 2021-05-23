@@ -9,6 +9,8 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
+using AKeyState = CommonPrimitivesLibrary.AKeyState;
+
 
 using GameLibrary;
 using GameLibrary.Extension;
@@ -35,6 +37,11 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             Game = game;
         }
 
+        public WorldPanel(AGame game, ASize size, IPrimitiveTexture primitiveTexture) : base(size, primitiveTexture)
+        {
+            Game = game;
+        }
+
         public override void Initialize()
         {
 
@@ -44,11 +51,13 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             _CloseSettlementForm = new AButton(new ASize(40, 40)) { Parent = this, Location = new APoint(Width - 50, 10), Text = "×" };
 
-            _CharacterPanel = new CharacterPanel(Game, new ASize(width, Height - 80)) { Parent = this, Location = new APoint(10, 70) };
-            _CharactersListPanel = new CharactersListPanel(Game, new ASize(width, Height - 80)) { Parent = this, Location = _CharacterPanel.Location + new APoint(_CharacterPanel.Width + 10, 0) };
+            _CharactersListPanel = new CharactersListPanel(Game, new ASize(width, Height - 80)) { Parent = this, Location = new APoint(10, 70)};
+            _CharacterPanel = new CharacterPanel(Game, new ASize(width, Height - 80)) { Parent = this, Location = _CharactersListPanel.Location + new APoint(_CharactersListPanel.Width + 10, 0) };
 
             _CloseSettlementForm.MouseClickEvent += (state, mstate) => { Enabled = false; };
             _CharactersListPanel.SelectCharacterEvent += (character) => { _CharacterPanel.Update(character); _CharacterPanel.Enabled = true; };
+
+            KeyDownEvent += (state, kstate) => { if (kstate.KeyState.Equals(AKeyState.Exit)) Enabled = false; };
 
             TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
 

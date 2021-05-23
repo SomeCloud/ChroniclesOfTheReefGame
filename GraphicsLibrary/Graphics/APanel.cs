@@ -13,6 +13,8 @@ namespace GraphicsLibrary.Graphics
         private Color _FillColor;
         private Color _BorderColor;
 
+        private bool IsFilledConstructor;
+
         public Color FillColor
         {
             get => _FillColor;
@@ -44,10 +46,23 @@ namespace GraphicsLibrary.Graphics
             Texture = Source;
         }
 
+        public APanel(ASize size, Color fillColor) : this(size)
+        {
+            IsFilledConstructor = true;
+            _FillColor = fillColor;
+        }
+
+        public APanel(ASize size, IPrimitiveTexture primitiveTexture) : this(size)
+        {
+            Texture = Source = primitiveTexture;
+        }
+
         public override void Initialize()
         {
+
             Collider = new ARectangleCollider(Size);
-            Texture = Source = new ARectangleTexture(GraphicsDevice, Size) { IsDraw = true, IsFill = true };
+            if (Source is null) Texture = Source = IsFilledConstructor ? new ARectangleTexture(GraphicsDevice, Size, _FillColor, _BorderColor) { IsDraw = true, IsFill = true } : new ARectangleTexture(GraphicsDevice, Size) { IsDraw = true, IsFill = true };
+
         }
 
         public override void OnLocationChangeProcess()

@@ -22,11 +22,11 @@ namespace GameLibraryTester
         static void Main(string[] args)
         {
 
-            Dictionary<int, IPlayer> Players = new Dictionary<int, IPlayer>();
-            Dictionary<IPlayer, List<AMapCell>> Map = new Dictionary<IPlayer, List<AMapCell>>();
-            Dictionary<IPlayer, List<ISettlement>> Settlements = new Dictionary<IPlayer, List<ISettlement>>();
+            Dictionary<int, GameLibrary.Player.ICharacter> Players = new Dictionary<int, GameLibrary.Player.ICharacter>();
+            Dictionary<GameLibrary.Player.ICharacter, List<AMapCell>> Map = new Dictionary<GameLibrary.Player.ICharacter, List<AMapCell>>();
+            Dictionary<GameLibrary.Player.ICharacter, List<ISettlement>> Settlements = new Dictionary<GameLibrary.Player.ICharacter, List<ISettlement>>();
 
-            IPlayer player = null;
+            GameLibrary.Player.ICharacter player = null;
             List<AMapCell> territories = new List<AMapCell>() { new AMapCell(new APoint(1, 1)), new AMapCell(new APoint(2, 2)), new AMapCell(new APoint(3, 3)) };
             List<ISettlement> settlements = new List<ISettlement>() { new ASettlement(territories[0], player), new ASettlement(territories[1], player), new ASettlement(territories[2], player) };
 

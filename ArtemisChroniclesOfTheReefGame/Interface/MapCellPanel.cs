@@ -9,11 +9,12 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
+using AKeyState = CommonPrimitivesLibrary.AKeyState;
 
 using GameLibrary;
 using GameLibrary.Map;
 using GameLibrary.Character;
-using GameLibrary.Player;
+using GameLibrary.Extension;
 using GameLibrary.Unit.Main;
 
 namespace ArtemisChroniclesOfTheReefGame.Interface
@@ -22,6 +23,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
     {
 
         public delegate void OnUpdate(AMapCell mapCell);
+        public event OnUpdate UpdateEvent;
 
         private AGame Game;
 
@@ -30,9 +32,9 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         private AButton _ShowUnitsPanel;
         private AButton _ShowCharactersPanel;
 
-        private SettlementPanel _SettlementPanel;
+        private SettlementPanelOld _SettlementPanel;
         private UnitsPanel _UnitsPanel;
-        private CharacterPanel _CharacterPanel;
+        private CharacterPanelOld _CharacterPanel;
         private CharactersListPanel _CharactersListPanel;
 
         private OnUpdate OnUpdateHandler;
@@ -42,16 +44,24 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         public AButton ShowUnitsPanel { get => _ShowUnitsPanel; }
         public AButton ShowCharactersPanel { get => _ShowCharactersPanel; }
 
-        public SettlementPanel SettlementPanel { get => _SettlementPanel; }
+        public SettlementPanelOld SettlementPanel { get => _SettlementPanel; }
         public UnitsPanel UnitsPanel { get => _UnitsPanel; }
-        public CharacterPanel CharactersPanel { get => _CharacterPanel; }
+        public CharacterPanelOld CharactersPanel { get => _CharacterPanel; }
         public CharactersListPanel CharactersListPanel { get => _CharactersListPanel; }
 
         public MapCellPanel(AGame game, ASize size) : base(size)
         {
             Game = game;
 
-            OnUpdateHandler = new OnUpdate((mapCell) => { if (mapCell.IsSettlement) Text = mapCell.Settlement.Name + " (" + mapCell.Settlement.Owner.Name + "), " + mapCell.Population.Total + " человек(а)"; else Text = mapCell.Location.ToString() + " (" + (mapCell.Owner is null? "владелец отсутствует": mapCell.Owner.Name) + "), " + mapCell.Population.Total + " человек(а)"; });
+            OnUpdateHandler = new OnUpdate((mapCell) => { 
+                if (mapCell.IsSettlement) Text = mapCell.Settlement.Name + " (" + mapCell.Settlement.Owner.Name + "), " +
+                    mapCell.Population.Total + " человек(а), ресурс " +
+                    "<" + (mapCell.IsResource ? GameLocalization.Resources[mapCell.ResourceType] + ">" + (mapCell.IsMined ? " добывается" : " не добывается") : "отсутствует");
+                else Text = mapCell.Location.ToString() + " (" + (mapCell.Owner is null? "владелец отсутствует": mapCell.Owner.Name) + "), " + 
+                    mapCell.Population.Total + " человек(а), ресурс " +
+                    "<" + (mapCell.IsResource ? GameLocalization.Resources[mapCell.ResourceType] + ">" + (mapCell.IsMined ? " добывается" : " не добывается") : "отсутствует");
+                UpdateEvent.Invoke(null);
+            });
 
         }
 
@@ -67,9 +77,9 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             _ShowUnitsPanel = new AButton(new ASize(width + 10, 50)) { Parent = this, Location = _ShowSettlementPanel.Location + new APoint(_ShowSettlementPanel.Width + 10, 0), Text = "Юниты" };
             _ShowCharactersPanel = new AButton(new ASize(width + 10, 50)) { Parent = this, Location = _ShowUnitsPanel.Location + new APoint(_ShowUnitsPanel.Width + 10, 0), Text = "Персонажи" };
 
-            _SettlementPanel = new SettlementPanel(Game, new ASize(Width - 20, Height - _ShowSettlementPanel.Height - 79)) { Parent = this, Location = _ShowSettlementPanel.Location + new APoint(0, _ShowSettlementPanel.Height + 10) };
+            _SettlementPanel = new SettlementPanelOld(Game, new ASize(Width - 20, Height - _ShowSettlementPanel.Height - 79)) { Parent = this, Location = _ShowSettlementPanel.Location + new APoint(0, _ShowSettlementPanel.Height + 10) };
             _UnitsPanel = new UnitsPanel(Game, new ASize(Width - 20, Height - _ShowSettlementPanel.Height - 79)) { Parent = this, Location = _ShowSettlementPanel.Location + new APoint(0, _ShowSettlementPanel.Height + 10) };
-            _CharacterPanel = new CharacterPanel(Game, new ASize((Width - 30) / 2, Height - _ShowSettlementPanel.Height - 79)) { Parent = this, Location = _ShowSettlementPanel.Location + new APoint(0, _ShowSettlementPanel.Height + 10) };
+            _CharacterPanel = new CharacterPanelOld(Game, new ASize((Width - 30) / 2, Height - _ShowSettlementPanel.Height - 79)) { Parent = this, Location = _ShowSettlementPanel.Location + new APoint(0, _ShowSettlementPanel.Height + 10) };
             _CharactersListPanel = new CharactersListPanel(Game, new ASize((Width - 30) / 2, Height - _ShowSettlementPanel.Height - 79)) { Parent = this, Location = _CharacterPanel.Location + new APoint(_CharacterPanel.Width + 10, 0) };
 
             _CharactersListPanel.SelectCharacterEvent += (character) => { _CharacterPanel.Update(character); _CharacterPanel.Enabled = true; };
@@ -121,6 +131,8 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 _ShowSettlementPanel.BorderColor = GraphicsExtension.DefaultBorderColor;
             };
 
+            KeyDownEvent += (state, kstate) => { if (kstate.KeyState.Equals(AKeyState.Exit)) HideAll(); };
+
             _SettlementPanel.Enabled = true;
             _UnitsPanel.Enabled = false;
             _CharacterPanel.Enabled = false;
@@ -140,7 +152,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             {
                 _CharactersListPanel.Update(characters);
 
-                Enabled = true;
+                //Enabled = true;
 
                 _SettlementPanel.Enabled = false;
                 _UnitsPanel.Enabled = false;
@@ -157,7 +169,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             {
                 UnitsPanel.Update(location);
 
-                Enabled = true;
+                //Enabled = true;
 
                 _SettlementPanel.Enabled = false;
                 _UnitsPanel.Enabled = true;
@@ -176,7 +188,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             {
                 SettlementPanel.Update(location);
 
-                Enabled = true;
+                //Enabled = true;
 
                 _SettlementPanel.Enabled = true;
                 _UnitsPanel.Enabled = false;
@@ -185,7 +197,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
                 ShowSettlementPanel.Enabled = true;
 
-                Text = mapCell.Settlement.Name + " (" + mapCell.Settlement.Owner.Name + "), " + mapCell.Population.Total + " человек(а)";
+                Text = mapCell.Settlement.Name + " (" + mapCell.Settlement.Owner.Name + "), " + mapCell.Population.Total + " человек(а), ресурс " + "<" +(mapCell.IsResource? GameLocalization.Resources[mapCell.ResourceType] + ">" + (mapCell.IsMined? " добывается": " не добывается"): "отсутствует");
 
                 ShowSettlementPanel.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
                 ShowUnitsPanel.BorderColor = GraphicsExtension.DefaultBorderColor;

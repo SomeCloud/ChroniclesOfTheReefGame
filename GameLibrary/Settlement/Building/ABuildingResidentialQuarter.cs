@@ -16,7 +16,7 @@ namespace GameLibrary.Settlement.Building
             _Characteristics = new List<ISettlementCharacteristic>() {
                 new ASettlementCharacteristicIncome(6),
                 new ASettlementCharacteristicScience(1),
-                new ASettlementCharacteristicCulture(1),
+                new ASettlementCharacteristicCulture(3),
                 new ASettlementCharacteristicMedicine(-3),
                 new ASettlementCharacteristicReligion(2),
                 new ASettlementCharacteristicFood(-4)

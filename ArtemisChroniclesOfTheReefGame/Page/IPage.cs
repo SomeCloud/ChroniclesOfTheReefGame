@@ -19,5 +19,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         public void Remove(IPrimitive primitive);
         public void Clear();
 
+        public void Update();
+
     }
 }

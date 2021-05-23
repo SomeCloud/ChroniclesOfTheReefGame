@@ -28,7 +28,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         public TextBoxPanel(ASize size): base(size)
         {
-            DragAndDrop = true;
+
         }
 
         public override void Initialize()

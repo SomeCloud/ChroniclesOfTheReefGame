@@ -19,6 +19,10 @@ namespace GraphicsLibrary
         public static Color DefaultDarkBorderColor = new Color(43, 44, 55, 255);
         public static Color DefaultTextColor = Color.Black;
 
+        public static Color ExtraColorGreen = new Color(93, 149, 70, 255);
+        public static Color ExtraColorYellow = new Color(166, 154, 78, 255);
+        public static Color ExtraColorRed = new Color(166, 103, 78, 255);
+
         public static Color BackgroundColor = new Color(66, 67, 83, 255); //new Color(7, 12, 46);
 
         public static ASize DefaultStandartPrimititveSize = new ASize(64, 64);

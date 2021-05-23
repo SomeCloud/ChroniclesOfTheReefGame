@@ -277,6 +277,18 @@
 /processorParam:TextureFormat=Color
 /build:Inteface/MiniButtons_General_Turn.png
 
+#begin Inteface/MiniButtons_Message.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Inteface/MiniButtons_Message.png
+
 #begin Inteface/MiniButtons_Unit_Archer.png
 /importer:TextureImporter
 /processor:TextureProcessor

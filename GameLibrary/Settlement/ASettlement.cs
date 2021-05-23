@@ -8,16 +8,19 @@ using APoint = CommonPrimitivesLibrary.APoint;
 using IPlayer = GameLibrary.Player.IPlayer;
 
 using AMapCell = GameLibrary.Map.AMapCell;
+using AResourceType = GameLibrary.Map.AResourceType;
 
-using GameLocalization = GameLibrary.Extension.GameLocalization;
+using GameLibrary.Extension;
 
 using GameLibrary.Settlement.Building;
 using ASettlementCharacteristicType = GameLibrary.Settlement.Characteristic.ASettlementCharacteristicType;
 using ISettlementCharacteristic = GameLibrary.Settlement.Characteristic.ISettlementCharacteristic;
 
+using ITechnology = GameLibrary.Technology.ITechnology;
+
 namespace GameLibrary.Settlement
 {
-    public class ASettlement: ISettlement
+    public class ASettlement : ISettlement
     {
 
         private string _Name;
@@ -27,7 +30,23 @@ namespace GameLibrary.Settlement
 
         private List<IBuilding> _Buildings { get; }
         private List<ABuildingsInConstruction> _BuildingsInConstruction { get; }
+        public IReadOnlyDictionary<AResourceType, int> Resources
+        {
+            get
+            {
+                List<AResourceType> resources = Territories.Where(x => x.IsMined).Select(x => x.ResourceType).ToList();
+                Dictionary<AResourceType, int> result = new Dictionary<AResourceType, int>();
+                foreach (AResourceType resource in resources)
+                {
+                    if (result.ContainsKey(resource)) result[resource]++;
+                    else result.Add(resource, 1);
+                }
+                return result;
+            }
+        }
         private List<AMapCell> _Territories;
+
+        private ITechnology _InvestigatedTechnology;
 
         private int _Protection;
         private int _Income;
@@ -46,6 +65,8 @@ namespace GameLibrary.Settlement
         public IReadOnlyList<IBuilding> Buildings { get => _Buildings; }
         public IReadOnlyList<ABuildingsInConstruction> BuildingsInConstruction { get => _BuildingsInConstruction; }
         public IReadOnlyList<AMapCell> Territories { get => _Territories; }
+
+        public ITechnology InvestigatedTechnology => _InvestigatedTechnology;
 
         public int Protection { get => _Protection; }
         public int Income { get => _Income; }
@@ -101,7 +122,7 @@ namespace GameLibrary.Settlement
 
         public void StartBuilding(IBuilding building)
         {
-            _BuildingsInConstruction.Add(new ABuildingsInConstruction(building));
+            if (_Owner.ChangeCoffers(-GameExtension.BuildCost[building.BuildingType])) _BuildingsInConstruction.Add(new ABuildingsInConstruction(building));
         }
 
         public void RemoveBuilding(IBuilding building)
@@ -116,11 +137,13 @@ namespace GameLibrary.Settlement
         public void AddTerritory(AMapCell territory)
         {
             _Territories.Add(territory);
+            if (!_Owner.Territories.Contains(territory)) Owner.AddTerritory(territory);
         }
 
         public void RemoveTerritory(AMapCell territory)
         {
             if (_Territories.Contains(territory)) _Territories.Remove(territory);
+            if (_Owner.Territories.Contains(territory)) Owner.RemoveTerritory(territory);
         }
 
         private void RecalculateCharacteristics()
@@ -138,5 +161,15 @@ namespace GameLibrary.Settlement
                 }
         }
 
+        public void SetInvestigatedTechnology(ITechnology technology) => _InvestigatedTechnology = technology;
+        public void Turn()
+        {
+            UpdateBuilding();
+            if (_InvestigatedTechnology is object)
+            {
+                _InvestigatedTechnology.Increase(_Science);
+                if (_InvestigatedTechnology.IsCompleted) _InvestigatedTechnology = null;
+            }
+        }
     }
 }

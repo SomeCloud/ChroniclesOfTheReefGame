@@ -22,6 +22,7 @@ namespace GameLibrary.Character
         private int _SpouseId;
 
         private bool _Alive;
+        private bool _IsMatrilinearMarriage;
 
         private APoint _Location;
 
@@ -52,6 +53,8 @@ namespace GameLibrary.Character
         public bool IsAlive { get => _Alive; }
         public bool IsMarried { get => _SpouseId != 0; }
         public bool IsChild { get => _ChildId.Count > 0; }
+        public bool IsOwned { get => _OwnerId > 0; }
+        public bool IsMatrilinearMarriage { get => _IsMatrilinearMarriage; }
 
         public APoint Location { get => _Location; }
 
@@ -74,6 +77,7 @@ namespace GameLibrary.Character
             _OwnerId = ownerId;
             _ChildId = new List<int>();
             _Alive = true;
+            _IsMatrilinearMarriage = false;
             SetRandomStats(GameExtension.PlayerDefautStatsValue);
         }
 
@@ -82,6 +86,12 @@ namespace GameLibrary.Character
         public int Age(int currentDate) => IsAlive? currentDate - BirthDate: DeathDate - BirthDate;
         public void Kill(int currentDate) => (_Alive, DeathDate) = (false, currentDate);
         public void SetLocation(APoint location) => _Location = location;
+
+        public void Marry(int spouse, bool isMatrilinearMarriage)
+        {
+            _SpouseId = spouse;
+            _IsMatrilinearMarriage = isMatrilinearMarriage;
+        }
 
         private void SetRandomStats(int value)
         {
@@ -92,8 +102,8 @@ namespace GameLibrary.Character
 
             foreach (string stat in stats)
             {
-                GetType().GetField(stat, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, 1);
-                value--;
+                GetType().GetField(stat, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, 5);
+                value -= 5;
             }
 
             for (int i = 0; i < value; i++)
@@ -102,6 +112,11 @@ namespace GameLibrary.Character
                 var field = GetType().GetField(stat, BindingFlags.NonPublic | BindingFlags.Instance);
                 field.SetValue(this, Convert.ToInt32(field.GetValue(this)) + 1);
             }
+        }
+
+        public void AddChild(int childId)
+        {
+            if (!_ChildId.Contains(childId)) _ChildId.Add(childId);
         }
 
     }

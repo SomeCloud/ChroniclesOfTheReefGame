@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,10 @@ namespace ArtemisChroniclesOfTheReefGame
 
         APageMainMenu PageMenu;
         APageSingleplayerGameSettings PageSingleplayerGameSettings;
-        APageGame PageGame;
+        APageMultiplayerGame PageMultiplayerGame;
+        APageConnection PageConnection;
+        APageWaitConnection PageWaitConnection;
+        //APageGame PageGame;
 
         private Dictionary<Keys, AKeyboardKey> keys = new Dictionary<Keys, AKeyboardKey>()
                 {
@@ -78,7 +82,7 @@ namespace ArtemisChroniclesOfTheReefGame
             {
                 _graphics.IsFullScreen = false;
                 _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 50;
-                _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
+                _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 150;
             }
             _graphics.ApplyChanges();
 
@@ -91,17 +95,75 @@ namespace ArtemisChroniclesOfTheReefGame
 
             PageMenu = new APageMainMenu(Graphics) { Visible = true };
             PageSingleplayerGameSettings = new APageSingleplayerGameSettings(Graphics) { Visible = false };
-            PageGame = new APageGame(Graphics) { Visible = false };
+            PageMultiplayerGame = new APageMultiplayerGame(Graphics) { Visible = false };
+            PageConnection = new APageConnection(Graphics) { Visible = false };
+            PageWaitConnection = new APageWaitConnection(Graphics) { Visible = false };
+            //PageGame = new APageGame(Graphics) { Visible = false };
+
+            Graphics.SizeChangeEvent += (state, value) => {
+                PageMenu.Update();
+                PageSingleplayerGameSettings.Update();
+                //PageGame.Update();
+            };
 
             PageMenu.SingleplayerGame.MouseClickEvent += (state, mstate) => {
                 PageMenu.Visible = false;
                 PageSingleplayerGameSettings.Visible = true; 
             };
+            
+            PageMenu.MultiplayerGame.MouseClickEvent += (state, mstate) => {
+                PageMenu.Visible = false;
+                PageMultiplayerGame.Show(); 
+            };
+
+            PageMultiplayerGame.ConnectToGame.MouseClickEvent += (state, mstate) => {
+                PageMultiplayerGame.Hide();
+                PageConnection.Show();
+            };
+
+            PageConnection.BackEvent += () => {
+                PageMultiplayerGame.Show();
+                PageConnection.Hide();
+            };
+
+            PageConnection.ConnectEvent += (ip, port, name) => {
+                PageWaitConnection.Show(ip, port, name);
+                PageConnection.Hide();
+            };
+
+            PageWaitConnection.BackEvent += () => {
+                PageMultiplayerGame.Show();
+                PageWaitConnection.Hide();
+            };
 
             PageSingleplayerGameSettings.StartNewGame.MouseClickEvent += (state, mstate) => {
                 PageSingleplayerGameSettings.Visible = false;
-                PageGame.Visible = true;
-                PageGame.StartGame(new List<string>() { "Player Tom", "Player Alex" }, new List<ICharacter>() { new ACharacter("Том", "Питерсон", ASexType.Male, -16, 1, 1), new ACharacter("Александра", "Эриксон", ASexType.Female, -16, 2, 2) }, new ASize(8, 13));
+                //PageGame.Visible = true;
+                /*PageGame.StartGame(
+                    new List<string>() { "Player Tom", "Player Alex", "Player Mark", "Player Malin" }, 
+                    new List<ICharacter>() { 
+                        new ACharacter("Том", "Питерсон", ASexType.Male, -16, 1, 1),
+                        //new ACharacter("Эмбрел", "Филистин", ASexType.Female, -16, 1, 1),
+                        new ACharacter("Александра", "Эриксон", ASexType.Female, -16, 2, 2),
+                        new ACharacter("Марк", "Эллианел", ASexType.Male, -16, 3, 3),
+                        new ACharacter("Лин", "Берггрен", ASexType.Female, -16, 4, 4) },
+                    new ASize(8, 17));*/
+            };
+            
+            PageSingleplayerGameSettings.Back.MouseClickEvent += (state, mstate) => {
+                PageSingleplayerGameSettings.Visible = false;
+                PageMenu.Visible = true;
+            };
+
+            PageMultiplayerGame.Back.MouseClickEvent += (state, mstate) => {
+                PageMultiplayerGame.Hide();
+                PageMenu.Visible = true;
+                PageSingleplayerGameSettings.Back.Text = "123";
+            };
+
+            PageMultiplayerGame.ConnectionEvent += (room) => {
+                PageMultiplayerGame.Hide();
+                PageSingleplayerGameSettings.Visible = true;
             };
 
             base.Initialize();
@@ -128,21 +190,43 @@ namespace ArtemisChroniclesOfTheReefGame
                 switch (LastKey)
                 {
                     case Keys.Back:
+                        _keyboardState.KeyboardKey = AKeyboardKey.None;
                         _keyboardState.KeyState = AKeyState.Backspace;
                         break;
+                    case Keys.F1:
+                        if (_graphics.IsFullScreen)
+                        {
+                            _graphics.IsFullScreen = false;
+                            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 50;
+                            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 150;
+                        }
+                        else
+                        {
+                            _graphics.IsFullScreen = true;
+                            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                        }
+                        _graphics.ApplyChanges();
+                        Graphics.Size = new ASize(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+                        break;
                     case Keys.Space:
+                        _keyboardState.KeyboardKey = AKeyboardKey.None;
                         _keyboardState.KeyState = AKeyState.Space;
                         break;
                     case Keys.Escape:
+                        _keyboardState.KeyboardKey = AKeyboardKey.None;
                         _keyboardState.KeyState = AKeyState.Exit;
                         break;
                     case Keys.Enter:
+                        _keyboardState.KeyboardKey = AKeyboardKey.None;
                         _keyboardState.KeyState = AKeyState.Enter;
                         break;
                     case Keys.CapsLock:
+                        _keyboardState.KeyboardKey = AKeyboardKey.None;
                         _keyboardState.CapsLook = !_keyboardState.CapsLook;
                         break;
                     case Keys.LeftShift:
+                        _keyboardState.KeyboardKey = AKeyboardKey.None;
                         _keyboardState.Shift = !_keyboardState.Shift;
                         break;
                     default:

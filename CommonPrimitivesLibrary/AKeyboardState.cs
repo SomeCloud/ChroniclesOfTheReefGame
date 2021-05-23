@@ -40,6 +40,11 @@ namespace CommonPrimitivesLibrary
         public AKeyboardState(AKeyState keyState) => (KeyState, KeyboardKey, KeyboardLanguage, CapsLook, Shift) = (keyState, AKeyboardKey.None, AKeyboardLanguage.Eng, false, false);
         public AKeyboardState(AKeyState keyState, AKeyboardKey keyboardKey, AKeyboardLanguage keyboardLanguage, bool capsLook, bool shift): this(keyState) => (KeyboardKey, KeyboardLanguage, CapsLook, Shift) = (keyboardKey, keyboardLanguage, capsLook, shift);
 
+        public AKeyboardState Clone()
+        {
+            return new AKeyboardState(KeyState, KeyboardKey, KeyboardLanguage, CapsLook, Shift);
+        }
+
         private string Localization()
         {
 

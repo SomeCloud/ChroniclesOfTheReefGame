@@ -6,12 +6,17 @@ using APoint = CommonPrimitivesLibrary.APoint;
 
 using GameLibrary.Player;
 using GameLibrary.Character;
+
+using AResourceType = GameLibrary.Map.AResourceType;
 using APeople = GameLibrary.Map.APeople;
 
 namespace GameLibrary.Unit.Main
 {
-    public abstract class AUnit: IUnit
+    public abstract class AUnit: IUnit, IDisposable
     {
+        public event OnAction MoveEvent;
+        public event OnAction DestroyEvent;
+
         private int _Id;
         private IPlayer _Owner;
         private ICharacter _General;
@@ -20,7 +25,7 @@ namespace GameLibrary.Unit.Main
 
         private string _Name;
 
-        private APoint _Location;
+        protected APoint _Location;
         private APoint _Homeland;
         private List<APeople> _Squad;
 
@@ -34,6 +39,7 @@ namespace GameLibrary.Unit.Main
 
         public abstract int ContentTax { get; }
         public abstract int Cost { get; }
+        public abstract AResourceType RequiredResource { get; }
 
         public string Name { get => _Name; }
 
@@ -43,6 +49,8 @@ namespace GameLibrary.Unit.Main
         public abstract string UnitTypeName { get; }
         public IReadOnlyList<APeople> Squad { get => _Squad; }
 
+        public bool IsGeneral { get => General is object; }
+
         public AUnit(int id, IPlayer player, APoint location, List<APeople> commoners, string name) => (_Id, _Owner, _Location, _Name, _Squad, _Homeland, _Action) = (id, player, location, name, commoners, location, ActionMaxValue);
 
         public void SetName(string name) => _Name = name;
@@ -50,17 +58,22 @@ namespace GameLibrary.Unit.Main
         public void Turn() => _Action = ActionMaxValue;
         public void Attack(int count)
         {
+            UnderAttack(count);
+            _Action--;
+        }
+        public void UnderAttack(int count)
+        {
             Random random = new Random((int)DateTime.Now.Ticks);
             for (int i = 0; i < count; i++)
             {
                 int index = random.Next(_Squad.Count);
-                if (_Squad[index].Count - 1 < 0) _Squad.RemoveAt(index);
+                if (_Squad[index].Count - 1 <= 0) _Squad.RemoveAt(index);
                 else _Squad[index].Count--;
             }
-            _Action--;
         }
         public abstract bool Act();
-        public bool Act(APoint newLocation) { if (_Action - 1 >= 0) { _Action--; _Location = newLocation; return true; } else return false; }
+        public bool Act(APoint newLocation) { if (_Action - 1 >= 0 && !Location.Equals(newLocation)) { _Action--; _Location = newLocation; MoveEvent?.Invoke(); return true; } else return false; }
+        public void Move(APoint newLocation) => _Location = newLocation;
         public void SetOwner(IPlayer player) => _Owner = player;
         public void SetGeneral(ICharacter character) => _General = character;
 
@@ -69,8 +82,20 @@ namespace GameLibrary.Unit.Main
             return UnitTypeName + " <" + _Name + ">\n" +
                 "ID: " + _Id + " / C: " + Count + " / F: " + Force + " / A: " + _Action + "\n" +
                 "Владелец: " + _Owner.Name + "\n" +
-                "Полководец: " + (General is object ? General.FullName : "отсутствует") + "\n" +
+                "Полководец: " + (General is object ? General.FullName + "(" + General.MartialSkills + ")" : "отсутствует") + "\n" +
                 "Расположение: " + Location;
+        }
+
+        public void Dispose()
+        {
+            DestroyEvent?.Invoke();
+            if (_Owner is object) _Owner = null;
+            if (_General is object) _General = null;
+        }
+
+        ~AUnit()
+        {
+            Dispose();
         }
 
     }

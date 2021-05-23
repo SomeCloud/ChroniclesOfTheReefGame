@@ -5,11 +5,14 @@ using APoint = CommonPrimitivesLibrary.APoint;
 using IPlayer = GameLibrary.Player.IPlayer;
 
 using AMapCell = GameLibrary.Map.AMapCell;
+using AResourceType = GameLibrary.Map.AResourceType;
 
 using IBuilding = GameLibrary.Settlement.Building.IBuilding;
 using ABuildingsInConstruction = GameLibrary.Settlement.Building.ABuildingsInConstruction;
 using ASettlementCharacteristicType = GameLibrary.Settlement.Characteristic.ASettlementCharacteristicType;
 using ISettlementCharacteristic = GameLibrary.Settlement.Characteristic.ISettlementCharacteristic;
+
+using ITechnology = GameLibrary.Technology.ITechnology;
 
 namespace GameLibrary.Settlement
 {
@@ -23,7 +26,10 @@ namespace GameLibrary.Settlement
 
         public IReadOnlyList<IBuilding> Buildings { get; }
         public IReadOnlyList<ABuildingsInConstruction> BuildingsInConstruction { get; }
+        public IReadOnlyDictionary<AResourceType, int> Resources { get; }
         public IReadOnlyList<AMapCell> Territories { get; }
+
+        public ITechnology InvestigatedTechnology { get; }
 
         public int Protection { get; }
         public int Income { get; }
@@ -42,6 +48,9 @@ namespace GameLibrary.Settlement
         public void RemoveBuilding(IBuilding building);
         public void AddTerritory(AMapCell territory);
         public void RemoveTerritory(AMapCell territory);
+
+        public void SetInvestigatedTechnology(ITechnology technology);
+        public void Turn();
 
     }
 }

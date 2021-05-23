@@ -7,8 +7,32 @@ using CommonPrimitivesLibrary;
 
 namespace GraphicsLibrary.Interfaces
 {
+
+
+    public delegate void OnTimeEvent();
+
+    public delegate void OnMouseEvent(IPrimitive primitive, AMouseState mouseState);
+    public delegate void OnKeyEvent(IPrimitive primitive, AKeyboardState keyboardState);
+    public delegate void OnSizeChangeEvent(IPrimitive primitive, ASize size);
+
     public interface IPrimitive: IDisposable
     {
+
+        public event OnMouseEvent MouseClickEvent;
+        public event OnMouseEvent MouseEnterEvent;
+        public event OnMouseEvent MouseIntoEvent;
+        public event OnMouseEvent MouseIntoChildEvent;
+        public event OnMouseEvent MouseOverEvent;
+        public event OnMouseEvent MouseButtonDownEvent;
+        public event OnMouseEvent MouseButtonUpEvent;
+
+        public event OnKeyEvent KeyUpEvent;
+        public event OnKeyEvent KeyPressEvent;
+        public event OnKeyEvent KeyDownEvent;
+
+        public event OnTimeEvent TimeEvent;
+
+        public event OnSizeChangeEvent SizeChangeEvent;
 
         public ASize Size { get; set; }
         public int Width { get; set; }

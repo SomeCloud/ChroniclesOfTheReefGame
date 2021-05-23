@@ -23,7 +23,11 @@ namespace GraphicsLibrary.Graphics
         {
             Text = "New Form";
         }
-
+        public AForm(ASize size, IPrimitiveTexture primitiveTexture) : base(new ASize(Math.Max(size.Width, 100), Math.Max(size.Height, 100)), primitiveTexture)
+        {
+            Text = "New Form";
+        }
+        
         public override void Initialize()
         {
 
@@ -37,6 +41,8 @@ namespace GraphicsLibrary.Graphics
                 CloseEvent?.Invoke();
                 Enabled = false;
             };
+
+            DragAndDrop = true;
 
             TextLabel.VerticalAlign = ATextVerticalAlign.Top;
             TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
