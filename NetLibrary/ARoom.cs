@@ -41,6 +41,9 @@ namespace NetLibrary
             _GameStatus = room._GameStatus;
         }
 
+        public void SetName(string name) => _Name = name;
+        public void SetPlayersCount(int count) => _PlayersCount = count;
+
         public void StartGame()
         {
             _GameStatus = AGameStatus.Game;
@@ -58,9 +61,18 @@ namespace NetLibrary
             return true;
         }
 
-        public void Disconnect(RPlayer player)
+        public bool Disconnect(RPlayer player)
         {
             if (_Players.Contains(player)) _Players.Remove(player);
+            else return false;
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ARoom room)
+                return Id == room.Id && Name == room.Name && PlayersCount == room.PlayersCount && GameStatus == room.GameStatus && Players == room.Players;
+            return false;
         }
 
     }

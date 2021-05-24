@@ -154,6 +154,8 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
 
         public int ZIndex { get; set; }
 
+        public int DTimer { get; set; }
+
         public bool Enabled { get => _Enabled; set => _Enabled = value; }
         public bool Active { get => _Active; set => _Active = value; }
         public bool ActiveCollider { get => _ActiveCollider; set => _ActiveCollider = value; }
@@ -245,6 +247,8 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
             _TextLabel = new ATextLabel();
             Text = "";
 
+            DTimer = 10;
+
             TextLabelChange = new ATextLabel.OnChangeEvent(state => { if (Text.Length > 0) UpdateTextOffset(); });
 
             TextLabel.ChangeEvent += TextLabelChange;
@@ -290,11 +294,16 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
             //new Vector2(GlobalLocation.X + (Location.X < 0 ? VisibleArea.Location.X : 0), GlobalLocation.Y + (Location.Y < 0 ? VisibleArea.Location.Y : 0))
             if (Enabled)
             {
-                if (IsCounting) if (!_Counter.Equals(DateTime.Now.Second))
-                {
-                    TimeEvent?.Invoke();
-                    _Counter = DateTime.Now.Second;
-                }
+                if (IsCounting) 
+                    if (_Counter - DateTime.Now.Second <= DTimer && _Counter - DateTime.Now.Second >= 0)
+                    {
+                        if (_Counter.Equals(DateTime.Now.Second))
+                        {
+                            TimeEvent?.Invoke();
+                            _Counter = DateTime.Now.Second + DTimer;
+                        }
+                    }
+                    else _Counter = DateTime.Now.Second + DTimer;
 
                 spriteBatch.Draw(_IsDarkenedTexture ? Texture.DarkenedTexture : Texture.Texture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
                 spriteBatch.Draw(_TextTexture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);

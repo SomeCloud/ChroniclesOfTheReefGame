@@ -14,10 +14,19 @@ namespace NetLibrary
         // локальный хост
         public string IPAdress;
 
-        public RPlayer(string name)
+        public RPlayer(string name, string ip)
         {
             Name = name;
+            IPAdress = ip;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RPlayer player)
+                return Name == player.Name && IPAdress == player.IPAdress;
+            return false;
+        }
+
 
     }
 }

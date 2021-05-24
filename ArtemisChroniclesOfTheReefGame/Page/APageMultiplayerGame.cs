@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
@@ -34,53 +35,82 @@ namespace ArtemisChroniclesOfTheReefGame.Page
     public class APageMultiplayerGame : APage, IPage
     {
 
+        public delegate void OnCreateRoom(int id, string name);
+
         private AClient Client;
 
         public event OnConnection ConnectionEvent;
+        public event OnResult ConnectEvent;
+
+        public event OnCreateRoom CreateRoomEvent;
 
         private LobbyList _LobbyList;
 
-        private Dictionary<int, ARoom> rooms;
+        private ConcurrentDictionary<int, ARoom> rooms;
 
         private AButton _CreateNewRoom;
         private AButton _ConnectToGame;
         private AButton _Back;
 
+        private ALabeledTextBox _PlayerName;
+
         public AButton CreateNewRoom { get => _CreateNewRoom; }
         public AButton ConnectToGame { get => _ConnectToGame; }
         public AButton Back { get => _Back; }
 
+        public string Name => _PlayerName.Text.Length.Equals(0) || _PlayerName.Text.Equals(" ") ? Environment.UserName : _PlayerName.Text;
+
         public APageMultiplayerGame(IPrimitive primitive) : base(primitive)
         {
 
-            ASize lobbySize = new ASize((Parent.Width - 20) * 3 / 4, Parent.Height - GraphicsExtension.DefaultButtonSize.Height - 30);
+            ASize lobbySize = new ASize((Parent.Width - 20) * 3 / 4, Parent.Height - GraphicsExtension.DefaultButtonSize.Height - 140);
 
             _Back = new AButton(GraphicsExtension.DefaultMenuButtonSize) { Text = "Главное меню", Location = new APoint((Parent.Width - lobbySize.Width) / 2, 10) };
             _CreateNewRoom = new AButton(GraphicsExtension.DefaultMenuButtonSize) { Text = "Создать новую игру", Location = _Back.Location + new APoint((lobbySize.Width - GraphicsExtension.DefaultMenuButtonSize.Width) / 2, 0) };
             _ConnectToGame = new AButton(GraphicsExtension.DefaultMenuButtonSize) { Text = "Присоедениться к игре", Location = _Back.Location + new APoint(lobbySize.Width - GraphicsExtension.DefaultMenuButtonSize.Width, 0) };
 
-            _LobbyList = new LobbyList(lobbySize) { Location = _Back.Location + new APoint(0, _Back.Height + 10) };
+            _PlayerName = new ALabeledTextBox(new ASize(lobbySize.Width, 100)) { Location = _Back.Location + new APoint(0, _Back.Height + 10) };
+
+            _LobbyList = new LobbyList(lobbySize) { Location = _PlayerName.Location + new APoint(0, _PlayerName.Height + 10), IsCounting = true, DTimer = 1 };
+
+            _LobbyList.TimeEvent += () =>
+            {
+                Client.ReceiveFrame();
+            };
 
             Add(_CreateNewRoom);
             Add(_ConnectToGame);
             Add(_Back);
 
+            Add(_PlayerName);
+
             Add(_LobbyList);
 
-            rooms = new Dictionary<int, ARoom>();
+            _PlayerName.LabelText = "Имя игрока";
+            _PlayerName.Text = Environment.UserName;
+
+            rooms = new ConcurrentDictionary<int, ARoom>();
 
             Client = new AClient("224.0.0.0", 8001);
 
+            _LobbyList.SelectLobbyEvent += (room) => {
+                ConnectEvent?.Invoke("224.0.0.0", 8002, Name);
+                ConnectionEvent?.Invoke(room);
+            };
+
             Client.Receive += (frame) =>
             {
-                /*if (frame.MessageType.Equals(AMessageType.RoomInfo))
+                if (frame.MessageType.Equals(AMessageType.RoomInfo))
                 {
                     ARoom room = (ARoom)frame.Data;
                     if (rooms.ContainsKey(frame.Id)) rooms[frame.Id] = room;
-                    else rooms.Add(frame.Id, room);
+                    else rooms.TryAdd(frame.Id, room);
                     _LobbyList.Update(rooms.Values);
-                }*/
-                test(frame);
+                }
+            };
+
+            _CreateNewRoom.MouseClickEvent += (state, mstate) => {         
+                CreateRoomEvent?.Invoke(rooms.Count > 0? rooms.Keys.Max() + 1: 1, Name);
             };
 
         }
@@ -91,14 +121,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             {
                 ARoom room = (ARoom)frame.Data;
                 if (rooms.ContainsKey(frame.Id)) rooms[frame.Id] = room;
-                else rooms.Add(frame.Id, room);
+                else rooms.TryAdd(frame.Id, room);
                 _LobbyList.Update(rooms.Values);
             }
-        }
-
-        private async void test(AFrame frame)
-        {
-            await Task.Run(() => AddRoom(frame));
         }
 
         public void Hide()
@@ -129,7 +154,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             _CreateNewRoom.Location = _Back.Location + new APoint((lobbySize.Width - GraphicsExtension.DefaultMenuButtonSize.Width) / 2, 0);
             _ConnectToGame.Location = _Back.Location + new APoint(lobbySize.Width - GraphicsExtension.DefaultMenuButtonSize.Width, 0);
 
-            _LobbyList.Location = _Back.Location + new APoint(0, _Back.Height + 10);
+            _PlayerName.Location = _Back.Location + new APoint(0, _Back.Height + 10);
+
+            _LobbyList.Location = _PlayerName.Location + new APoint(0, _PlayerName.Height + 10);
 
         }
 

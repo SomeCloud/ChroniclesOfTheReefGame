@@ -69,7 +69,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             base.Initialize();
 
-            int dWidth = Height / 2;
+            int dWidth = Height;
 
             _Button = new AButton(new ASize(Width - dWidth - 2, Height - 2)) { Parent = this, Location = new APoint(1, 1) };
             _ExtraButton = new AButton(new ASize(dWidth - 1, Height - 2)) { Parent = this, Location = _Button.Location + new APoint(_Button.Width - 1, 0) };

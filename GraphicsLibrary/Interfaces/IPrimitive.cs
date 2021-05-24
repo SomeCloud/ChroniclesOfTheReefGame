@@ -47,6 +47,8 @@ namespace GraphicsLibrary.Interfaces
 
         public int ZIndex { get; set; }
 
+        public int DTimer { get; set; }
+
         public bool Enabled { get; set; }
         public bool Active { get; set; }
         public bool ActiveCollider { get; set; }

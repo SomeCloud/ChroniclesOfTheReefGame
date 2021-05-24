@@ -40,6 +40,8 @@ namespace ArtemisChroniclesOfTheReefGame
         APageMultiplayerGame PageMultiplayerGame;
         APageConnection PageConnection;
         APageWaitConnection PageWaitConnection;
+        APageConnectionLobby PageConnectionLobby;
+        APageCreateLobby PageCreateLobby;
         //APageGame PageGame;
 
         private Dictionary<Keys, AKeyboardKey> keys = new Dictionary<Keys, AKeyboardKey>()
@@ -98,6 +100,8 @@ namespace ArtemisChroniclesOfTheReefGame
             PageMultiplayerGame = new APageMultiplayerGame(Graphics) { Visible = false };
             PageConnection = new APageConnection(Graphics) { Visible = false };
             PageWaitConnection = new APageWaitConnection(Graphics) { Visible = false };
+            PageConnectionLobby = new APageConnectionLobby(Graphics) { Visible = false };
+            PageCreateLobby = new APageCreateLobby(Graphics) { Visible = false };
             //PageGame = new APageGame(Graphics) { Visible = false };
 
             Graphics.SizeChangeEvent += (state, value) => {
@@ -122,18 +126,18 @@ namespace ArtemisChroniclesOfTheReefGame
             };
 
             PageConnection.BackEvent += () => {
-                PageMultiplayerGame.Show();
                 PageConnection.Hide();
+                PageMultiplayerGame.Show();
             };
 
             PageConnection.ConnectEvent += (ip, port, name) => {
-                PageWaitConnection.Show(ip, port, name);
                 PageConnection.Hide();
+                PageWaitConnection.Show(ip, port, name);
             };
 
             PageWaitConnection.BackEvent += () => {
-                PageMultiplayerGame.Show();
                 PageWaitConnection.Hide();
+                PageMultiplayerGame.Show();
             };
 
             PageSingleplayerGameSettings.StartNewGame.MouseClickEvent += (state, mstate) => {
@@ -158,12 +162,27 @@ namespace ArtemisChroniclesOfTheReefGame
             PageMultiplayerGame.Back.MouseClickEvent += (state, mstate) => {
                 PageMultiplayerGame.Hide();
                 PageMenu.Visible = true;
-                PageSingleplayerGameSettings.Back.Text = "123";
+            };
+            
+            PageMultiplayerGame.CreateRoomEvent += (id, name) => {
+                PageMultiplayerGame.Hide();
+                PageCreateLobby.Show(id, name);
             };
 
-            PageMultiplayerGame.ConnectionEvent += (room) => {
+            PageMultiplayerGame.ConnectEvent += (ip, port, name) => {
                 PageMultiplayerGame.Hide();
-                PageSingleplayerGameSettings.Visible = true;
+                PageWaitConnection.Show(ip, port, name);
+            };
+
+            PageWaitConnection.ConnectionEvent += (room) => {
+                PageWaitConnection.Hide();
+                PageConnectionLobby.Show(room, PageWaitConnection.Player);
+            };
+
+            PageConnectionLobby.DisconnectionEvent += () =>
+            {
+                PageConnectionLobby.Hide();
+                PageMultiplayerGame.Show();
             };
 
             base.Initialize();

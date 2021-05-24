@@ -12,10 +12,9 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
 
-using GameLibrary;
-
 namespace ArtemisChroniclesOfTheReefGame.Interface
 {
+
     public class LobbyList: AScrolleredPanel
     {
 
@@ -57,10 +56,10 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
                 LobbyNote lobby;
 
-                if (LobbyButton.ContainsKey(room))
+                if (LobbyButton.Keys.Select(x => x.Id).Contains(room.Id))
                 {
-                    lobby = LobbyButton[room];
-                    if (lobby.Room.Equals(room)) lobby.Update(room);
+                    lobby = LobbyButton[LobbyButton.Keys.Where(x => x.Id.Equals(room.Id)).First()];
+                    if (!lobby.Room.Equals(room)) lobby.Update(room);
                     lobby.Enabled = true;
                 }
                 else

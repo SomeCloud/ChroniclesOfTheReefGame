@@ -35,7 +35,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             base.Initialize();
 
-            int dWidth = Width * 3 / 4;
+            int dWidth = Width * 5 / 8;
             int dHeight = Height / 2;
 
             Header = new AEmptyPanel(new ASize(dWidth, Height) - 2) { Parent = this, Location = new APoint(1, 1), IsInteraction = false };
@@ -48,7 +48,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             Status.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
             Status.TextLabel.TextColor = Microsoft.Xna.Framework.Color.White;
-            Status.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 12);
+            Status.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 10);
 
             Info.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
             Info.TextLabel.TextColor = Microsoft.Xna.Framework.Color.White;

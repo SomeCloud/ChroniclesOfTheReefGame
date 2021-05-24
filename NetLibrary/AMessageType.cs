@@ -11,6 +11,7 @@ namespace NetLibrary
         Undefined,
         Connection,
         Disconnection,
+        ServerDisconnection,
         RoomInfo,
         StartGame,
         Game,
@@ -18,7 +19,8 @@ namespace NetLibrary
         GameOver,
         Confirm,
         Request,
-        Response
+        Response,
+        Renouncement
     }
 
 }

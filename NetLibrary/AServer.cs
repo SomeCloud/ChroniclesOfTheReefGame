@@ -74,7 +74,7 @@ namespace NetLibrary
             IPEndPoint endPoint = new IPEndPoint(GroupIPAdress, remotePort);
             try
             {
-                while (DoLoop == true)
+                //while (DoLoop == true)
                 {
                     byte[] data = ObjectToByteArray(message);
                     // отправка
@@ -82,14 +82,14 @@ namespace NetLibrary
                     // вызываем событие того, что фрейм был отправлен удачно (особой роли не играет, используется для дебага)
                     AfterSend?.Invoke(true);
                 }
-                if (DoLoop == false)
+                /*if (DoLoop == false)
                 {
                     byte[] data = ObjectToByteArray(message);
                     // отправка
                     sender.Send(data, data.Length, endPoint);
                     // вызываем событие того, что фрейм был отправлен удачно (особой роли не играет, используется для дебага)
                     AfterSend?.Invoke(true);
-                }
+                }*/
             }
             // в случае каких-либо косяков получаем ошибку
             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace NetLibrary
             }
             finally
             {
-                sender.Close();
+                //sender.Close();
             }
         }
 

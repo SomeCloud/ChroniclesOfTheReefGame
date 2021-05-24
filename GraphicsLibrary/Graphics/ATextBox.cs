@@ -7,8 +7,16 @@ using GraphicsLibrary.StandartGraphicsPrimitives;
 
 namespace GraphicsLibrary.Graphics
 {
+
     public class ATextBox : APrimitive, IPrimitive
     {
+
+        public delegate void OnTextChange(string text);
+
+        public event OnTextChange TextChangeEvent;
+        public event OnTextChange EndEditEvent;
+        public event OnTextChange StartEditEvent;
+
         private IPrimitiveTexture Source;
         private Color _FillColor;
         private Color _BorderColor;
@@ -59,6 +67,7 @@ namespace GraphicsLibrary.Graphics
             MouseClickEvent += (state, mstate) => {
                 isActive = true;
                 sourceText = Text.Length > 0 && !Text.Equals(" ")? Text: "";
+                StartEditEvent?.Invoke(Text);
             };
 
             KeyDownEvent += (state, kstate) => {
@@ -67,6 +76,7 @@ namespace GraphicsLibrary.Graphics
                     isActive = false;
                     isCursor = false;
                     Text = sourceText.Length > 0? sourceText: " ";
+                    EndEditEvent?.Invoke(Text);
                 }
                 else if (kstate.KeyState.Equals(AKeyState.Enter))
                 {
@@ -76,6 +86,7 @@ namespace GraphicsLibrary.Graphics
                         isCursor = false;
                         Text = Text.Remove(Text.Length - 1);
                     }
+                    EndEditEvent?.Invoke(Text);
                 }
                 else if (kstate.KeyState.Equals(AKeyState.Backspace)) RemoveChar();
                 else if (kstate.KeyState.Equals(AKeyState.Space)) AddChar(" ");
@@ -89,6 +100,7 @@ namespace GraphicsLibrary.Graphics
                     isCursor = false;
                     Text = Text.Remove(Text.Length - 1);
                 }
+                EndEditEvent?.Invoke(Text);
             };
 
         }
@@ -129,6 +141,7 @@ namespace GraphicsLibrary.Graphics
                 if (Text.Equals(" ")) Text = "";
             }
             Text += ch;
+            TextChangeEvent?.Invoke(Text);
         }
         private void RemoveChar()
         {
@@ -137,7 +150,11 @@ namespace GraphicsLibrary.Graphics
                 isCursor = false;
                 Text = Text.Remove(Text.Length - 1);
             }
-            if (Text.Length > 0) Text = Text.Remove(Text.Length - 1);
+            if (Text.Length > 0)
+            {
+                Text = Text.Remove(Text.Length - 1);
+                TextChangeEvent?.Invoke(Text);
+            }
         }
 
         public new void Dispose()

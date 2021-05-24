@@ -40,43 +40,40 @@ namespace NetLibrary
 
         public void StartReceive(string name)
         {
-            Receiver = new Thread(ReceiveFrame) { Name = name, IsBackground = true };
-            Receiver.Start();
+            //Receiver = new Thread(ReceiveFrame) { Name = name, IsBackground = true };
+            //Receiver.Start();
+            // UdpClient для получения данных
+            receiver = new UdpClient(remotePort);
+            // подключаемся к группе 
+            receiver.JoinMulticastGroup(GroupIPAdress, localIPAdress);
+            receiver.Client.ReceiveTimeout = 5;
         }
 
         public void StopReceive()
         {
             DoLoop = false;
-            if ((receiver is null) == false)
-            {
-                receiver.Close();
-            }
+            //if ((receiver is null) == false)
+            //{
+                receiver?.Close();
+            //}
             Receiver = null;
         }
 
         // главная функция по принятию сообщений из сети
         public void ReceiveFrame()
         {
-            // UdpClient для получения данных
-            receiver = new UdpClient(remotePort);
-            //receiver.Client.ReceiveTimeout = 50;
-            // подключаемся к группе 
-            receiver.JoinMulticastGroup(GroupIPAdress, localIPAdress);
             IPEndPoint remoteIp = null;
             string localAddress = LocalIPAddress();
             try
             {
-                while (DoLoop == true)
-                {
-                    // получаем данные
-                    byte[] data = receiver.Receive(ref remoteIp);
-                    // если будешь тестить программу на одном пк - закомментированное ниже - не трожь, иначе сообщения не будут отлавливаться
-                    /*if (remoteIp.Address.ToString().Equals(localAddress))
-                        continue;*/
-                    // вызываем событие о получении сообщения
-                    AFrame frame = (AFrame)ByteArrayToObject(data);
-                    Receive?.Invoke(frame);
-                }
+                // получаем данные
+                byte[] data = receiver.Receive(ref remoteIp);
+                // если будешь тестить программу на одном пк - закомментированное ниже - не трожь, иначе сообщения не будут отлавливаться
+                /*if (remoteIp.Address.ToString().Equals(localAddress))
+                    continue;*/
+                // вызываем событие о получении сообщения
+                AFrame frame = ByteArrayToObject(data) as AFrame;
+                Receive?.Invoke(frame);
             }
             // получаем сообщение об ошибке
             catch (Exception ex)
@@ -85,7 +82,7 @@ namespace NetLibrary
             }
             finally
             {
-                receiver.Close();
+                //receiver.Close();
             }
         }
 

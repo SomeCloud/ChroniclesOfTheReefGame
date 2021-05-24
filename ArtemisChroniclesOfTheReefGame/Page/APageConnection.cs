@@ -18,11 +18,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 {
 
     public delegate void OnBack();
+    public delegate void OnResult(string ip, int port, string name);
 
     public class APageConnection : APage, IPage
     {
 
-        public delegate void OnResult(string ip, int port, string name);
 
         public event OnBack BackEvent;
         public event OnResult ConnectEvent;
@@ -52,6 +52,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             };
 
         }
+
         public void Hide() => Visible = false;
 
         public void Show()
