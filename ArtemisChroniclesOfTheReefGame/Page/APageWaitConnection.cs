@@ -32,6 +32,10 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         private AEmptyPanel _Status;
         private AButton _Back;
 
+        private AFrame Frame;
+
+        private bool IsSend;
+
         public APageWaitConnection(IPrimitive primitive) : base(primitive)
         {
 
@@ -45,7 +49,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _Back.MouseClickEvent += (state, mstate) =>
             {
-                Server?.StopSending();
+                IsSend = false;
                 Client?.StopReceive();
                 BackEvent?.Invoke();
             };
@@ -55,6 +59,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             _Status.TimeEvent += () =>
             {
                 Client.ReceiveFrame();
+                if (IsSend) Server.SendFrame(Frame);
             };
 
             Client.Receive += (frame) =>
@@ -90,7 +95,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             Client.StopReceive();
-            Server.StopSending();
+            IsSend = false;
 
             Visible = false;
 
@@ -106,11 +111,13 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Server?.StopSending();
             Server = new AServer(ip, port);
 
+            IsSend = true;
+
             PlayerInfo = new RPlayer(name, Client.LocalIPAddress());
 
             Client.StartReceive("Receiver");
 
-            Server.StartSending(new AFrame(-1, PlayerInfo, AMessageType.Connection, Client.LocalIPAddress(), ip), false, "Connection");
+            Frame = new AFrame(-1, PlayerInfo, AMessageType.Connection, Client.LocalIPAddress(), ip);
 
             //Client.StartReceive("Receiver");
 

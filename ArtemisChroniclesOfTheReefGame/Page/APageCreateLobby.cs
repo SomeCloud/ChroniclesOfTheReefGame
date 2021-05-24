@@ -46,7 +46,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             _LobbyPanel.TimeEvent += () =>
             {
                 Client.ReceiveFrame();
-                if (IsSend)  Server?.SendFrame(Frame);
+                if (IsSend) Server?.SendFrame(Frame);
             };
 
             Client.Receive += (frame) =>
@@ -69,6 +69,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _Back.MouseClickEvent += (state, mstate) => {
                 Frame = new AFrame(_LobbyPanel.Room.Id, _LobbyPanel.Room, AMessageType.ServerDisconnection, "224.0.0.0", Client.LocalIPAddress());
+                IsSend = true;
                 BackEvent?.Invoke();
             };
 

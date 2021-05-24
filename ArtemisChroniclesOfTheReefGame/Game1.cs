@@ -185,6 +185,12 @@ namespace ArtemisChroniclesOfTheReefGame
                 PageMultiplayerGame.Show();
             };
 
+            PageCreateLobby.BackEvent += () =>
+            {
+                PageCreateLobby.Hide();
+                PageMultiplayerGame.Show();
+            };
+
             base.Initialize();
         }
 
