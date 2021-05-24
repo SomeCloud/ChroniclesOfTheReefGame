@@ -46,7 +46,7 @@ namespace NetLibrary
             receiver = new UdpClient(remotePort);
             // подключаемся к группе 
             receiver.JoinMulticastGroup(GroupIPAdress, localIPAdress);
-            receiver.Client.ReceiveTimeout = 5;
+            receiver.Client.ReceiveTimeout = 1;
         }
 
         public void StopReceive()

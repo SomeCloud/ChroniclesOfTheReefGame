@@ -65,6 +65,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             {
                 Frame = new AFrame(_LobbyPanel.Room.Id, player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress());
                 IsSend = true;
+                _LobbyPanel.Room.Disconnect(player);
+                _LobbyPanel.Update();
             };
 
             _LobbyPanel.ChangeEvent += (room) =>

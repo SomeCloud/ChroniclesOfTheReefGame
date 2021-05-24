@@ -70,14 +70,14 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                         DisconnectionEvent?.Invoke();
                         break;
                     case AMessageType.Disconnection:
-                        if (player is object)
+                        if (player is object && player.Equals(Player))
                         {
                             IsDisconnect = false;
                             DisconnectionEvent?.Invoke();
                         }
                         break;
                     case AMessageType.Confirm:
-                        if (player is object)
+                        if (player is object && player.Equals(Player))
                         {
                             IsDisconnect = false;
                             DisconnectionEvent?.Invoke();
