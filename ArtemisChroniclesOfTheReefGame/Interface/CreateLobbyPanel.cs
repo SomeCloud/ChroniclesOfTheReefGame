@@ -21,9 +21,11 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         public delegate void OnProcess(AFrame frame);
         public delegate void OnChange(ARoom room);
+        public delegate void OnPlayerSelect(RPlayer player);
 
         public event OnProcess ProcessEvent;
         public event OnChange ChangeEvent;
+        public event OnPlayerSelect PlayerSelectEvent;
 
         private ATextBox Header;
         private AEmptyPanel RoomInfo;
@@ -53,6 +55,10 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                     _Room.SetName(text);
                     ChangeEvent?.Invoke(_Room);
                 } };
+
+            PlyersList.ExtraSelectEvent += (player) => {
+                PlayerSelectEvent?.Invoke(player);
+            };
 
         }
 

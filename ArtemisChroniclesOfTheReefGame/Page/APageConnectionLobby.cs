@@ -62,14 +62,22 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client.Receive += (frame) =>
             {
+                RPlayer player = frame.Data as RPlayer;
                 Server?.StopSending();
                 switch (frame.MessageType)
                 {
                     case AMessageType.ServerDisconnection:
                         DisconnectionEvent?.Invoke();
                         break;
+                    case AMessageType.Disconnection:
+                        if (player is object)
+                        {
+                            IsDisconnect = false;
+                            DisconnectionEvent?.Invoke();
+                        }
+                        break;
                     case AMessageType.Confirm:
-                        if (frame.Data is RPlayer player && player is object)
+                        if (player is object)
                         {
                             IsDisconnect = false;
                             DisconnectionEvent?.Invoke();
