@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
+using ASize = CommonPrimitivesLibrary.ASize;
+
+using GameLibrary;
+using GameLibrary.Character;
+using GameLibrary.Extension;
 
 namespace NetLibrary
 {
@@ -14,14 +19,22 @@ namespace NetLibrary
         private int _PlayersCount;
         private List<RPlayer> _Players;
 
+        private AGame _Game;
+
         private AGameStatus _GameStatus;
+
+        private ASize _MapSize;
 
         public int Id => _Id;
         public string Name => _Name;
         public int PlayersCount => _PlayersCount;
         public IReadOnlyList<RPlayer> Players => _Players;
 
+        public GameData Game => new GameData(_Game);
+
         public AGameStatus GameStatus => _GameStatus;
+
+        private ASize MapSize => _MapSize;
 
         public ARoom(string name, int id, int playersCount)
         {
@@ -42,11 +55,28 @@ namespace NetLibrary
         }
 
         public void SetName(string name) => _Name = name;
+        public void SetMapSize(ASize size) => _MapSize = size;
         public void SetPlayersCount(int count) => _PlayersCount = count;
 
         public void StartGame()
         {
+
+            Random random = new Random((int)DateTime.Now.Ticks);
+
+            _Game = new AGame();
+
+            List<ICharacter> characters = new List<ICharacter>();
+
+            for (int i = 0; i < _Players.Count; i++)
+            {
+                ASexType sexType = new[] { ASexType.Female, ASexType.Male }[random.Next(2)];
+                ICharacter character = new ACharacter(GameExtension.CharacterName(sexType), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], sexType, random.Next(-16, -5), i, i);
+                characters.Add(character);
+            }
+            _Game.Initialize(_Players.Select(x => x.Name).ToList(), characters);
+            _Game.StartGame(_MapSize);
             _GameStatus = AGameStatus.Game;
+
         }
 
         public void OverGame()

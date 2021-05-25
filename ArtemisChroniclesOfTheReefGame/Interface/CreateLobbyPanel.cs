@@ -25,6 +25,10 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         private ATextBox Header;
         private AEmptyPanel RoomInfo;
+
+        private ALabeledScrollbar MapHeight;
+        private ALabeledScrollbar MapWidth;
+
         private LobbyPlyersList PlyersList;
 
         private ARoom _Room;
@@ -41,9 +45,20 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             base.Initialize();
 
-            Header = new ATextBox(new ASize(Width - 20, 100)) { Parent = this, Text = _Room.Name, Location = new APoint(10, 10) };
-            RoomInfo = new AEmptyPanel(new ASize(Width - 20, 100)) { Parent = this, Text = "Количество игроков: " + _Room.Players.Count + "/" + _Room.PlayersCount, Location = Header.Location + new APoint(0, Header.Height + 10) };
-            PlyersList = new LobbyPlyersList(new ASize(Width - 20, Height - 240)) { Parent = this, Location = RoomInfo.Location + new APoint(0, RoomInfo.Height + 10) };
+            int dWidth = Width * 3 / 4;
+
+            Header = new ATextBox(new ASize(Width - 20, 80)) { Parent = this, Text = _Room.Name, Location = new APoint(10, 10) };
+
+            PlyersList = new LobbyPlyersList(new ASize(dWidth - 30, Height - 110)) { Parent = this, Location = Header.Location + new APoint(0, Header.Height + 10) };
+
+            RoomInfo = new AEmptyPanel(new ASize(Width - dWidth, 80)) { Parent = this, Text = "Количество игроков: " + _Room.Players.Count + "/" + _Room.PlayersCount, Location = PlyersList.Location + new APoint(PlyersList.Width + 10, 0) };
+
+            MapHeight = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = RoomInfo.Location + new APoint(0, RoomInfo.Height + 10), Text = "Высота карты: ", MinValue = 5, MaxValue = 15 };
+            MapWidth = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = MapHeight.Location + new APoint(0, MapHeight.Height + 10), Text = "Ширина карты: ", MinValue = 12, MaxValue = 30 };
+
+
+            Header.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 16);
+            RoomInfo.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 16);
 
             Header.EndEditEvent += (text) => {
                 if (text.Length > 0 && !text.Equals(" ") && !_Room.Name.Equals(text))

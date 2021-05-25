@@ -31,7 +31,7 @@ namespace GameLibrary
         public delegate void OnAttack(IUnit dUnit, IUnit aUnit, int dPower, int aPower, int dResult, int aResult);
         public event OnAttack OnAttackResultEvent;
 
-        private AMap GameMap;
+        private AMap _GameMap;
 
         private bool _Status;
 
@@ -51,6 +51,8 @@ namespace GameLibrary
 
         private int NewCharacterId => _Characters.Sum(x => x.Value.Count) + 1;
 
+        public AMap GameMap => _GameMap;
+
         public IReadOnlyDictionary<int, IPlayer> Players => _Players;
         public IReadOnlyDictionary<int, List<AMapCell>> Territories => _Territories;
         public IReadOnlyDictionary<int, List<ISettlement>> Settlements => _Settlements;
@@ -63,7 +65,7 @@ namespace GameLibrary
         public AMapCell SelectedMapCell => _SelectedMapCell;
         public IPlayer ActivePlayer => _ActivePlayer;
         public int CurrentTurn => _CurrentTurn;
-        public ASize Size => GameMap.Size;
+        public ASize Size => _GameMap.Size;
 
         public bool IsMapCellSelected => _SelectedMapCell is object;
 
@@ -72,9 +74,9 @@ namespace GameLibrary
         public AGame()
         {
 
-            GameMap = new AMap();
+            _GameMap = new AMap();
 
-            _Map = GameMap.Map;
+            _Map = _GameMap.Map;
 
             _Territories = new Dictionary<int, List<AMapCell>>();
             _Players = new Dictionary<int, IPlayer>();
@@ -143,9 +145,9 @@ namespace GameLibrary
 
             if (size.Count > 0 && _Players.Count > 0)
             {
-                GameMap.RandomGeneration(size);
+                _GameMap.RandomGeneration(size);
 
-                foreach (var e in GameMap.SetPlayers(_Players.Select(x => x.Value).ToList()))
+                foreach (var e in _GameMap.SetPlayers(_Players.Select(x => x.Value).ToList()))
                 {
                     _Players[e.Key].AddSettlement(GetMapCell(e.Value).Settlement);
                     _Players[e.Key].ExploreTerritories(GetMapCell(e.Value).NeighboringCells.Select(x => x.Location));
@@ -364,7 +366,7 @@ namespace GameLibrary
             else mapCell.SetActiveUnit(null);
         }
         public void SelectMapCell(APoint location) => _SelectedMapCell = GetMapCell(location);
-        public AMapCell GetMapCell(APoint location) => GameMap[location];
+        public AMapCell GetMapCell(APoint location) => _GameMap[location];
         public List<IUnit> GetUnits(APoint location) => _Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(location)).ToList();
         public List<IUnit> GetEnemies(APoint location) => _Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(location) && x.Owner.Relationship(_ActivePlayer).Equals(ARelationshipType.War)).ToList();
         public List<IUnit> GetUnits() => _Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(_SelectedMapCell.Location)).ToList();
