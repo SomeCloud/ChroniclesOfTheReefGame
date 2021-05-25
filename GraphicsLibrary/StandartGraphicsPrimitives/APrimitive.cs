@@ -38,6 +38,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
         public event OnKeyEvent KeyDownEvent;
 
         public event OnTimeEvent TimeEvent;
+        public event OnTimeEvent DrawEvent;
 
         public event OnSizeChangeEvent SizeChangeEvent;
 
@@ -294,6 +295,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
             //new Vector2(GlobalLocation.X + (Location.X < 0 ? VisibleArea.Location.X : 0), GlobalLocation.Y + (Location.Y < 0 ? VisibleArea.Location.Y : 0))
             if (Enabled)
             {
+                DrawEvent?.Invoke();
                 if (IsCounting) 
                     if (_Counter - DateTime.Now.Second <= DTimer && _Counter - DateTime.Now.Second >= 0)
                     {

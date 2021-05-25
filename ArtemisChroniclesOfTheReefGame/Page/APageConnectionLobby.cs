@@ -49,7 +49,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Add(_Back);
             Add(_LobbyPanel);
 
-            _LobbyPanel.TimeEvent += () =>
+            _LobbyPanel.DrawEvent += () =>
             {
                 Client.ReceiveFrame();
                 if (IsDisconnect) Server?.SendFrame(new AFrame(Room.Id, Player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress()));

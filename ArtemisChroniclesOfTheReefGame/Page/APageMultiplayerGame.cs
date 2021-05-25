@@ -73,7 +73,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _LobbyList = new LobbyList(lobbySize) { Location = _PlayerName.Location + new APoint(0, _PlayerName.Height + 10), IsCounting = true, DTimer = 1 };
 
-            _LobbyList.TimeEvent += () =>
+            _LobbyList.DrawEvent += () =>
             {
                 Client.ReceiveFrame();
             };

@@ -62,7 +62,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client = new AClient("224.0.0.0", 8001);
 
-            _Status.TimeEvent += () =>
+            _Status.DrawEvent += () =>
             {
                 Client.ReceiveFrame();
                 if (IsSend) Server.SendFrame(Frame);

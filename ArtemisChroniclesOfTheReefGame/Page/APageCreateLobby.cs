@@ -44,7 +44,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Add(_Back);
             Add(_LobbyPanel);
 
-            _LobbyPanel.TimeEvent += () =>
+            _LobbyPanel.DrawEvent += () =>
             {
                 if (IsReceive) Client.ReceiveFrame();
                 if (IsSend) Server?.SendFrame(Frame);

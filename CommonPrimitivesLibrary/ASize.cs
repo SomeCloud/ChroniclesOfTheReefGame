@@ -2,6 +2,7 @@
 
 namespace CommonPrimitivesLibrary
 {
+    [Serializable]
     public struct ASize
     {
         public int Width { get; set; }
