@@ -19,7 +19,7 @@ namespace NetLibrary
         private int _PlayersCount;
         private List<RPlayer> _Players;
 
-        private AGame _Game;
+        private GameData _Game;
 
         private AGameStatus _GameStatus;
 
@@ -30,7 +30,7 @@ namespace NetLibrary
         public int PlayersCount => _PlayersCount;
         public IReadOnlyList<RPlayer> Players => _Players;
 
-        public GameData Game => new GameData(_Game);
+        public GameData Game => _Game;
 
         public AGameStatus GameStatus => _GameStatus;
 
@@ -62,8 +62,9 @@ namespace NetLibrary
         {
 
             Random random = new Random((int)DateTime.Now.Ticks);
+            _GameStatus = AGameStatus.Game;
 
-            _Game = new AGame();
+            /*_Game = new AGame();
 
             List<ICharacter> characters = new List<ICharacter>();
 
@@ -75,8 +76,7 @@ namespace NetLibrary
             }
             _Game.Initialize(_Players.Select(x => x.Name).ToList(), characters);
             _Game.StartGame(_MapSize);
-            _GameStatus = AGameStatus.Game;
-
+            */
         }
 
         public void OverGame()
