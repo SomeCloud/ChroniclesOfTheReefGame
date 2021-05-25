@@ -22,6 +22,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         public delegate void OnChange(ARoom room);
 
         public event OnChange ChangeEvent;
+        public event OnChange StartGameEvent;
 
         private ATextBox Header;
         private AEmptyPanel RoomInfo;
@@ -30,6 +31,8 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         private ALabeledScrollbar MapWidth;
 
         private LobbyPlyersList PlyersList;
+
+        private AButton StartGame;
 
         private ARoom _Room;
 
@@ -56,6 +59,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             MapHeight = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = RoomInfo.Location + new APoint(0, RoomInfo.Height + 10), Text = "Высота карты: ", MinValue = 5, MaxValue = 15 };
             MapWidth = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = MapHeight.Location + new APoint(0, MapHeight.Height + 10), Text = "Ширина карты: ", MinValue = 12, MaxValue = 30 };
 
+            StartGame = new AButton(new ASize(Width - dWidth, 50)) { Parent = this, Location = MapWidth.Location + new APoint(0, MapWidth.Height + 10), Text = "Начать игру" };
 
             Header.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 16);
             RoomInfo.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 16);
@@ -66,6 +70,25 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                     _Room.SetName(text);
                     ChangeEvent?.Invoke(_Room);
                 } 
+            };
+
+            MapHeight.ValueChange += (value) =>
+            {
+                _Room.SetMapSize(new ASize(MapWidth.Value, value));
+                ChangeEvent?.Invoke(_Room);
+            };
+
+            MapWidth.ValueChange += (value) =>
+            {
+                _Room.SetMapSize(new ASize(value, MapHeight.Value));
+                ChangeEvent?.Invoke(_Room);
+            };
+
+            _Room.SetMapSize(new ASize(MapWidth.MinValue, MapHeight.MinValue));
+
+            StartGame.MouseClickEvent += (state, mstate) => {
+                _Room.StartGame();
+                StartGameEvent?.Invoke(_Room);
             };
 
             PlyersList.ExtraSelectEvent += (player) => {

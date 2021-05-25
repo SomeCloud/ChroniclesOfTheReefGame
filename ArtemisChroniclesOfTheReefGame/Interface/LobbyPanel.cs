@@ -33,14 +33,20 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             base.Initialize();
 
-            int dWidth = (Width - 20) * 3 / 4;
+            int dWidth = Width * 3 / 4;
 
-            Header = new AEmptyPanel(new ASize(dWidth, 100)) { Parent = this, Location = new APoint(10, 10) };
-            RoomInfo = new AEmptyPanel(new ASize(dWidth, 100)) { Parent = this, Location = Header.Location + new APoint(0, Header.Height + 10) };
-            PlyersList = new LobbyPlyersList(new ASize(dWidth, Height - 240)) { Parent = this, Location = RoomInfo.Location + new APoint(0, RoomInfo.Height + 10) };
+            Header = new AEmptyPanel(new ASize(Width - 20, 80)) { Parent = this, Location = new APoint(10, 10) };
+
+            PlyersList = new LobbyPlyersList(new ASize(dWidth - 30, Height - 110)) { Parent = this, Location = Header.Location + new APoint(0, Header.Height + 10) };
+
+            RoomInfo = new AEmptyPanel(new ASize(Width - dWidth, PlyersList.Height)) { Parent = this, Location = PlyersList.Location + new APoint(PlyersList.Width + 10, 0) };
 
             Header.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 16);
-            RoomInfo.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 14);
+            RoomInfo.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 16);
+
+            Header.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+
+            RoomInfo.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
 
         }
 
@@ -48,7 +54,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         {
 
             Header.Text = room.Name;
-            RoomInfo.Text = "Количество игроков: " + room.Players.Count + "/" + room.PlayersCount;
+            RoomInfo.Text = "Количество игроков: " + room.Players.Count + "/" + room.PlayersCount + "\nВысота карты: " + room.MapSize.Height + "\nШирина карты: " + room.MapSize.Width;
             PlyersList.Update(room.Players);
 
         }

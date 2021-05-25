@@ -5,10 +5,14 @@ using System.Text;
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
 
+using GraphicsLibrary.StandartGraphicsPrimitives;
+
 namespace GraphicsLibrary.Graphics
 {
     public class ALabeledScrollbar : AEmptyPanel
     {
+
+        public event AScrollbar.OnValueChange ValueChange;
 
         private ALabel _Label;
         private AHorizontalScrollbar _Scrollbar;
@@ -40,6 +44,12 @@ namespace GraphicsLibrary.Graphics
             get => _Scrollbar.MaxValue;
         }
 
+        public int Value
+        {
+            set => _Scrollbar.Value = value;
+            get => _Scrollbar.Value;
+        }
+
         public ALabeledScrollbar(ASize size) : base(size)
         {      
 
@@ -56,6 +66,8 @@ namespace GraphicsLibrary.Graphics
             _Scrollbar.ValueChange += (value) => _Label.Text = _Text + value.ToString();
 
             Label.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+
+            _Scrollbar.ValueChange += (value) => ValueChange?.Invoke(value);
 
         }
 

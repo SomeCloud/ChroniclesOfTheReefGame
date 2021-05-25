@@ -113,6 +113,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             Client.StopReceive();
+
             Visible = false;
 
         }
@@ -127,6 +128,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Player = player;
 
             Client.StartReceive("Receiver");
+
             _LobbyPanel.Update(room);
 
         }

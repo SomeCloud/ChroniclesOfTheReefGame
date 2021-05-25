@@ -47,6 +47,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             _LobbyPanel.DrawEvent += () =>
             {
                 if (IsReceive) Client.ReceiveFrame();
+                //if (IsSend) Server?.SendFrame(Frame);
+            };
+
+            _LobbyPanel.TimeEvent += () =>
+            {
                 if (IsSend) Server?.SendFrame(Frame);
             };
 
@@ -77,6 +82,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             Client.StopReceive();
+
             Visible = false;
 
             IsSend = false;

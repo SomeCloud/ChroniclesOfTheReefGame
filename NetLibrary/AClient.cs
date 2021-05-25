@@ -72,6 +72,8 @@ namespace NetLibrary
                 /*if (remoteIp.Address.ToString().Equals(localAddress))
                     continue;*/
                 // вызываем событие о получении сообщения
+                if (receiver.Client.Connected) 
+                    ;
                 AFrame frame = ByteArrayToObject(data) as AFrame;
                 Receive?.Invoke(frame);
             }

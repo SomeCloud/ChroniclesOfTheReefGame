@@ -35,6 +35,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         private AFrame Frame;
 
         private bool IsSend;
+        private bool IsReceive;
 
         private int Counter;
         private int WaitCount = 10;
@@ -56,7 +57,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             _Back.MouseClickEvent += (state, mstate) =>
             {
                 IsSend = false;
-                Client?.StopReceive();
+                IsReceive = false;
                 BackEvent?.Invoke();
             };
 
@@ -64,7 +65,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _Status.DrawEvent += () =>
             {
-                Client.ReceiveFrame();
+                if (IsReceive) Client.ReceiveFrame();
                 if (IsSend) Server.SendFrame(Frame);
             };
 
@@ -75,7 +76,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     ARoom room = frame.Data as ARoom;
                     if (room is object && room.Players.Contains(PlayerInfo))
                     {
-                        Client.StopReceive();
+                        IsReceive = false;
                         IsSend = false;
                         ConnectionEvent?.Invoke(room);
                     }
@@ -83,7 +84,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     {
                         if (Counter >= WaitCount)
                         {
-                            Client.StopReceive();
+                            IsReceive = false;
                             BackEvent?.Invoke();
                         }
                         else Counter++;
@@ -99,7 +100,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         public void Hide()
         {
 
-            Client.StopReceive();
+            Client?.StopReceive();
+
+            IsReceive = false;
             IsSend = false;
 
             Visible = false;
@@ -113,10 +116,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _Status.Text = "Ожидаем ответа от " + ip + ":" + port + " на подключение для игрока " + name + "\nПопыток подключиться осталось: " + (WaitCount - Counter) + "/" + Counter;
 
-            Server?.StopSending();
+            //Server?.StopSending();
             Server = new AServer(ip, port);
 
             IsSend = true;
+            IsReceive = true;
 
             Ip = ip;
             Port = port;
@@ -124,11 +128,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Counter = 0;
 
-            Client.StartReceive("Receiver");
-
             Frame = new AFrame(-1, PlayerInfo, AMessageType.Connection, Client.LocalIPAddress(), ip);
 
-            //Client.StartReceive("Receiver");
+            Client.StartReceive("Receiver");
 
             Update();
 

@@ -58,6 +58,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         public AButton ConnectToGame { get => _ConnectToGame; }
         public AButton Back { get => _Back; }
 
+        private bool IsReceive;
+
         public string Name => _PlayerName.Text.Length.Equals(0) || _PlayerName.Text.Equals(" ") ? Environment.UserName : _PlayerName.Text;
 
         public APageMultiplayerGame(IPrimitive primitive) : base(primitive)
@@ -75,7 +77,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _LobbyList.DrawEvent += () =>
             {
-                Client.ReceiveFrame();
+                if (IsReceive) Client.ReceiveFrame();
             };
 
             Add(_CreateNewRoom);
@@ -128,8 +130,10 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
         public void Hide()
         {
+            IsReceive = false;
 
             Client.StopReceive();
+
             Visible = false;
 
         }
@@ -138,6 +142,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             Visible = true;
+            IsReceive = true;
 
             Client.StartReceive("Receiver");
 

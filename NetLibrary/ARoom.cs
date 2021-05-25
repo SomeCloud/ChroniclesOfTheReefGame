@@ -34,7 +34,7 @@ namespace NetLibrary
 
         public AGameStatus GameStatus => _GameStatus;
 
-        private ASize MapSize => _MapSize;
+        public ASize MapSize => _MapSize;
 
         public ARoom(string name, int id, int playersCount)
         {
