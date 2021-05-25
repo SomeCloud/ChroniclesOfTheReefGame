@@ -19,13 +19,9 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
     public class CreateLobbyPanel : APanel
     {
 
-        public delegate void OnProcess(AFrame frame);
         public delegate void OnChange(ARoom room);
-        public delegate void OnPlayerSelect(RPlayer player);
 
-        public event OnProcess ProcessEvent;
         public event OnChange ChangeEvent;
-        public event OnPlayerSelect PlayerSelectEvent;
 
         private ATextBox Header;
         private AEmptyPanel RoomInfo;
@@ -54,10 +50,14 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 {
                     _Room.SetName(text);
                     ChangeEvent?.Invoke(_Room);
-                } };
+                } 
+            };
 
             PlyersList.ExtraSelectEvent += (player) => {
-                PlayerSelectEvent?.Invoke(player);
+                Room.Disconnect(player);
+                ChangeEvent?.Invoke(_Room);
+                PlyersList.Update(_Room.Players);
+                RoomInfo.Text = "Количество игроков: " + _Room.Players.Count + "/" + _Room.PlayersCount;
             };
 
         }
@@ -69,16 +69,15 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             {
                 case AMessageType.Connection:
                     player = frame.Data as RPlayer;
-                    if (Room.Connect(player)) ProcessEvent?.Invoke(new AFrame(Room.Id, Room, AMessageType.Confirm, frame.DestinationAdress, frame.SourceAdress)); 
-                    else ProcessEvent?.Invoke(new AFrame(Room.Id, player, AMessageType.Renouncement, frame.DestinationAdress, frame.SourceAdress));
+                    Room.Connect(player);
+                    ChangeEvent?.Invoke(_Room);
                     break;
                 case AMessageType.Disconnection:
                     player = frame.Data as RPlayer;
-                    if (Room.Disconnect(player)) ProcessEvent?.Invoke(new AFrame(Room.Id, player, AMessageType.Confirm, frame.DestinationAdress, frame.SourceAdress));
-                    else ProcessEvent?.Invoke(new AFrame(Room.Id, Room, AMessageType.Renouncement, frame.DestinationAdress, frame.SourceAdress));
+                    Room.Disconnect(player);
+                    ChangeEvent?.Invoke(_Room);
                     break;
                 default:
-                    ProcessEvent?.Invoke(new AFrame(Room.Id, Room, AMessageType.RoomInfo, "224.0.0.0", frame.SourceAdress));
                     break;
             }
             PlyersList.Update(_Room.Players);
@@ -89,6 +88,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         {
 
             PlyersList.Update(_Room.Players);
+            RoomInfo.Text = "Количество игроков: " + _Room.Players.Count + "/" + _Room.PlayersCount;
 
         }
 

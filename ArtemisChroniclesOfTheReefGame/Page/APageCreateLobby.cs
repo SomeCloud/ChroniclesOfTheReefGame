@@ -30,6 +30,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         private AFrame Frame;
 
         private bool IsSend;
+        private bool IsReceive;
 
         public APageCreateLobby(IPrimitive primitive) : base(primitive)
         {
@@ -45,28 +46,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _LobbyPanel.TimeEvent += () =>
             {
-                Client.ReceiveFrame();
+                if (IsReceive) Client.ReceiveFrame();
                 if (IsSend) Server?.SendFrame(Frame);
-            };
-
-            Client.Receive += (frame) =>
-            {
-                IsSend = false;
-                _LobbyPanel.ProcessFrame(frame);
-            };
-
-            _LobbyPanel.ProcessEvent += (frame) =>
-            {
-                Frame = frame;
-                IsSend = true;
-            };
-
-            _LobbyPanel.PlayerSelectEvent += (player) =>
-            {
-                Frame = new AFrame(_LobbyPanel.Room.Id, player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress());
-                IsSend = true;
-                _LobbyPanel.Room.Disconnect(player);
-                _LobbyPanel.Update();
             };
 
             _LobbyPanel.ChangeEvent += (room) =>
@@ -75,14 +56,20 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 IsSend = true;
             };
 
+            Client.Receive += (frame) =>
+            {
+                _LobbyPanel.ProcessFrame(frame);
+            };
+
             _Back.MouseClickEvent += (state, mstate) => {
                 Frame = new AFrame(_LobbyPanel.Room.Id, _LobbyPanel.Room, AMessageType.ServerDisconnection, "224.0.0.0", Client.LocalIPAddress());
-                IsSend = true;
                 BackEvent?.Invoke();
             };
 
-            IsSend = true;
             Frame = new AFrame(_LobbyPanel.Room.Id, _LobbyPanel.Room, AMessageType.RoomInfo, "224.0.0.0", Client.LocalIPAddress());
+
+            IsSend = true;
+            IsReceive = true;
 
         }
 
@@ -91,6 +78,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client.StopReceive();
             Visible = false;
+
+            IsSend = false;
+            IsReceive = false;
 
         }
 
@@ -103,6 +93,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Client.StartReceive("Receiver");
 
             _LobbyPanel.Show(id, name);
+
+            IsSend = true;
+            IsReceive = true;
 
         }
 

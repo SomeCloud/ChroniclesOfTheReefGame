@@ -36,6 +36,12 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
         private bool IsSend;
 
+        private int Counter;
+        private int WaitCount = 10;
+
+        private string Ip;
+        private int Port;
+
         public APageWaitConnection(IPrimitive primitive) : base(primitive)
         {
 
@@ -64,27 +70,26 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client.Receive += (frame) =>
             {
-                if (frame.DestinationAdress.Equals(Client.LocalIPAddress()))
+                if (frame.MessageType.Equals(AMessageType.RoomInfo))
                 {
-                    switch (frame.MessageType)
+                    ARoom room = frame.Data as ARoom;
+                    if (room is object && room.Players.Contains(PlayerInfo))
                     {
-                        case AMessageType.Confirm:
-                            ARoom room = frame.Data as ARoom;
-                            if (room.Players.Contains(PlayerInfo))
-                            {
-                                Server?.StopSending();
-                                ConnectionEvent?.Invoke(room);
-                            }
-                            break;
-                        case AMessageType.Renouncement:
-                            RPlayer player = frame.Data as RPlayer;
-                            if (player.Equals(PlayerInfo))
-                            {
-                                Server?.StopSending();
-                                BackEvent?.Invoke();
-                                Client.StopReceive();
-                            }
-                            break;
+                        Client.StopReceive();
+                        IsSend = false;
+                        ConnectionEvent?.Invoke(room);
+                    }
+                    else
+                    {
+                        if (Counter >= WaitCount)
+                        {
+                            Client.StopReceive();
+                            BackEvent?.Invoke();
+                        }
+                        else Counter++;
+
+                        _Status.Text = "Ожидаем ответа от " + Ip + ":" + Port + " на подключение для игрока " + PlayerInfo.Name + "\nПопыток подключиться осталось: " + (WaitCount - Counter) + "/" + WaitCount;
+
                     }
                 }
             };
@@ -106,14 +111,18 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Visible = true;
 
-            _Status.Text = "Ожидаем ответа от " + ip + ":" + port + " на подключение для игрока " + name;
+            _Status.Text = "Ожидаем ответа от " + ip + ":" + port + " на подключение для игрока " + name + "\nПопыток подключиться осталось: " + (WaitCount - Counter) + "/" + Counter;
 
             Server?.StopSending();
             Server = new AServer(ip, port);
 
             IsSend = true;
 
+            Ip = ip;
+            Port = port;
             PlayerInfo = new RPlayer(name, Client.LocalIPAddress());
+
+            Counter = 0;
 
             Client.StartReceive("Receiver");
 

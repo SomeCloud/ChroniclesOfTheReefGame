@@ -62,6 +62,25 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client.Receive += (frame) =>
             {
+                switch (frame.MessageType)
+                {
+                    case AMessageType.ServerDisconnection:
+                        DisconnectionEvent?.Invoke();
+                        break;
+                    case AMessageType.RoomInfo:
+                        ARoom room = frame.Data as ARoom;
+                        if (room is object && !room.Players.Contains(Player))
+                        {
+                            IsDisconnect = false;
+                            DisconnectionEvent?.Invoke();
+                        }
+                        _LobbyPanel.Update(frame.Data as ARoom);
+                        break;
+                }
+            };
+
+            /*Client.Receive += (frame) =>
+            {
                 RPlayer player = frame.Data as RPlayer;
                 Server?.StopSending();
                 switch (frame.MessageType)
@@ -87,7 +106,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                         _LobbyPanel.Update(frame.Data as ARoom);
                         break;
                 }
-            };
+            };*/
         }
 
         public void Hide()
