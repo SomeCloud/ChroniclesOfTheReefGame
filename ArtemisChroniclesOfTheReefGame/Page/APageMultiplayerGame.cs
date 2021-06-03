@@ -165,7 +165,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-Receiver", IsBackground = true };
                 ClientReceiver.Start();
                 //ClientReceiver.Join();
-                if (CClient.IsComleted) OnClientReceive(CClient.Result);
             };
 
             GamePanel.TimeEvent += () =>
@@ -204,9 +203,18 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     ServerReceiver?.Abort();
                     ServerReceiver = new Thread(() => SClient.ReceiveResult()) { Name = "Server-Receiver", IsBackground = true };
                     ServerReceiver.Start();
-                    ServerReceiver.Join();
-                    if (SClient.IsComleted) OnServerReceive(SClient.Result);
+                    //ServerReceiver.Join();
                 }
+            };
+
+            GamePanel.DrawEvent += () =>
+            {
+                if (SClient.IsComleted) OnServerReceive(SClient.Result);
+            };
+            
+            GamePanel.DrawEvent += () =>
+            {
+                if (CClient.IsComleted) OnClientReceive(CClient.Result);
             };
 
         }
@@ -410,7 +418,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             ClientFrame = new AFrame(Room.Id, new AData(null, Player, ADataType.None), AMessageType.Request, CClient.LocalIPAddress(), CClient.GroupIPAdress.ToString());
 
-            ClientReceiver?.Abort();
+            //ClientReceiver?.Abort();
             ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-OnShowReceiver", IsBackground = true };
 
             if (isServer)
@@ -432,18 +440,22 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
                 if (Game.StartGame(Room.MapSize)) Room.StartGame(Game);
 
-                ServerSender?.Abort();
-                ServerSender = new Thread(() => SServer?.SendFrame(new AFrame(Room.Id, Room, AMessageType.RoomInfo, CClient.LocalIPAddress(), CClient.GroupIPAdress.ToString()))) { Name = "Server-Sender", IsBackground = true };
+                //ServerSender?.Abort();
+                AFrame frame = new AFrame(Room.Id, Room, AMessageType.RoomInfo, CClient.LocalIPAddress(), CClient.GroupIPAdress.ToString());
+                ServerSender = new Thread(() => SServer?.SendFrame(frame)) { Name = "Server-Sender", IsBackground = true };
                 ServerSender.Start();
+
+                OnClientReceive(frame);
 
                 //SServer?.SendFrame(new AFrame(Room.Id, Room.Game, AMessageType.RoomInfo, CClient.LocalIPAddress(), CClient.GroupIPAdress.ToString()));
 
             }
-
-            ClientReceiver.Start();
-            ClientReceiver.Join();
-
-            if (CClient.IsComleted) OnClientReceive(CClient.Result);
+            else
+            {
+                ClientReceiver.Start();
+                ClientReceiver.Join();
+                if (CClient.IsComleted) OnClientReceive(CClient.Result);
+            }
 
             Visible = true;
             Update();
