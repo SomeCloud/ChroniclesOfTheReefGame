@@ -93,7 +93,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 }
             };
 
-            /*_Status.TimeEvent += () =>
+            _Status.TimeEvent += () =>
             {
                 if (IsReceive)
                 {
@@ -102,7 +102,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     Receiver.Start();
                     IsReceive = false;
                 }
-            };*/
+            };
 
         }
 
@@ -140,10 +140,10 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client.StartReceive("Receiver");
 
-            Receiver?.Interrupt();
-            Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Wait-Receiver", IsBackground = true };
-            Receiver.Start();
-            Receiver.Join();
+            //Receiver?.Interrupt();
+            //Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Wait-Receiver", IsBackground = true };
+            //Receiver.Start();
+            //Receiver.Join();
 
             Update();
 
