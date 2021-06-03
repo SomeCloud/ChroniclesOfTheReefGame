@@ -6,6 +6,7 @@ using GameLibrary.Extension;
 
 namespace GameLibrary.Technology
 {
+    [Serializable]
     public class ATechnology: ITechnology
     {
 

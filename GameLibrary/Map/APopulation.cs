@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace GameLibrary.Map
 {
+    [Serializable]
     public class APopulation
     {
 

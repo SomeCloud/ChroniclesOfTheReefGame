@@ -17,6 +17,8 @@ using GameLibrary.Player;
 using GameLibrary.Extension;
 using GameLibrary.Technology;
 
+using ArtemisChroniclesOfTheReefGame.Panels;
+
 namespace ArtemisChroniclesOfTheReefGame.Interface
 {
     public class PlayerPanel: AForm

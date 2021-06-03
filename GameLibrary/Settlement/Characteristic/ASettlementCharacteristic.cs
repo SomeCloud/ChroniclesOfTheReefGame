@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GameLibrary.Settlement.Characteristic
 {
+    [Serializable]
     public abstract class ASettlementCharacteristic: ISettlementCharacteristic
     {
 

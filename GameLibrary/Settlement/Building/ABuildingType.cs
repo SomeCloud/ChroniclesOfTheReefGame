@@ -1,6 +1,8 @@
-﻿
+﻿using System;
+
 namespace GameLibrary.Settlement.Building
 {
+    [Serializable]
     public enum ABuildingType
     {
         //  Ратуша

@@ -9,6 +9,7 @@ using GameLibrary.Player;
 
 namespace GameLibrary.Map
 {
+    [Serializable]
     public class AMap
     {
 

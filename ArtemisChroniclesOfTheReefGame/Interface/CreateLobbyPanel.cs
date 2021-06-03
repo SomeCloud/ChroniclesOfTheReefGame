@@ -57,7 +57,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             RoomInfo = new AEmptyPanel(new ASize(Width - dWidth, 80)) { Parent = this, Text = "Количество игроков: " + _Room.Players.Count + "/" + _Room.PlayersCount, Location = PlyersList.Location + new APoint(PlyersList.Width + 10, 0) };
 
             MapHeight = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = RoomInfo.Location + new APoint(0, RoomInfo.Height + 10), Text = "Высота карты: ", MinValue = 5, MaxValue = 15 };
-            MapWidth = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = MapHeight.Location + new APoint(0, MapHeight.Height + 10), Text = "Ширина карты: ", MinValue = 12, MaxValue = 30 };
+            MapWidth = new ALabeledScrollbar(new ASize(Width - dWidth, 80)) { Parent = this, Location = MapHeight.Location + new APoint(0, MapHeight.Height + 10), Text = "Ширина карты: ", MinValue = 8, MaxValue = 30 };
 
             StartGame = new AButton(new ASize(Width - dWidth, 50)) { Parent = this, Location = MapWidth.Location + new APoint(0, MapWidth.Height + 10), Text = "Начать игру" };
 
@@ -84,10 +84,8 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 ChangeEvent?.Invoke(_Room);
             };
 
-            _Room.SetMapSize(new ASize(MapWidth.MinValue, MapHeight.MinValue));
-
             StartGame.MouseClickEvent += (state, mstate) => {
-                _Room.StartGame();
+                //_Room.StartGame();
                 StartGameEvent?.Invoke(_Room);
             };
 
@@ -136,7 +134,10 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         {
 
             Enabled = true;
+
             _Room = new ARoom(name + "'s Game", id, 2);
+            _Room.SetMapSize(new ASize(MapWidth.MinValue, MapHeight.MinValue));
+
             Header.Text = _Room.Name;
             ChangeEvent?.Invoke(_Room);
         }

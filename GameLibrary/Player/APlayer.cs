@@ -14,6 +14,7 @@ using GameLibrary.Message;
 
 namespace GameLibrary.Player
 {
+    [Serializable]
     public class APlayer: IPlayer
     {
 

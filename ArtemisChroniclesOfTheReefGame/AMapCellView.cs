@@ -31,7 +31,7 @@ namespace ArtemisChroniclesOfTheReefGame
         readonly new string Text;
         readonly new ATextLabel TextLabel;
 
-        private AGame Game;
+        private GameData GameData;
 
         private Color _Color;
         public Color Color
@@ -44,16 +44,16 @@ namespace ArtemisChroniclesOfTheReefGame
             }
         }
 
-        public AMapCellView(int radius, AGame game, AMapCell mapCell, IPrimitiveTexture source) : base(new ASize(radius, radius))
+        public AMapCellView(int radius, GameData gameData, AMapCell mapCell, IPrimitiveTexture source) : base(new ASize(radius, radius))
         {
-            Game = game;
+            GameData = gameData;
             DragAndDrop = true;
             IsDarkened = true;
             _MapCell = mapCell;
             Source = source;
         }
 
-        public AMapCellView(AMapCell mapCell, AGame game, APrimitiveTexture source) : this(GraphicsExtension.DefaultMapCellRadius, game, mapCell, source) { }
+        public AMapCellView(AMapCell mapCell, GameData gameData, APrimitiveTexture source) : this(GraphicsExtension.DefaultMapCellRadius, gameData, mapCell, source) { }
 
         public override void Initialize()
         {
@@ -94,12 +94,12 @@ namespace ArtemisChroniclesOfTheReefGame
         public new void Draw(SpriteBatch spriteBatch)
         {
 
-            bool isUnit = Game.GetUnits(_MapCell.Location) is List<IUnit> units && units.Count > 0;
+            bool isUnit = GameData.GetUnits(_MapCell.Location) is List<IUnit> units && units.Count > 0;
 
             if (MapCell.IsSettlement && !MapCell.Settlement.Name.Equals(Label.Text)) Label.Text = MapCell.Settlement.Name;
-            Enabled = Game.ActivePlayer.ExploredTerritories.Contains(_MapCell.Location);
+            Enabled = GameData.ActivePlayer.ExploredTerritories.Contains(_MapCell.Location);
 
-            _IsDarkenedTexture = Game.IsMapCellSelected && Game.SelectedMapCell.IsSettlement && Game.SelectedMapCell.Settlement.Territories.Contains(_MapCell);
+            _IsDarkenedTexture = GameData.IsMapCellSelected && GameData.SelectedMapCell.IsSettlement && GameData.SelectedMapCell.Settlement.Territories.Contains(_MapCell);
             
             if (Enabled)
             {
@@ -117,7 +117,7 @@ namespace ArtemisChroniclesOfTheReefGame
                     }
                 }
 
-                if (Game.ActivePlayer.IsResource(MapCell.ResourceType)) spriteBatch.Draw(TexturePack.Resource(_MapCell.ResourceType, _MapCell.IsMined), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
+                if (GameData.ActivePlayer.IsResource(MapCell.ResourceType)) spriteBatch.Draw(TexturePack.Resource(_MapCell.ResourceType, _MapCell.IsMined), new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
                 spriteBatch.Draw(TextTexture, new Vector2(GlobalLocation.X + VisibleArea.Location.X, GlobalLocation.Y + VisibleArea.Location.Y), new Rectangle(VisibleArea.Location.X, VisibleArea.Location.Y, VisibleArea.Size.Width, VisibleArea.Size.Height), Color.White, 0f, Vector2.Zero, /*scaling*/1f, SpriteEffects.None, 0f);
 
                 foreach (IPrimitive primitive in Controls.OrderBy(x => x.ZIndex).ToList())
@@ -164,6 +164,8 @@ namespace ArtemisChroniclesOfTheReefGame
 
             return false;
         }
+
+        public void SetSourceMapCell(AMapCell mapCell) => _MapCell = mapCell;
 
         public new void Dispose()
         {

@@ -19,6 +19,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
     public class APageCreateLobby : APage, IPage
     {
 
+        public delegate void OnStartGame(ARoom room, RPlayer player);
+
+        public event OnStartGame StartGameEvent;
         public event OnBack BackEvent;
 
         private AButton _Back;
@@ -32,6 +35,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         private bool IsSend;
         private bool IsReceive;
 
+        private RPlayer Player;
+
+        Thread Receiver;
+        Thread Sender;
+
         public APageCreateLobby(IPrimitive primitive) : base(primitive)
         {
 
@@ -44,15 +52,36 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Add(_Back);
             Add(_LobbyPanel);
 
-            _LobbyPanel.DrawEvent += () =>
+            /*_LobbyPanel.DrawEvent += () =>
             {
-                if (IsReceive) Client.ReceiveFrame();
-                //if (IsSend) Server?.SendFrame(Frame);
-            };
+                if (IsSend) Server?.SendFrame(Frame);
+            };*/
 
             _LobbyPanel.TimeEvent += () =>
             {
-                if (IsSend) Server?.SendFrame(Frame);
+                if (IsSend)
+                {
+                    Sender?.Abort();
+                    Sender = new Thread(() => Server?.SendFrame(Frame)) { Name = "Lobby-Sender", IsBackground = true };
+                    Sender.Start();
+                }
+                //Server?.SendFrame(Frame);
+            };
+            
+            _LobbyPanel.TimeEvent += () =>
+            {
+                if (IsReceive)
+                {
+                    Receiver?.Abort();
+                    Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Lobby-Receiver", IsBackground = true };
+                    Receiver.Start();
+                    IsReceive = false;
+                }
+            };
+            
+            _LobbyPanel.DrawEvent += () =>
+            {
+                if (Client.IsComleted) OnReceive(Client.Result);
             };
 
             _LobbyPanel.ChangeEvent += (room) =>
@@ -60,10 +89,10 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 Frame = new AFrame(room.Id, room, AMessageType.RoomInfo, "224.0.0.0", Client.LocalIPAddress());
                 IsSend = true;
             };
-
-            Client.Receive += (frame) =>
+            
+            _LobbyPanel.StartGameEvent += (room) =>
             {
-                _LobbyPanel.ProcessFrame(frame);
+                StartGameEvent?.Invoke(room, Player);
             };
 
             _Back.MouseClickEvent += (state, mstate) => {
@@ -72,10 +101,17 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             };
 
             Frame = new AFrame(_LobbyPanel.Room.Id, _LobbyPanel.Room, AMessageType.RoomInfo, "224.0.0.0", Client.LocalIPAddress());
+            //Task.Run(() => Client.ReceiveFrame());
 
             IsSend = true;
             IsReceive = true;
 
+        }
+
+        private void OnReceive(AFrame frame)
+        {
+            _LobbyPanel.ProcessFrame(frame);
+            IsReceive = true;
         }
 
         public void Hide()
@@ -98,7 +134,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Client.StartReceive("Receiver");
 
+            Player = new RPlayer(name, Client.LocalIPAddress());
+
             _LobbyPanel.Show(id, name);
+            _LobbyPanel.Room.Connect(Player);
+            _LobbyPanel.Update();
 
             IsSend = true;
             IsReceive = true;

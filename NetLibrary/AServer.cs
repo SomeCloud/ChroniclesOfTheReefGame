@@ -11,8 +11,13 @@ using System.Threading;
 
 namespace NetLibrary
 {
+
     public class AServer
-    {// событие на отправку фрейма, возвращает статус отправки
+    {
+
+        public const int PackageLength = 16384;
+
+        // событие на отправку фрейма, возвращает статус отправки
         public delegate void AfterSendEvent(bool status);
         public event AfterSendEvent AfterSend;
 
@@ -36,6 +41,7 @@ namespace NetLibrary
             GroupIPAdress = IPAddress.Parse(adress);
             remotePort = port;
             localIPAdress = IPAddress.Parse(LocalIPAddress());
+            //sender.Client.SendTimeout = 5;
         }
 
         // запускаем поток отправки данных в сеть
@@ -61,7 +67,6 @@ namespace NetLibrary
             Sender = null;
             InSend = false;
             DoLoop = false;
-            //CloseEvent?.Invoke();
         }
 
         // главная функция для отправки данных в общую сеть
@@ -70,25 +75,88 @@ namespace NetLibrary
         {
             // создаем UdpClient для отправки
             sender = new UdpClient();
-            //sender.Client.SendTimeout = 50;
             IPEndPoint endPoint = new IPEndPoint(GroupIPAdress, remotePort);
             try
             {
-                //while (DoLoop == true)
+
+                byte[] data = ObjectToByteArray(message);
+                APackage package = null;
+
+                if (data.Length < PackageLength)
                 {
-                    byte[] data = ObjectToByteArray(message);
-                    // отправка
-                    sender.Send(data, data.Length, endPoint);
-                    // вызываем событие того, что фрейм был отправлен удачно (особой роли не играет, используется для дебага)
-                    AfterSend?.Invoke(true);
+                    package = new APackage(data.Length, data, APackageType.SinglePackage, true);
+                    byte[] packageData = ObjectToByteArray(package);
+                    sender.Send(packageData, packageData.Length, endPoint);
                 }
-                /*if (DoLoop == false)
+                else
                 {
-                    byte[] data = ObjectToByteArray(message);
-                    // отправка
-                    sender.Send(data, data.Length, endPoint);
-                    // вызываем событие того, что фрейм был отправлен удачно (особой роли не играет, используется для дебага)
-                    AfterSend?.Invoke(true);
+
+                    int dLehgth = data.Length;
+                    int dCounter = 0;
+
+                    //Console.WriteLine("START SENDING (" + dLehgth + ")");
+
+                    int pCounter = 0;
+
+                    while (dLehgth - dCounter > 0)
+                    {
+                        Task Sending = new Task(() =>
+                        {
+                            if (dLehgth - dCounter > PackageLength)
+                            {
+                                byte[] buffer = new byte[PackageLength];
+                                Array.Copy(data, dCounter, buffer, 0, buffer.Length);
+                                package = new APackage(data.Length, buffer, APackageType.HugePackage, dCounter.Equals(0) ? true : false);
+                                dCounter += PackageLength;
+                                pCounter++;
+                            }
+                            else if (dLehgth - dCounter > 0)
+                            {
+                                byte[] buffer = new byte[dLehgth - dCounter];
+                                Array.Copy(data, dCounter, buffer, 0, dLehgth - dCounter);
+                                package = new APackage(data.Length, buffer, APackageType.HugePackage, dCounter.Equals(0)? true: false);
+                                dCounter += dLehgth - dCounter;
+                                pCounter++;
+                            }
+                            byte[] packageData = ObjectToByteArray(package);
+                            sender.Send(packageData, packageData.Length, endPoint);
+
+                            //Console.WriteLine("SEND: " + dCounter + " / " + data.Length);
+                        });
+
+                        Sending.Start();
+                        Thread.Sleep(100);
+                    }
+
+                    //Console.WriteLine("SEND: Отправленно пакетов " + pCounter + " из " + ((dLehgth / PackageLength) + 1) + " (" + dCounter + " / " + data.Length + ")");
+
+                }
+
+                //byte[] size = ObjectToByteArray(data.Length);
+
+                //int dLehgth = data.Length;
+                //int dCounter = 0;
+
+                /*sender.Send(size, size.Length, endPoint);
+
+                while (true)
+                {
+                    if (dLehgth - dCounter > 4096)
+                    {
+                        byte[] buffer = new byte[4096];
+                        Array.Copy(data, dCounter, buffer, 0, buffer.Length);
+                        sender.Send(buffer, buffer.Length, endPoint);
+                        dCounter += 4096;
+                    }
+                    else if (dLehgth - dCounter > 0)
+                    {
+                        byte[] buffer = new byte[dLehgth - dCounter];
+                        Array.Copy(data, dCounter, buffer, 0, buffer.Length);
+                        sender.Send(buffer, buffer.Length, endPoint);
+                        dCounter += dLehgth - dCounter;
+                        break;
+                    }
+                    else break;
                 }*/
             }
             // в случае каких-либо косяков получаем ошибку
@@ -96,7 +164,7 @@ namespace NetLibrary
             {
                 Console.WriteLine(ex.Message);
                 // опять же - вызываем событие об не удачной отправке сообщения
-                AfterSend?.Invoke(false);
+                //AfterSend?.Invoke(false);
             }
             finally
             {
@@ -144,4 +212,5 @@ namespace NetLibrary
             return obj;
         }
     }
+    
 }

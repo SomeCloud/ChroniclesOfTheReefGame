@@ -12,6 +12,8 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
 
+using ArtemisChroniclesOfTheReefGame.Panels;
+
 namespace ArtemisChroniclesOfTheReefGame.Interface
 {
 

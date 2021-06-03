@@ -27,7 +27,17 @@ namespace ArtemisChroniclesOfTheReefGame.Page
     public class APageGame : APage, IPage
     {
 
-        private AGame COTR;
+        public APageGame(IPrimitive primitive) : base(primitive)
+        {
+
+        }
+
+        public override void Update()
+        {
+
+        }
+
+        /*private AGame COTR;
 
         private APanel MapField;
 
@@ -250,7 +260,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 if (mapCell.ActiveUnit is null && COTR.GetUnits(mapCell.Location) is List<IUnit> units && units.Count > 0) mapCell.SetActiveUnit(units.First());
                 //AMapCell mapCell = COTR.GetMapCell(new APoint(x, y));
                 APrimitiveTexture source = TexturePack.Hex[mapCell.OwnerId];
-                AMapCellView mapCellView = new AMapCellView(mapCell, COTR, source) { Parent = MapView, Location = CalculateSpriteVector(/*new APoint(x, y)*/e.Key) };
+                AMapCellView mapCellView = new AMapCellView(mapCell, COTR, source) { Parent = MapView, Location = CalculateSpriteVector(e.Key) };
 
                 mapCellView.MouseClickEvent += (state, mouseState) =>
                 {
@@ -373,6 +383,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
         private string StringPad(string value, int width) => value + new String(' ', width - value.Length);
         private string StringPad(int value, int width) => StringPad(value.ToString(), width);
-
+        */
     }
 }

@@ -25,7 +25,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         public event OnSelect SelectEvent;
 
         private AScrolleredPanel TechnologiesInSettlementsList;
-        private TechnologiesListPanel TechnologiesList;
+        //private TechnologiesListPanel TechnologiesList;
 
         public AButton _CloseButton;
 
@@ -54,7 +54,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             ASize size = new ASize((Width - 30) / 2, Height - _CloseButton.Height - 30);
 
             TechnologiesInSettlementsList = new AScrolleredPanel(AScrollbarAlign.Vertical, size) { Parent = this, Location = new APoint(10, _CloseButton.Y + _CloseButton.Height + 10) };
-            TechnologiesList = new TechnologiesListPanel(size) { Parent = this, Location = TechnologiesInSettlementsList.Location + new APoint(TechnologiesInSettlementsList.Width + 10, 0) };
+            //TechnologiesList = new TechnologiesListPanel(size) { Parent = this, Location = TechnologiesInSettlementsList.Location + new APoint(TechnologiesInSettlementsList.Width + 10, 0) };
 
             _CloseButton.MouseClickEvent += (state, mstate) => Hide();
 
@@ -67,14 +67,14 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             Text = "Советник по науке";
 
-            TechnologiesList.SelectEvent += (technology) => {
+            /*TechnologiesList.SelectEvent += (technology) => {
                 if (MapCell is object && MapCell.IsSettlement)
                 {
                     MapCell.Settlement.SetInvestigatedTechnology(technology);
                     Update(MapCell, Player);
                     SelectEvent?.Invoke(technology);
                 }
-            };
+            };*/
 
         }
 
@@ -84,7 +84,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             MapCell = mapCell;
             Player = player;
 
-            TechnologiesList.Update(player.Technologies);
+            //TechnologiesList.Update(player.Technologies);
 
             string technologiesText = "Исследования в городах: \n\n" + string.Join("\n", player.Settlements.Select(x => x.Name + ": " + (x.InvestigatedTechnology is object? x.InvestigatedTechnology.Name + " " + x.InvestigatedTechnology.StudyPoints + "/" + x.InvestigatedTechnology.RequiredStudyPoints + " (" + (x.Science > 0 ? "+" + x.Science : x.Science.ToString()) + ")" : "исследование не выбрано")));
             

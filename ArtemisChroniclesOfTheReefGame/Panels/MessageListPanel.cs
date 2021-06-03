@@ -14,7 +14,7 @@ using AKeyState = CommonPrimitivesLibrary.AKeyState;
 using GameLibrary;
 using GameLibrary.Message;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
     public class MessageListPanel: AScrolleredPanel
     {

@@ -5,18 +5,16 @@ using System.Collections.Generic;
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
 
-using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAlign;
-
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
-using AKeyState = CommonPrimitivesLibrary.AKeyState;
-
 using GameLibrary;
 using GameLibrary.Message;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+using ArtemisChroniclesOfTheReefGame.Panels;
+
+namespace ArtemisChroniclesOfTheReefGame.Forms
 {
-    public class MessageForm: AForm
+    public class AMessageForm: AForm
     {
 
         public delegate void OnDone();
@@ -29,7 +27,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         private IMessage Message;
 
-        public MessageForm(ASize size) : base(size)
+        public AMessageForm(ASize size) : base(size)
         {
 
         }

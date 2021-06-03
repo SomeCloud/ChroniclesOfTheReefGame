@@ -6,6 +6,7 @@ using GameLibrary.Player;
 
 namespace GameLibrary.Message
 {
+    [Serializable]
     public class AMessage: IMessage
     {
 
@@ -13,8 +14,8 @@ namespace GameLibrary.Message
         public IPlayer Recipient { get; }
         public string Header { get; }
         public string Text { get; }
-        public Action Done { get; }
-        public Action Renouncement { get; }
+        //public Action Done { get; }
+        //public Action Renouncement { get; }
 
         public bool IsRenouncement { get; }
 
@@ -25,14 +26,14 @@ namespace GameLibrary.Message
             Recipient = recipient;
             Header = header;
             Text = text;
-            Done = done;
+            //Done = done;
             IsRenouncement = iSRenouncement;
 
         }
 
         public AMessage(IPlayer sender, IPlayer recipient, string header, string text, Action done, bool iSRenouncement, Action renouncement) : this(sender, recipient, header, text, done, iSRenouncement)
         {
-            Renouncement = renouncement;
+            //Renouncement = renouncement;
         }
 
     }

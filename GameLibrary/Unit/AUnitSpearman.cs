@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 
 using APoint = CommonPrimitivesLibrary.APoint;
 
@@ -11,6 +12,7 @@ using GameLibrary.Unit.Main;
 
 namespace GameLibrary.Unit
 {
+    [Serializable]
     public class AUnitSpearman : AUnit, IUnit
     {
 

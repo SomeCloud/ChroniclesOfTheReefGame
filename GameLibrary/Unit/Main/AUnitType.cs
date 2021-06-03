@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GameLibrary.Unit.Main
 {
+    [Serializable]
     public enum AUnitType
     {
 

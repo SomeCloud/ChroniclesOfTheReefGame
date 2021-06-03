@@ -20,6 +20,7 @@ using ITechnology = GameLibrary.Technology.ITechnology;
 
 namespace GameLibrary.Settlement
 {
+    [Serializable]
     public class ASettlement : ISettlement
     {
 

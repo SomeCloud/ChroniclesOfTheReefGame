@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace CommonPrimitivesLibrary
 {
+    [Serializable]
     public struct APoint
     {
         public int X { get; set; }

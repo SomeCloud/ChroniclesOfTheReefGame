@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+
+using APoint = CommonPrimitivesLibrary.APoint;
 
 using GameLibrary.Map;
 using GameLibrary.Unit;
@@ -32,6 +34,8 @@ namespace GameLibrary
         public IPlayer ActivePlayer;
         public AMapCell SelectedMapCell;
 
+        public bool IsMapCellSelected => SelectedMapCell is object;
+
         public GameData(AGame game)
         {
 
@@ -48,6 +52,23 @@ namespace GameLibrary
             ActivePlayer = game.ActivePlayer;
             SelectedMapCell = game.SelectedMapCell;
 
+        }
+
+        public ICharacter GetCharacter(int id) => Characters.SelectMany(x => x.Value).Where(x => x.Id == id).First();
+        public IPlayer GetPlayer(string name) => Players.Select(x => x.Value).Where(x => x.Name == name).First();
+        public AMapCell GetMapCell(APoint location) => GameMap[location];
+        public List<IUnit> GetUnits(APoint location) => Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(location)).ToList();
+
+        public bool CharacterIsRuler(ICharacter character, out IPlayer player)
+        {
+            Dictionary<ICharacter, IPlayer> rulers = Players.ToDictionary(x => x.Value.Ruler, x => x.Value);
+            player = null;
+            if (rulers.ContainsKey(character))
+            {
+                player = rulers[character];
+                return true;
+            }
+            return false;
         }
 
     }

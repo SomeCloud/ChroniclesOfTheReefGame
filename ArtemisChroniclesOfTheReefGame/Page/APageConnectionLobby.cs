@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
 
 using NetLibrary;
@@ -22,6 +21,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
     class APageConnectionLobby : APage, IPage
     {
 
+        public delegate void OnStartGame(ARoom room, RPlayer player);
+
+        public event OnStartGame StartGameEvent;
         public event OnBack BackEvent;
 
         public event OnDisconnection DisconnectionEvent;
@@ -37,6 +39,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         private ARoom Room;
         private RPlayer Player;
 
+        Thread Receiver;
+        Thread Sender;
+
+        private bool IsReceive;
+
         public APageConnectionLobby(IPrimitive primitive) : base(primitive)
         {
 
@@ -49,10 +56,31 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Add(_Back);
             Add(_LobbyPanel);
 
+            _LobbyPanel.TimeEvent += () =>
+            {
+                if (IsDisconnect)
+                {
+                    Sender?.Abort();
+                    Sender = new Thread(() => Server?.SendFrame(new AFrame(Room.Id, Player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress()))) { Name = "Connection-Sender", IsBackground = true };
+                    Sender.Start();
+                    //Server?.SendFrame(new AFrame(Room.Id, Player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress()));
+                }
+            };
+
+            _LobbyPanel.TimeEvent += () =>
+            {
+                if (IsReceive)
+                {
+                    Receiver?.Abort();
+                    Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Connection-Receiver", IsBackground = true };
+                    Receiver.Start();
+                    IsReceive = false;
+                }
+            };
+
             _LobbyPanel.DrawEvent += () =>
             {
-                Client.ReceiveFrame();
-                if (IsDisconnect) Server?.SendFrame(new AFrame(Room.Id, Player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress()));
+                if (Client.IsComleted) OnReceive(Client.Result);
             };
 
             _Back.MouseClickEvent += (state, mstate) => {
@@ -60,53 +88,33 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 BackEvent?.Invoke();
             };
 
-            Client.Receive += (frame) =>
-            {
-                switch (frame.MessageType)
-                {
-                    case AMessageType.ServerDisconnection:
-                        DisconnectionEvent?.Invoke();
-                        break;
-                    case AMessageType.RoomInfo:
-                        ARoom room = frame.Data as ARoom;
-                        if (room is object && !room.Players.Contains(Player))
-                        {
-                            IsDisconnect = false;
-                            DisconnectionEvent?.Invoke();
-                        }
-                        _LobbyPanel.Update(frame.Data as ARoom);
-                        break;
-                }
-            };
+        }
 
-            /*Client.Receive += (frame) =>
+        private void OnReceive(AFrame frame)
+        {
+            switch (frame.MessageType)
             {
-                RPlayer player = frame.Data as RPlayer;
-                Server?.StopSending();
-                switch (frame.MessageType)
-                {
-                    case AMessageType.ServerDisconnection:
-                        DisconnectionEvent?.Invoke();
-                        break;
-                    case AMessageType.Disconnection:
-                        if (player is object && player.Equals(Player))
+                case AMessageType.ServerDisconnection:
+                    DisconnectionEvent?.Invoke();
+                    break;
+                case AMessageType.RoomInfo:
+                    ARoom room = frame.Data as ARoom;
+                    if (room is object)
+                    {
+                        if (!room.Players.Contains(Player))
                         {
                             IsDisconnect = false;
                             DisconnectionEvent?.Invoke();
                         }
-                        break;
-                    case AMessageType.Confirm:
-                        if (player is object && player.Equals(Player))
+                        else if (room.GameStatus.Equals(AGameStatus.Game))
                         {
-                            IsDisconnect = false;
-                            DisconnectionEvent?.Invoke();
+                            StartGameEvent?.Invoke(room, Player);
                         }
-                        break;
-                    case AMessageType.RoomInfo:
-                        _LobbyPanel.Update(frame.Data as ARoom);
-                        break;
-                }
-            };*/
+                    }
+                    _LobbyPanel.Update(room);
+                    break;
+            }
+            IsReceive = true;
         }
 
         public void Hide()
@@ -115,6 +123,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Client.StopReceive();
 
             Visible = false;
+            IsReceive = false;
 
         }
 
@@ -122,6 +131,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             Visible = true;
+            IsReceive = true;
             Update();
 
             Room = room;

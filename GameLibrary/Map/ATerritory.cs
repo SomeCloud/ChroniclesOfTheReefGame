@@ -6,6 +6,7 @@ using APoint = CommonPrimitivesLibrary.APoint;
 
 namespace GameLibrary.Map
 {
+    [Serializable]
     public class ATerritory
     {
         protected ABiomeType _BiomeType;

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GameLibrary.Technology
 {
+    [Serializable]
     public enum ATechnologyType
     {
         PrimitiveSociety,

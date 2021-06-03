@@ -10,19 +10,16 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
-using AKeyState = CommonPrimitivesLibrary.AKeyState;
-
 using GameLibrary;
 using GameLibrary.Settlement.Building;
-using GameLibrary.Settlement.Characteristic;
 using GameLibrary.Settlement;
 using GameLibrary.Player;
 using GameLibrary.Technology;
 using GameLibrary.Extension;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
-    public class BuildingPanel: AScrolleredPanel
+    public class ABuildingPanel: AScrolleredPanel
     {
 
 
@@ -35,7 +32,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         private TripleFieldButton Header;
         private ISettlement Settlement;
 
-        public BuildingPanel(ASize size) : base(AScrollbarAlign.Vertical, size)
+        public ABuildingPanel(ASize size) : base(AScrollbarAlign.Vertical, size)
         {
 
             BuildingList = new Dictionary<IBuilding, TripleFieldButton>();

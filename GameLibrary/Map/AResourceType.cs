@@ -1,6 +1,8 @@
-﻿
+﻿using System;
+
 namespace GameLibrary.Map
 {
+    [Serializable]
     public enum AResourceType
     {
         None,

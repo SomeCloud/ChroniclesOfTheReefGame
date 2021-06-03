@@ -15,9 +15,11 @@ using GameLibrary;
 using GameLibrary.Message;
 using GameLibrary.Player;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+using ArtemisChroniclesOfTheReefGame.Panels;
+
+namespace ArtemisChroniclesOfTheReefGame.Forms
 {
-    public class MessageListPanelForm: AForm
+    public class AMessageListPanelForm: AForm
     {
 
         public delegate void OnSelect(IMessage message);
@@ -28,12 +30,12 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         private IPlayer Player;
 
-        public MessageListPanelForm(ASize size) : base(size)
+        public AMessageListPanelForm(ASize size) : base(size)
         {
 
         }
 
-        public MessageListPanelForm(ASize size, IPrimitiveTexture primitiveTexture) : base(size, primitiveTexture)
+        public AMessageListPanelForm(ASize size, IPrimitiveTexture primitiveTexture) : base(size, primitiveTexture)
         {
 
         }

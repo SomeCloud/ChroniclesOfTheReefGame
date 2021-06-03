@@ -5,6 +5,7 @@ using GameLibrary.Settlement.Characteristic;
 
 namespace GameLibrary.Settlement.Building
 {
+    [Serializable]
     public class ABuildingFarm : ABuilding, IBuilding
     {
         public override ABuildingType BuildingType { get => ABuildingType.Farm; }

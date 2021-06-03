@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GameLibrary.Settlement.Building
 {
+    [Serializable]
     public class ABuildingsInConstruction
     {
 

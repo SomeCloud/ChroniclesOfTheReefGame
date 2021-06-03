@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GameLibrary.Map
 {
+    [Serializable]
     public class APeople
     {
         public int Age;

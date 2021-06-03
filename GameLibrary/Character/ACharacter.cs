@@ -9,6 +9,7 @@ using APoint = CommonPrimitivesLibrary.APoint;
 
 namespace GameLibrary.Character
 {
+    [Serializable]
     public class ACharacter: ICharacter, ICharacterStats
     {
 

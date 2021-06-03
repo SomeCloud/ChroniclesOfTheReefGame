@@ -18,6 +18,8 @@ using GameLibrary.Settlement.Characteristic;
 using GameLibrary.Extension;
 using GameLibrary.Technology;
 
+using ArtemisChroniclesOfTheReefGame.Panels;
+
 namespace ArtemisChroniclesOfTheReefGame.Interface
 {
     public class SettlementInfoPanel: APanel

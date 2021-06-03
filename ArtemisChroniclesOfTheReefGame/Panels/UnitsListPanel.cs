@@ -9,13 +9,10 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
-using AKeyState = CommonPrimitivesLibrary.AKeyState;
 
-using GameLibrary;
 using GameLibrary.Unit.Main;
-using GameLibrary.Extension;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
     public class UnitsListPanel : AScrolleredPanel
     {

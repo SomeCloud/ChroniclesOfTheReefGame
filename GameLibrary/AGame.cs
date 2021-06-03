@@ -22,6 +22,7 @@ namespace GameLibrary
 
     public delegate void OnGameOver(IPlayer player);
 
+    [Serializable]
     public class AGame
     {
 
@@ -367,7 +368,9 @@ namespace GameLibrary
         }
         public void SelectMapCell(APoint location) => _SelectedMapCell = GetMapCell(location);
         public AMapCell GetMapCell(APoint location) => _GameMap[location];
+        public IPlayer GetPlayer(string name) => Players.Select(x => x.Value).Where(x => x.Name == name).First();
         public List<IUnit> GetUnits(APoint location) => _Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(location)).ToList();
+        public IUnit GetUnit(IUnit unit) => _Units.Values.SelectMany(x => x).Where(x => x.Equals(unit)).FirstOrDefault();
         public List<IUnit> GetEnemies(APoint location) => _Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(location) && x.Owner.Relationship(_ActivePlayer).Equals(ARelationshipType.War)).ToList();
         public List<IUnit> GetUnits() => _Units.Values.SelectMany(x => x).Where(x => x.Location.Equals(_SelectedMapCell.Location)).ToList();
         public ICharacter GetCharacter(int id) => _Characters.SelectMany(x => x.Value).Where(x => x.Id == id).First();

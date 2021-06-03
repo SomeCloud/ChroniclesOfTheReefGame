@@ -6,6 +6,7 @@ using GameLibrary.Settlement.Characteristic;
 
 namespace GameLibrary.Settlement.Building
 {
+    [Serializable]
     public abstract class ABuilding: IBuilding
     {
 

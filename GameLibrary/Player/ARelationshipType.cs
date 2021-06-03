@@ -4,6 +4,7 @@ using System.Text;
 
 namespace GameLibrary.Player
 {
+    [Serializable]
     public enum ARelationshipType
     {
         None,

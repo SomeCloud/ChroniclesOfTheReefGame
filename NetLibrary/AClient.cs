@@ -24,8 +24,12 @@ namespace NetLibrary
         // порт для отправки данных
         public int remotePort; //= 8000;    
         // поток для отлавливания сообщений
-        Thread Receiver;
+        //Thread Receiver;
         UdpClient receiver;
+
+        public AFrame Result;
+
+        public bool IsComleted;
 
         public bool InReceive { get => DoLoop; }
 
@@ -46,7 +50,9 @@ namespace NetLibrary
             receiver = new UdpClient(remotePort);
             // подключаемся к группе 
             receiver.JoinMulticastGroup(GroupIPAdress, localIPAdress);
-            receiver.Client.ReceiveTimeout = 1;
+            //receiver.Client.ReceiveTimeout = 1;
+            DoLoop = true;
+            //receiver.Client.SendBufferSize = receiver.Client.ReceiveBufferSize = 4096;
         }
 
         public void StopReceive()
@@ -54,33 +60,70 @@ namespace NetLibrary
             DoLoop = false;
             //if ((receiver is null) == false)
             //{
-                receiver?.Close();
+            receiver?.Close();
             //}
-            Receiver = null;
+            //Receiver = null;
         }
 
-        // главная функция по принятию сообщений из сети
-        public void ReceiveFrame()
+        public void ReceiveResult()
         {
+
+            IsComleted = false;
+
             IPEndPoint remoteIp = null;
             string localAddress = LocalIPAddress();
             try
             {
-                // получаем данные
-                byte[] data = receiver.Receive(ref remoteIp);
-                // если будешь тестить программу на одном пк - закомментированное ниже - не трожь, иначе сообщения не будут отлавливаться
-                /*if (remoteIp.Address.ToString().Equals(localAddress))
-                    continue;*/
-                // вызываем событие о получении сообщения
-                if (receiver.Client.Connected) 
-                    ;
-                AFrame frame = ByteArrayToObject(data) as AFrame;
-                Receive?.Invoke(frame);
+                if (receiver is object)
+                {
+
+                    //receiver.Client.ReceiveTimeout = 90;
+                    // получаем данные
+                    byte[] data = receiver.Receive(ref remoteIp);
+                    if (data is object)
+                    {
+                        //receiver.Client.ReceiveTimeout = 120;
+                        APackage package = ByteArrayToObject(data) as APackage;
+
+                        //Console.WriteLine("START RECEIVE (" + package.Length + ")");
+
+                        if (package.FirstPackage)
+                        {
+                            byte[] buffer = new byte[package.Length];
+                            Array.Copy(package.Data, 0, buffer, 0, package.Data.Length);
+                            int dCounter = package.Data.Length;
+
+                            int pCounter = 1;
+
+                            //Console.WriteLine("RECEIVE: " + package.Data.Length + " (" + dCounter + " / " + buffer.Length + ")");
+
+                            if (package.Length > AServer.PackageLength)
+                            {
+                                while (dCounter < buffer.Length)
+                                {
+                                    byte[] temp = receiver.Receive(ref remoteIp);
+                                    package = ByteArrayToObject(temp) as APackage;
+                                    if (package.FirstPackage) break;
+                                    Array.Copy(package.Data, 0, buffer, dCounter, package.Data.Length);
+                                    dCounter += package.Data.Length;
+                                    pCounter++;
+                                    //Console.WriteLine("RECEIVE: " + package.Data.Length + " (" + dCounter + " / " + buffer.Length + ")");
+                                }
+                            }
+                            else buffer = package.Data;
+
+                            //Console.WriteLine("RECEIVE: Принято пакетов " + pCounter + " из " + (buffer.Length / AServer.PackageLength) + " (" + dCounter + " / " + buffer.Length + ")");
+
+                            Result = ByteArrayToObject(buffer) as AFrame;
+                            IsComleted = Result is object;
+                        }
+                    }
+                }
             }
             // получаем сообщение об ошибке
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
             }
             finally
             {
@@ -88,7 +131,69 @@ namespace NetLibrary
             }
         }
 
-        // все что ниже - чекай класс AServer - идентично
+        public void Stop()
+        {
+            receiver.Close();
+            receiver = new UdpClient(remotePort);
+            receiver.JoinMulticastGroup(GroupIPAdress, localIPAdress);
+        }
+
+        // главная функция по принятию сообщений из сети
+        public void ReceiveFrame()
+        {
+            IPEndPoint remoteIp = null;
+            string localAddress = LocalIPAddress();
+            while (DoLoop)
+            {
+                try
+                {
+                    if (receiver is object)
+                    {
+
+                        // получаем данные
+                        byte[] data = receiver.Receive(ref remoteIp);
+                        APackage package = ByteArrayToObject(data) as APackage;
+
+                        if (package.FirstPackage)
+                        {
+                            byte[] buffer = new byte[package.Length];
+                            Array.Copy(package.Data, 0, buffer, 0, package.Data.Length);
+                            int dCounter = package.Data.Length;
+
+                            if (package.Length > AServer.PackageLength)
+                            {
+                                while (dCounter < buffer.Length)
+                                {
+                                    byte[] temp = receiver.Receive(ref remoteIp);
+                                    package = ByteArrayToObject(temp) as APackage;
+                                    if (package.FirstPackage) break;
+                                    Array.Copy(package.Data, 0, buffer, dCounter, package.Data.Length);
+                                    dCounter += package.Data.Length;
+                                    //Console.WriteLine("RECEIVE: " + package.Data.Length + " (" + dCounter + " / " + buffer.Length + ")");
+                                }
+                            }
+                            else buffer = package.Data;
+
+                            // вызываем событие о получении сообщения
+                            AFrame frame = (AFrame)ByteArrayToObject(buffer);
+                            Result = frame;
+                            Receive?.Invoke(frame);
+                        }
+                    }
+                }
+                // получаем сообщение об ошибке
+                catch (Exception ex)
+                {
+                    //Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    //receiver.Close();
+                }
+            }
+        }
+
+        // все что ниже - смотри класс AServer - идентично
 
         public string LocalIPAddress()
         {
@@ -128,5 +233,4 @@ namespace NetLibrary
             return obj;
         }
     }
-
 }

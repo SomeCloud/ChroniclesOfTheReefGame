@@ -58,26 +58,15 @@ namespace NetLibrary
         public void SetMapSize(ASize size) => _MapSize = size;
         public void SetPlayersCount(int count) => _PlayersCount = count;
 
-        public void StartGame()
+        public void StartGame(AGame game)
         {
 
-            Random random = new Random((int)DateTime.Now.Ticks);
+            _Game = new GameData(game);
             _GameStatus = AGameStatus.Game;
 
-            /*_Game = new AGame();
-
-            List<ICharacter> characters = new List<ICharacter>();
-
-            for (int i = 0; i < _Players.Count; i++)
-            {
-                ASexType sexType = new[] { ASexType.Female, ASexType.Male }[random.Next(2)];
-                ICharacter character = new ACharacter(GameExtension.CharacterName(sexType), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], sexType, random.Next(-16, -5), i, i);
-                characters.Add(character);
-            }
-            _Game.Initialize(_Players.Select(x => x.Name).ToList(), characters);
-            _Game.StartGame(_MapSize);
-            */
         }
+        public void UpdateGame(AGame game) => _Game = new GameData(game);
+
 
         public void OverGame()
         {

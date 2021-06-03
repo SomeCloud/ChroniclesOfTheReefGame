@@ -14,7 +14,7 @@ using AKeyState = CommonPrimitivesLibrary.AKeyState;
 using GameLibrary;
 using GameLibrary.Message;
 
-namespace ArtemisChroniclesOfTheReefGame
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
     public class MessagePanel: APanel
     {
@@ -75,8 +75,8 @@ namespace ArtemisChroniclesOfTheReefGame
         {
 
             _Content.Text = message.Text;
-            _DoneAction = message.Done;
-            _RenouncementAction = message.Renouncement;
+            //_DoneAction = message.Done;
+            //_RenouncementAction = message.Renouncement;
             _Renouncement.Enabled = message.IsRenouncement;
         }
 

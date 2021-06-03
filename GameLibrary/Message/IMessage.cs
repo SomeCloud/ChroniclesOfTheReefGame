@@ -13,8 +13,8 @@ namespace GameLibrary.Message
         public IPlayer Recipient { get; }
         public string Header { get; }
         public string Text { get; }
-        public Action Done { get; }
-        public Action Renouncement { get; }
+        //public Action Done { get; }
+        //public Action Renouncement { get; }
 
         public bool IsRenouncement { get; }
 

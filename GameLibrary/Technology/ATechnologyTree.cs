@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace GameLibrary.Technology
 {
+    [Serializable]
     public class ATechnologyTree
     {
 

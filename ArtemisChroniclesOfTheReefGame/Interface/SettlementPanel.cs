@@ -17,6 +17,8 @@ using GameLibrary.Unit.Main;
 using GameLibrary.Extension;
 using GameLibrary.Technology;
 
+using ArtemisChroniclesOfTheReefGame.Panels;
+
 namespace ArtemisChroniclesOfTheReefGame.Interface
 {
     public class SettlementPanel : AForm
@@ -33,7 +35,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         public event OnShow ShowEvent;
 
         private SettlementInfoPanel SettlementInfoPanel;
-        private BuildingPanel BuildingPanel;
+        //private BuildingPanel BuildingPanel;
         private CreateUnitsPanel UnitsPanel;
 
         private AScrolleredPanel BuildingsInConstruction;
@@ -62,7 +64,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             BuildingsInConstruction = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(Content.Width - Main.Width - 12, 200)) { Location = Main.Location + new APoint(Main.Width + 10, 0) };
 
-            BuildingPanel = new BuildingPanel(new ASize(Content.Width - Main.Width - 12, Content.Height - 210 - 2)) { Location = BuildingsInConstruction.Location + new APoint(0, BuildingsInConstruction.Height + 10) };
+            //BuildingPanel = new BuildingPanel(new ASize(Content.Width - Main.Width - 12, Content.Height - 210 - 2)) { Location = BuildingsInConstruction.Location + new APoint(0, BuildingsInConstruction.Height + 10) };
             UnitsPanel = new CreateUnitsPanel(new ASize(Content.Width - Main.Width - 12, Content.Height - 2)) { Location = Main.Location + new APoint(Main.Width + 10, 0) };
 
             Add(Main);
@@ -71,7 +73,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             Add(SettlementInfoPanel);
             Add(BuildingsInConstruction);
-            Add(BuildingPanel);
+            //Add(BuildingPanel);
             Add(UnitsPanel);
 
             Main.MouseClickEvent += (state, mstate) => {
@@ -94,7 +96,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
                 BuildingsInConstruction.Enabled = true;
 
-                BuildingPanel.Show(Settlement.Owner, Settlement);
+                //BuildingPanel.Show(Settlement.Owner, Settlement);
             };
 
             Units.MouseClickEvent += (state, mstate) =>
@@ -120,13 +122,13 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 UnitsPanel.Show(Settlement.Owner);
             };
 
-            BuildingPanel.SelectEvent += (building) =>
+            /*BuildingPanel.SelectEvent += (building) =>
             {
                 Settlement.StartBuilding(building);
                 UpdateBuildingsInConstruction(Settlement);
                 BuildingPanel.Show(Settlement.Owner, Settlement);
                 BuildingSelectEvent?.Invoke();
-            };
+            };*/
 
             BuildingsInConstruction.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
             BuildingsInConstruction.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
@@ -145,7 +147,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             UpdateBuildingsInConstruction(settlement);
 
             SettlementInfoPanel.Update(settlement);
-            BuildingPanel.Update(Settlement.Owner, settlement);
+            //BuildingPanel.Update(Settlement.Owner, settlement);
             UnitsPanel.Update(Settlement.Owner);
 
             HideChilds();
@@ -167,7 +169,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         private void HideChilds() {
             BuildingsInConstruction.Enabled = false;
             SettlementInfoPanel.Enabled = false;
-            BuildingPanel.Enabled = false;
+            //BuildingPanel.Enabled = false;
             UnitsPanel.Enabled = false;
         }
         public void Show(ISettlement settlement)

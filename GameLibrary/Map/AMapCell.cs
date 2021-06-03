@@ -16,7 +16,7 @@ namespace GameLibrary.Map
 {
 
     public delegate void OnExpansion(AMapCell mapCell);
-
+    [Serializable]
     public class AMapCell: ATerritory
     {
 

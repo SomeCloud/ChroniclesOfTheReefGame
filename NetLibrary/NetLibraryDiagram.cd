@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NetLibrary.AClient" Collapsed="true">
+    <Position X="2.25" Y="2.25" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="NetLibrary.AClient.ReceiveEvent" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>AClient.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>CAAAIAEAAAAABAABAAgAAEAAAEAAAAASBAAIAEAAAAA=</HashCode>
+      <FileName>AClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetLibrary.AData" Collapsed="true">
+    <Position X="4" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>AData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetLibrary.AFrame" Collapsed="true">
+    <Position X="5.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQCAAAAAAAEAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>AFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetLibrary.APackage" Collapsed="true">
+    <Position X="2.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAABAAAAAABAAAAAAEAAAAAA=</HashCode>
+      <FileName>APackage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetLibrary.ARoom" Collapsed="true">
+    <Position X="4" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQCAACAAAAAAAAUgAQAIIQgAAhgACAAAiAAUAAEABA=</HashCode>
+      <FileName>ARoom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetLibrary.AServer" Collapsed="true">
+    <Position X="5.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAgAIAAAAAAEAAAAAAgAEEIIQAAAAAACAAAIAEIIAAA=</HashCode>
+      <FileName>AServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetLibrary.RPlayer" Collapsed="true">
+    <Position X="2.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAYAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="NetLibrary.ADataType" Collapsed="true">
+    <Position X="2.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAICAAAABAgECCAAACAAAAABAAIAQAQAAAAQAAAEA=</HashCode>
+      <FileName>AData.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="NetLibrary.AGameStatus" Collapsed="true">
+    <Position X="4" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAwAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>AGameStatus.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="NetLibrary.AMessageType" Collapsed="true">
+    <Position X="5.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgQAAAABQAAEAAAACQAAwAAgAgAAAAAAAAAAAAKA=</HashCode>
+      <FileName>AMessageType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="NetLibrary.APackageType" Collapsed="true">
+    <Position X="2.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>APackage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

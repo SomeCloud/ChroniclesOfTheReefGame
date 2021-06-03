@@ -1,6 +1,8 @@
-﻿
+﻿using System;
+
 namespace GameLibrary.Settlement.Characteristic
 {
+    [Serializable]
     public class ASettlementCharacteristicProtection: ASettlementCharacteristic, ISettlementCharacteristic
     {
         public override ASettlementCharacteristicType SettlementCharacteristicType { get => ASettlementCharacteristicType.Protection; }

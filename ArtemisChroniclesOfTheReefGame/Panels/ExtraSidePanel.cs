@@ -5,18 +5,15 @@ using System.Collections.Generic;
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
 
-using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAlign;
-
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
-using AKeyState = CommonPrimitivesLibrary.AKeyState;
 
 using GameLibrary;
 using GameLibrary.Map;
 using GameLibrary.Extension;
 using GameLibrary.Unit.Main;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
     public class ExtraSidePanel: APanel
     {
@@ -36,11 +33,9 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         private SettlementMiniPanel SettlementMiniPanel;
         private AButton CloseButton;
 
-        private AGame Game;
-
-        public ExtraSidePanel(AGame game, ASize size): base(size)
+        public ExtraSidePanel(ASize size): base(size)
         {
-            Game = game;
+
         }
 
         public override void Initialize()
@@ -71,14 +66,14 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         }
 
-        public void Update(AMapCell mapCell)
+        public void Update(GameData gameData, AMapCell mapCell)
         {
 
             APoint location = new APoint(10, 10);
 
             if (mapCell.IsSettlement)
             {
-                SettlementMiniPanel.Show(mapCell.Settlement, Game.ActivePlayer.Equals(mapCell.Settlement.Owner));
+                SettlementMiniPanel.Show(mapCell.Settlement, gameData.ActivePlayer.Equals(mapCell.Settlement.Owner));
                 SettlementMiniPanel.Location = location;
                 SettlementMiniPanel.HeaderPanel.FillColor = mapCell.IsOwned ? TexturePack.Colors[mapCell.Owner.Id] : GraphicsExtension.DefaultFillColor;
                 location.Y += SettlementMiniPanel.Height + 10;
@@ -96,13 +91,13 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
             InfoPanel.Location = location;
 
             InfoPanel.Text = "Данные о клетке: \nМестность: " + GameLocalization.Biomes[mapCell.BiomeType] + "\n" +
-                "Ресурс: " + (Game.ActivePlayer.IsResource(mapCell.ResourceType) ? (GameLocalization.Resources[mapCell.ResourceType] + (mapCell.IsResource ? " (" + (mapCell.IsMined ? "Добывается" : "Не добывается") + ")" : "")): "Ресурс отсутствует") + "\n" +
+                "Ресурс: " + (gameData.ActivePlayer.IsResource(mapCell.ResourceType) ? (GameLocalization.Resources[mapCell.ResourceType] + (mapCell.IsResource ? " (" + (mapCell.IsMined ? "Добывается" : "Не добывается") + ")" : "")): "Ресурс отсутствует") + "\n" +
                 "Население: " + mapCell.Population.Total + " человек(а)" + "\n" +
                 "Культурный уровень: " + mapCell.Culture + " ед.";
 
             location.Y += InfoPanel.Height + 10;
 
-            if (Game.GetUnits(mapCell.Location) is List<IUnit> units && units.Count > 0)
+            if (gameData.GetUnits(mapCell.Location) is List<IUnit> units && units.Count > 0)
             {
                 UnitsList.Show(units);
                 UnitsList.Location = location;
@@ -115,10 +110,10 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
         }
 
         public void Hide() => Enabled = false;
-        public void Show(AMapCell mapCell)
+        public void Show(GameData gameData, AMapCell mapCell)
         {
             Enabled = true;
-            Update(mapCell);
+            Update(gameData, mapCell);
         }
 
     }

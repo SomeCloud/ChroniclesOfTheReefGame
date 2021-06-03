@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphicsLibrary", "Graphics
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonPrimitivesLibrary", "CommonPrimitivesLibrary\CommonPrimitivesLibrary.csproj", "{09273D92-C6AB-4254-8F9C-F329E00A079B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameLibraryTester", "GameLibraryTester\GameLibraryTester.csproj", "{104C5126-6F69-452D-8312-F798D07D0EDB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtemisChroniclesOfTheReefGame", "ArtemisChroniclesOfTheReefGame\ArtemisChroniclesOfTheReefGame.csproj", "{0F5BA8C2-15C2-4EF4-82B4-ED28F64EA1DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameLibrary", "GameLibrary\GameLibrary.csproj", "{126E7348-0741-4552-B48D-00F97AD7EF40}"
@@ -29,10 +27,6 @@ Global
 		{09273D92-C6AB-4254-8F9C-F329E00A079B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09273D92-C6AB-4254-8F9C-F329E00A079B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09273D92-C6AB-4254-8F9C-F329E00A079B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{104C5126-6F69-452D-8312-F798D07D0EDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{104C5126-6F69-452D-8312-F798D07D0EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{104C5126-6F69-452D-8312-F798D07D0EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{104C5126-6F69-452D-8312-F798D07D0EDB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F5BA8C2-15C2-4EF4-82B4-ED28F64EA1DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F5BA8C2-15C2-4EF4-82B4-ED28F64EA1DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F5BA8C2-15C2-4EF4-82B4-ED28F64EA1DE}.Release|Any CPU.ActiveCfg = Release|Any CPU

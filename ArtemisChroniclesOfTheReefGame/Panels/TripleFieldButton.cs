@@ -5,18 +5,10 @@ using System.Collections.Generic;
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
 
-using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAlign;
-
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
-using AKeyState = CommonPrimitivesLibrary.AKeyState;
 
-using GameLibrary;
-using GameLibrary.Settlement;
-using GameLibrary.Settlement.Characteristic;
-using GameLibrary.Extension;
-
-namespace ArtemisChroniclesOfTheReefGame.Interface
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
     class TripleFieldButton: AButton
     {

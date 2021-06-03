@@ -12,6 +12,7 @@ using APeople = GameLibrary.Map.APeople;
 
 namespace GameLibrary.Unit.Main
 {
+    [Serializable]
     public abstract class AUnit: IUnit, IDisposable
     {
         public event OnAction MoveEvent;
