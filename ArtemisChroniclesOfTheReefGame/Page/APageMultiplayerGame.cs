@@ -203,8 +203,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             {
                 if (IsServer && (IsServerReceive || !SClient.InReceive))
                 {
-                    ServerReceiver?.Abort();
                     SClient.Reset();
+                    ServerReceiver?.Abort();
                     ServerReceiver = new Thread(() => SClient.ReceiveResult()) { Name = "Server-Receiver", IsBackground = true };
                     ServerReceiver.Start();
                     IsServerReceive = false;
