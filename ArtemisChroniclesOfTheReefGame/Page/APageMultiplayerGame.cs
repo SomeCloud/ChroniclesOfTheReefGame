@@ -75,7 +75,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             ServerSender = null;
             ClientSender = null;
 
-            GamePanel = new GamePanel(Parent.Size) { Location = new APoint(0, 0), IsCounting = true, DTimer = 2 };
+            GamePanel = new GamePanel(Parent.Size) { Location = new APoint(0, 0), IsCounting = true, DTimer = 3 };
             //Menu = new AEmptyPanel(Parent.Size) { Location = new APoint(0, 0), IsInteraction = false, IsCounting = true, DTimer = 1 };
 
             Add(GamePanel);
@@ -167,6 +167,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 if (IsClientReceive)
                 {
                     ClientReceiver?.Abort();
+                    CClient.Reset();
                     ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-Receiver", IsBackground = true };
                     ClientReceiver.Start();
                     IsClientReceive = false;

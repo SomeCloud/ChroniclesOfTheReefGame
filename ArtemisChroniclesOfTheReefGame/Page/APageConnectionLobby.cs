@@ -43,7 +43,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         Thread Sender;
 
         private bool IsReceive;
-        private bool ResetReceive;
 
         public APageConnectionLobby(IPrimitive primitive) : base(primitive)
         {
@@ -76,7 +75,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     Client.Reset();
                     Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Connection-Receiver", IsBackground = true };
                     Receiver.Start();
-                    IsReceive = ResetReceive = false;
+                    IsReceive = false;
                 }
             };
 
@@ -117,7 +116,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     break;
             }
             IsReceive = true;
-            ResetReceive = false;
         }
 
         public void Hide()
@@ -127,7 +125,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Visible = false;
             IsReceive = false;
-            ResetReceive = false;
 
         }
 
@@ -136,7 +133,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             Visible = true;
             IsReceive = true;
-            ResetReceive = false;
             Update();
 
             Room = room;
