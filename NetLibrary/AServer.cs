@@ -107,6 +107,7 @@ namespace NetLibrary
                         });
 
                         Sending.Start();
+                        Sending.Wait();
                         Thread.Sleep(180);
                     }
 

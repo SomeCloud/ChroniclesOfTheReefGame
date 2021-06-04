@@ -65,7 +65,11 @@ namespace NetLibrary
             //Receiver = null;
         }
 
-        public void Reset() => _InReceive = false;
+        public void Reset()
+        {
+            _InReceive = false;
+            receiver.Client.ReceiveTimeout = 1;
+        }
 
         public void ReceiveResult()
         {
@@ -79,7 +83,7 @@ namespace NetLibrary
                 if (receiver is object)
                 {
 
-                    //receiver.Client.ReceiveTimeout = 90;
+                    receiver.Client.ReceiveTimeout = 0;
                     // получаем данные
                     _InReceive = false;
                     byte[] data = receiver.Receive(ref remoteIp);
