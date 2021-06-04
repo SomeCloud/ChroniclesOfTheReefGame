@@ -52,7 +52,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             Server = new AServer("224.0.0.0", 8002);
 
             _Back = new AButton(GraphicsExtension.DefaultMenuButtonSize) { Text = "Отключиться", Location = new APoint(10, 10) };
-            _LobbyPanel = new LobbyPanel(new ASize(Parent.Width - 20, Parent.Height - _Back.Height - 30)) { Location = _Back.Location + new APoint(0, _Back.Height + 10), IsCounting = true, DTimer = 1 };
+            _LobbyPanel = new LobbyPanel(new ASize(Parent.Width - 20, Parent.Height - _Back.Height - 30)) { Location = _Back.Location + new APoint(0, _Back.Height + 10), IsCounting = true, DTimer = 3 };
 
             Add(_Back);
             Add(_LobbyPanel);

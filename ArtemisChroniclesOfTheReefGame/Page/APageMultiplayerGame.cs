@@ -57,6 +57,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         Thread ServerSender;
         Thread ClientSender;
 
+        private bool IsReceive;
+
         public APageMultiplayerGame(IPrimitive primitive) : base(primitive)
         {
 
@@ -161,9 +163,13 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TimeEvent += () =>
             {
-                ClientReceiver?.Abort();
-                ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-Receiver", IsBackground = true };
-                ClientReceiver.Start();
+                if (IsReceive)
+                {
+                    ClientReceiver?.Abort();
+                    ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-Receiver", IsBackground = true };
+                    ClientReceiver.Start();
+                    IsReceive = false;
+                }
                 //ClientReceiver.Join();
             };
 
@@ -226,6 +232,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 ARoom room = frame.Data as ARoom;
                 if (room is object) GamePanel.Update(room.Game, Player.Name);
             }
+            IsReceive = true;
         }
 
         private void OnServerReceive(AFrame frame)
