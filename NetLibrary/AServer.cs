@@ -125,7 +125,7 @@ namespace NetLibrary
                         });
 
                         Sending.Start();
-                        Thread.Sleep(100);
+                        Thread.Sleep(180);
                     }
 
                     //Console.WriteLine("SEND: Отправленно пакетов " + pCounter + " из " + ((dLehgth / PackageLength) + 1) + " (" + dCounter + " / " + data.Length + ")");

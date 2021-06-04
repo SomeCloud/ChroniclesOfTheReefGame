@@ -65,6 +65,8 @@ namespace NetLibrary
             //Receiver = null;
         }
 
+        public void Reset() => _InReceive = false;
+
         public void ReceiveResult()
         {
 
@@ -79,10 +81,10 @@ namespace NetLibrary
 
                     //receiver.Client.ReceiveTimeout = 90;
                     // получаем данные
+                    _InReceive = false;
                     byte[] data = receiver.Receive(ref remoteIp);
                     if (data is object)
                     {
-                        _InReceive = true;
                         //receiver.Client.ReceiveTimeout = 120;
                         APackage package = ByteArrayToObject(data) as APackage;
 
@@ -102,7 +104,9 @@ namespace NetLibrary
                             {
                                 while (dCounter < buffer.Length)
                                 {
+                                    _InReceive = false;
                                     byte[] temp = receiver.Receive(ref remoteIp);
+                                    _InReceive = true;
                                     package = ByteArrayToObject(temp) as APackage;
                                     if (package.FirstPackage) break;
                                     Array.Copy(package.Data, 0, buffer, dCounter, package.Data.Length);
@@ -114,9 +118,12 @@ namespace NetLibrary
                             else buffer = package.Data;
 
                             //Console.WriteLine("RECEIVE: Принято пакетов " + pCounter + " из " + (buffer.Length / AServer.PackageLength) + " (" + dCounter + " / " + buffer.Length + ")");
-
-                            Result = ByteArrayToObject(buffer) as AFrame;
-                            IsComleted = Result is object;
+                            if (package.PackageType.Equals(APackageType.SinglePackage) || !package.FirstPackage)
+                            {
+                                Result = ByteArrayToObject(buffer) as AFrame;
+                                IsComleted = Result is object;
+                            }
+                            _InReceive = false;
                         }
                     }
                     _InReceive = false;

@@ -70,16 +70,13 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             _LobbyPanel.TimeEvent += () =>
             {
-                if (IsReceive || (ResetReceive && !Client.InReceive))
+                if (IsReceive ||!Client.InReceive)
                 {
                     Receiver?.Abort();
+                    Client.Reset();
                     Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Connection-Receiver", IsBackground = true };
                     Receiver.Start();
                     IsReceive = ResetReceive = false;
-                }
-                else
-                {
-                    ResetReceive = !IsReceive;
                 }
             };
 
