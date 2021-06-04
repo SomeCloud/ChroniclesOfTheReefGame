@@ -33,7 +33,8 @@ namespace NetLibrary
         // поток для отправки данных в сеть
         private Thread Sender;
         UdpClient sender;
-        public bool InSend = false;
+        private bool _InSend;
+        public bool InSend => _InSend;
         private bool DoLoop = true;
 
         public AServer(string adress, int port)
@@ -44,30 +45,7 @@ namespace NetLibrary
             //sender.Client.SendTimeout = 5;
         }
 
-        // запускаем поток отправки данных в сеть
-        public void StartSending(AFrame frame, bool OneSending, string name)
-        {
-            DoLoop = !OneSending;
-            if ((Sender is null) == false)
-            {
-                StopSending();
-            }
-            InSend = true;
-            Sender = new Thread(new ParameterizedThreadStart(SendFrame)) { Name = name, IsBackground = true };
-            Sender.Start(frame);
-        }
-
-        // соответственно, останавливаем отправку
-        public void StopSending()
-        {
-            if ((sender is null) == false)
-            {
-                sender.Close();
-            }
-            Sender = null;
-            InSend = false;
-            DoLoop = false;
-        }
+        public void Reset() => _InSend = false;
 
         // главная функция для отправки данных в общую сеть
         // используется технология широковещания, при которой данные отсылаются определенной группе
@@ -86,7 +64,9 @@ namespace NetLibrary
                 {
                     package = new APackage(data.Length, data, APackageType.SinglePackage, true);
                     byte[] packageData = ObjectToByteArray(package);
+                    _InSend = true;
                     sender.Send(packageData, packageData.Length, endPoint);
+                    _InSend = false;
                 }
                 else
                 {
@@ -100,6 +80,7 @@ namespace NetLibrary
 
                     while (dLehgth - dCounter > 0)
                     {
+                        _InSend = false;
                         Task Sending = new Task(() =>
                         {
                             if (dLehgth - dCounter > PackageLength)
@@ -119,6 +100,7 @@ namespace NetLibrary
                                 pCounter++;
                             }
                             byte[] packageData = ObjectToByteArray(package);
+                            _InSend = true;
                             sender.Send(packageData, packageData.Length, endPoint);
 
                             //Console.WriteLine("SEND: " + dCounter + " / " + data.Length);
@@ -132,32 +114,8 @@ namespace NetLibrary
 
                 }
 
-                //byte[] size = ObjectToByteArray(data.Length);
-
-                //int dLehgth = data.Length;
-                //int dCounter = 0;
-
-                /*sender.Send(size, size.Length, endPoint);
-
-                while (true)
-                {
-                    if (dLehgth - dCounter > 4096)
-                    {
-                        byte[] buffer = new byte[4096];
-                        Array.Copy(data, dCounter, buffer, 0, buffer.Length);
-                        sender.Send(buffer, buffer.Length, endPoint);
-                        dCounter += 4096;
-                    }
-                    else if (dLehgth - dCounter > 0)
-                    {
-                        byte[] buffer = new byte[dLehgth - dCounter];
-                        Array.Copy(data, dCounter, buffer, 0, buffer.Length);
-                        sender.Send(buffer, buffer.Length, endPoint);
-                        dCounter += dLehgth - dCounter;
-                        break;
-                    }
-                    else break;
-                }*/
+                _InSend = false;
+ 
             }
             // в случае каких-либо косяков получаем ошибку
             catch (Exception ex)

@@ -176,7 +176,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TimeEvent += () =>
             {
-                if (IsServer) Send(new AFrame(Room.Id, Room, AMessageType.RoomInfo, SClient.LocalIPAddress(), CClient.GroupIPAdress.ToString()));
+                if (IsServer && !SServer.InSend) Send(new AFrame(Room.Id, Room, AMessageType.RoomInfo, SClient.LocalIPAddress(), CClient.GroupIPAdress.ToString()));
             };
 
             GamePanel.TimeEvent += () =>
@@ -200,7 +200,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TimeEvent += () =>
             {
-                if (IsServer && IsServerReceive)
+                if (IsServer && (IsServerReceive || !SClient.InReceive))
                 {
                     ServerReceiver?.Abort();
                     SClient.Reset();
@@ -226,6 +226,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         private void Send(AFrame frame)
         {
             ServerSender?.Abort();
+            SServer.Reset();
             ServerSender = new Thread(() => SServer?.SendFrame(frame)) { Name = "Server-Sender", IsBackground = true };
             ServerSender.Start();
         }
