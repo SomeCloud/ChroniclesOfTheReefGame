@@ -57,7 +57,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         Thread ServerSender;
         Thread ClientSender;
 
-        private bool IsReceive;
+        private bool IsClientReceive;
+        private bool IsServerReceive;
 
         public APageMultiplayerGame(IPrimitive primitive) : base(primitive)
         {
@@ -163,12 +164,12 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TimeEvent += () =>
             {
-                if (IsReceive)
+                if (IsClientReceive)
                 {
                     ClientReceiver?.Abort();
                     ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-Receiver", IsBackground = true };
                     ClientReceiver.Start();
-                    IsReceive = false;
+                    IsClientReceive = false;
                 }
                 //ClientReceiver.Join();
             };
@@ -199,11 +200,13 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TimeEvent += () =>
             {
-                if (IsServer)
+                if (IsServer && IsServerReceive)
                 {
                     ServerReceiver?.Abort();
+                    SClient.Reset();
                     ServerReceiver = new Thread(() => SClient.ReceiveResult()) { Name = "Server-Receiver", IsBackground = true };
                     ServerReceiver.Start();
+                    IsServerReceive = false;
                     //ServerReceiver.Join();
                 }
             };
@@ -234,7 +237,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 ARoom room = frame.Data as ARoom;
                 if (room is object) GamePanel.Update(room.Game, Player.Name);
             }
-            IsReceive = true;
+            IsClientReceive = true;
         }
 
         private void OnServerReceive(AFrame frame)
@@ -402,6 +405,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 //SServer?.SendFrame(ServerFrame);
 
             }
+            IsServerReceive = true;
         }
 
         public void Hide()
@@ -411,7 +415,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             if (IsServer) SClient.StopReceive();
 
             Visible = false;
-            IsReceive = false;
+            IsClientReceive = false;
+            IsServerReceive = false;
 
         }
 
@@ -419,7 +424,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             IsServer = isServer;
-            IsReceive = false;
+            IsClientReceive = false;
+            IsServerReceive = true;
 
             Room = room;
             Player = player;
