@@ -30,8 +30,8 @@ namespace NetLibrary
         public AFrame Result;
 
         public bool IsComleted;
-
-        public bool InReceive { get => DoLoop; }
+        private bool _InReceive;
+        public bool InReceive => _InReceive;
 
         private bool DoLoop = true;
 
@@ -82,6 +82,7 @@ namespace NetLibrary
                     byte[] data = receiver.Receive(ref remoteIp);
                     if (data is object)
                     {
+                        _InReceive = true;
                         //receiver.Client.ReceiveTimeout = 120;
                         APackage package = ByteArrayToObject(data) as APackage;
 
@@ -118,6 +119,7 @@ namespace NetLibrary
                             IsComleted = Result is object;
                         }
                     }
+                    _InReceive = false;
                 }
             }
             // получаем сообщение об ошибке
