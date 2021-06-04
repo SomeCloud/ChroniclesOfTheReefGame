@@ -74,7 +74,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             ServerSender = null;
             ClientSender = null;
 
-            GamePanel = new GamePanel(Parent.Size) { Location = new APoint(0, 0), IsCounting = true, DTimer = 1 };
+            GamePanel = new GamePanel(Parent.Size) { Location = new APoint(0, 0), IsCounting = true, DTimer = 2 };
             //Menu = new AEmptyPanel(Parent.Size) { Location = new APoint(0, 0), IsInteraction = false, IsCounting = true, DTimer = 1 };
 
             Add(GamePanel);
@@ -175,12 +175,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TimeEvent += () =>
             {
-                if (IsServer)
-                {
-                    ServerSender?.Abort();
-                    ServerSender = new Thread(() => SServer?.SendFrame(new AFrame(Room.Id, Room, AMessageType.RoomInfo, SClient.LocalIPAddress(), CClient.GroupIPAdress.ToString()))) { Name = "Server-Sender", IsBackground = true };
-                    ServerSender.Start();
-                }
+                if (IsServer) Send(new AFrame(Room.Id, Room, AMessageType.RoomInfo, SClient.LocalIPAddress(), CClient.GroupIPAdress.ToString()));
             };
 
             GamePanel.TimeEvent += () =>
@@ -223,6 +218,13 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 if (CClient.IsComleted) OnClientReceive(CClient.Result);
             };
 
+        }
+
+        private void Send(AFrame frame)
+        {
+            ServerSender?.Abort();
+            ServerSender = new Thread(() => SServer?.SendFrame(frame)) { Name = "Server-Sender", IsBackground = true };
+            ServerSender.Start();
         }
 
         private void OnClientReceive(AFrame frame)
@@ -393,9 +395,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
                         isSend = false;
 
-                        ServerSender?.Abort();
-                        ServerSender = new Thread(() => SServer?.SendFrame(ServerFrame)) { Name = "Server-Sender", IsBackground = true };
-                        ServerSender.Start();
+                        Send(ServerFrame);
+
                     }
                 }
                 //SServer?.SendFrame(ServerFrame);
@@ -407,8 +408,10 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             CClient.StopReceive();
+            if (IsServer) SClient.StopReceive();
 
             Visible = false;
+            IsReceive = false;
 
         }
 
@@ -416,6 +419,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             IsServer = isServer;
+            IsReceive = false;
 
             Room = room;
             Player = player;
@@ -424,9 +428,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             if (isServer) SClient.StartReceive("Server Receiver");
 
             ClientFrame = new AFrame(Room.Id, new AData(null, Player, ADataType.None), AMessageType.Request, CClient.LocalIPAddress(), CClient.GroupIPAdress.ToString());
-
-            //ClientReceiver?.Abort();
-            ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-OnShowReceiver", IsBackground = true };
 
             if (isServer)
             {
@@ -459,6 +460,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             }
             else
             {
+                ClientReceiver?.Abort();
+                ClientReceiver = new Thread(() => CClient.ReceiveResult()) { Name = "Client-OnShowReceiver", IsBackground = true };
                 ClientReceiver.Start();
                 ClientReceiver.Join();
                 if (CClient.IsComleted) OnClientReceive(CClient.Result);
