@@ -83,7 +83,7 @@ namespace NetLibrary
                 if (receiver is object)
                 {
 
-                    receiver.Client.ReceiveTimeout = 0;
+                    receiver.Client.ReceiveTimeout = 360;
                     // получаем данные
                     _InReceive = false;
                     byte[] data = receiver.Receive(ref remoteIp);

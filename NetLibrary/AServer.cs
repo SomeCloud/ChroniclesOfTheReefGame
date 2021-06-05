@@ -45,7 +45,11 @@ namespace NetLibrary
             //sender.Client.SendTimeout = 5;
         }
 
-        public void Reset() => _InSend = false;
+        public void Reset()
+        {
+            _InSend = false;
+            sender.Client.SendTimeout = 1;
+        }
 
         // главная функция для отправки данных в общую сеть
         // используется технология широковещания, при которой данные отсылаются определенной группе
@@ -56,6 +60,8 @@ namespace NetLibrary
             IPEndPoint endPoint = new IPEndPoint(GroupIPAdress, remotePort);
             try
             {
+
+                sender.Client.SendTimeout = 0;
 
                 byte[] data = ObjectToByteArray(message);
                 APackage package = null;

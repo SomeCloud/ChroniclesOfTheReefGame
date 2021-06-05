@@ -97,6 +97,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             {
                 if (IsReceive)
                 {
+                    Client.Reset();
                     Receiver?.Abort();
                     Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Wait-Receiver", IsBackground = true };
                     Receiver.Start();
@@ -167,7 +168,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
         {
 
             _Status.Size = Parent.Size;
-            _Status.Location = new APoint(0, 0);
+            _Status.Location = new APoint(10, 10);
 
         }
 

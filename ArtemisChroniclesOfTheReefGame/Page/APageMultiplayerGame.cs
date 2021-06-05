@@ -204,11 +204,11 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 if (IsServer && (IsServerReceive || !SClient.InReceive))
                 {
                     SClient.Reset();
+                    ServerReceiver?.Join();
                     ServerReceiver?.Abort();
                     ServerReceiver = new Thread(() => SClient.ReceiveResult()) { Name = "Server-Receiver", IsBackground = true };
                     ServerReceiver.Start();
                     IsServerReceive = false;
-                    //ServerReceiver.Join();
                 }
             };
 

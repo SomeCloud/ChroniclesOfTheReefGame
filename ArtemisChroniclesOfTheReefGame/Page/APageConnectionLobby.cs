@@ -60,6 +60,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             {
                 if (IsDisconnect)
                 {
+                    Server.Reset();
                     Sender?.Abort();
                     Sender = new Thread(() => Server?.SendFrame(new AFrame(Room.Id, Player, AMessageType.Disconnection, "224.0.0.0", Client.LocalIPAddress()))) { Name = "Connection-Sender", IsBackground = true };
                     Sender.Start();
@@ -71,8 +72,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             {
                 if (IsReceive ||!Client.InReceive)
                 {
-                    Receiver?.Abort();
                     Client.Reset();
+                    Receiver?.Abort();
                     Receiver = new Thread(() => Client.ReceiveResult()) { Name = "Connection-Receiver", IsBackground = true };
                     Receiver.Start();
                     IsReceive = false;
