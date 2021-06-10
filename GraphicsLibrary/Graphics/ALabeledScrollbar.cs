@@ -27,10 +27,20 @@ namespace GraphicsLibrary.Graphics
             get => _Label.TextLabel;
         }
 
+        public string LabelText
+        {
+            get => Label.Text;
+            set => Label.Text = value;
+        }
+
         public new string Text
         {
             get => _Text;
-            set => _Text = value;
+            set
+            {
+                _Text = value;
+                if (_Label is object) _Label.Text = _Text + Value;
+            }
         }
 
         public int MinValue {
@@ -40,7 +50,10 @@ namespace GraphicsLibrary.Graphics
 
         public int MaxValue
         {
-            set => _Scrollbar.MaxValue = value;
+            set
+            {
+                if (!_Scrollbar.MaxValue.Equals(value)) _Scrollbar.MaxValue = value;
+            }
             get => _Scrollbar.MaxValue;
         }
 

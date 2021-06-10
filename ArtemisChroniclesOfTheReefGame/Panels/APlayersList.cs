@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using NetLibrary;
-
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
 
@@ -14,23 +12,19 @@ using ASize = CommonPrimitivesLibrary.ASize;
 
 using ArtemisChroniclesOfTheReefGame.Panels;
 
-namespace ArtemisChroniclesOfTheReefGame.Interface
+namespace ArtemisChroniclesOfTheReefGame.Panels
 {
-
-    public class LobbyPlyersList : AScrolleredPanel
+    public class APlayersList : AScrolleredPanel
     {
 
-        public delegate void OnSelect(RPlayer player);
+        public delegate void OnSelect(string player);
         public event OnSelect SelectEvent;
         public event OnSelect ExtraSelectEvent;
 
-        private Dictionary<RPlayer, AExtendedButton> PlayerButton;
-
-        public LobbyPlyersList(ASize size) : base(AScrollbarAlign.Vertical, size)
+        private Dictionary<string, AExtendedButton> PlayerButton;
+        public APlayersList(ASize size) : base(AScrollbarAlign.Vertical, size)
         {
-
-            PlayerButton = new Dictionary<RPlayer, AExtendedButton>();
-
+            PlayerButton = new Dictionary<string, AExtendedButton>();
         }
 
         public override void Initialize()
@@ -45,7 +39,13 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
         }
 
-        public void Update(IEnumerable<RPlayer> players)
+        public new void Clear()
+        {
+            base.Clear();
+            PlayerButton.Clear();
+        }
+
+        public void Update(IEnumerable<string> players)
         {
 
             Scrollbar.Value = Scrollbar.MinValue;
@@ -54,7 +54,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             foreach (AExtendedButton bt in PlayerButton.Values) bt.Enabled = false;
 
-            foreach (RPlayer player in players)
+            foreach (string player in players)
             {
 
                 AExtendedButton button;
@@ -62,7 +62,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 if (PlayerButton.Keys.Where(x => x.Equals(player)).Count() != 0)
                 {
                     button = PlayerButton[PlayerButton.Keys.Where(x => x.Equals(player)).First()];
-                    string text = player.Name + " (" + player.IPAdress + ")";
+                    string text = player;
                     if (!button.Text.Equals(text)) button.Text = text;
                     button.Enabled = true;
                 }
@@ -72,7 +72,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                     Add(button);
                     PlayerButton.Add(player, button);
 
-                    button.Text = player.Name + " (" + player.IPAdress + ")";
+                    button.Text = player;
                     button.ExtraButtonText = "x";
 
                     button.Button.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
@@ -89,8 +89,10 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
 
             }
 
-        }
+            ContentSize = new ASize(ContentSize.Width, PlayerButton.Count > 0 ? last.Y + 90 : Height);
+            Scrollbar.MaxValue = Height < ContentSize.Height ? ContentSize.Height - Height + 10 : 0;
 
+        }
 
     }
 }

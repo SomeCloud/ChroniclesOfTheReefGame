@@ -279,7 +279,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                             character = request.Package as ICharacter;
                             if (character is object && Game.CharacterIsRuler(character, out player) && !player.Equals(Game.ActivePlayer) && new ARelationshipType[] { ARelationshipType.Neutrality, ARelationshipType.None }.Contains(player.Relationship(Game.ActivePlayer)) && character.IsAlive)
                             {
-                                IMessage message = new AMessage(Game.ActivePlayer, player, "Объявление войны", "Игрок " + Game.ActivePlayer.Name + " объявляет войну игроку " + player.Name, () => { }, false);
+                                IMessage message = new AMessageNotification(Game.ActivePlayer, player, "Объявление войны", "Игрок " + Game.ActivePlayer.Name + " объявляет войну игроку " + player.Name);
                                 player.SendMessage(message);
                                 Game.SetRelationship(player, Game.ActivePlayer, ARelationshipType.War);
                                 Console.WriteLine("SERVER: Объявление войны игроком " + Game.ActivePlayer.Name + " игроку " + player.Name);
@@ -289,7 +289,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                             character = request.Package as ICharacter;
                             if (character is object && Game.CharacterIsRuler(character, out player) && !player.Equals(Game.ActivePlayer) && player.Relationship(Game.ActivePlayer).Equals(ARelationshipType.War) && character.IsAlive)
                             {
-                                IMessage message = new AMessage(Game.ActivePlayer, player, "Предложение мира", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить мир игроку " + player.Name, () => Game.SetRelationship(player, Game.ActivePlayer, ARelationshipType.Neutrality), true);
+                                IMessage message = new AMessagePeace(Game.ActivePlayer, player, "Предложение мира", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить мир игроку " + player.Name);
                                 player.SendMessage(message);
                                 Console.WriteLine("SERVER: Заключение мира между игроком " + Game.ActivePlayer.Name + " игроку " + player.Name);
                             }
@@ -298,7 +298,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                             character = request.Package as ICharacter;
                             if (character is object && Game.CharacterIsRuler(character, out player) && !player.Equals(Game.ActivePlayer) && new ARelationshipType[] { ARelationshipType.Neutrality, ARelationshipType.None }.Contains(player.Relationship(Game.ActivePlayer)) && character.IsAlive)
                             {
-                                IMessage message = new AMessage(Game.ActivePlayer, player, "Предложение союза", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить союз игроку " + player.Name, () => Game.SetRelationship(player, Game.ActivePlayer, ARelationshipType.Union), true);
+                                IMessage message = new AMessageUnion(Game.ActivePlayer, player, "Предложение союза", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить союз игроку " + player.Name);
                                 player.SendMessage(message);
                                 Console.WriteLine("SERVER: Заключение союза между игроком " + Game.ActivePlayer.Name + " игроку " + player.Name);
                             }
@@ -307,7 +307,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                             character = request.Package as ICharacter;
                             if (character is object && Game.CharacterIsRuler(character, out player) && !player.Equals(Game.ActivePlayer) && player.Relationship(Game.ActivePlayer).Equals(ARelationshipType.Union) && character.IsAlive)
                             {
-                                IMessage message = new AMessage(Game.ActivePlayer, player, "Разрыв союза", "Игрок " + Game.ActivePlayer.Name + " разрывает союз с игроком " + player.Name, () => { }, false);
+                                IMessage message = new AMessageNotification(Game.ActivePlayer, player, "Разрыв союза", "Игрок " + Game.ActivePlayer.Name + " разрывает союз с игроком " + player.Name);
                                 player.SendMessage(message);
                                 Game.SetRelationship(player, Game.ActivePlayer, ARelationshipType.Neutrality);
                                 Console.WriteLine("SERVER: Разрыв союза между игроком " + Game.ActivePlayer.Name + " игроку " + player.Name);
@@ -482,8 +482,6 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
         public override void Update()
         {
-
-
 
         }
     }

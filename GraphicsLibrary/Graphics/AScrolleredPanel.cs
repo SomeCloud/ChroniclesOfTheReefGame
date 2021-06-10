@@ -18,7 +18,7 @@ namespace GraphicsLibrary.Graphics
         private Color _FillColor;
         private Color _BorderColor;
         private AScrollbar _Scrollbar;
-        private AEmptyPanel _Content;
+        protected AEmptyPanel _Content;
 
         public ALabel InfoLabel;
 

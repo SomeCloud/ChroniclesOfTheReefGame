@@ -30,10 +30,12 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public event OnClick PeaceEvent;
         public event OnClick UnionEvent;
         public event OnClick BreakUnionEvent;
+        public event OnClick SelectRelativeEvent;
 
         private APanel HeaderPanel;
-        private AEmptyPanel InfoPanel;
-        private AEmptyPanel StatsPanel;
+        private ACharacterInfoPanel InfoPanel;
+        //private AEmptyPanel InfoPanel;
+        //private AEmptyPanel StatsPanel;
 
         private ACharacterControlPanel CharacterControlPanel;
 
@@ -49,13 +51,14 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             base.Initialize();
 
-            int dWidth = Convert.ToInt32(Width * 5 / 8) - 50;
+            int dWidth = Convert.ToInt32((Width - 20) * 3f / 8) - 50;
 
-            HeaderPanel = new APanel(new ASize(Width, 50)) { Parent = this, Location = new APoint(0, 0) };
-            InfoPanel = new AEmptyPanel(new ASize(dWidth, 120)) { Parent = this, Location = HeaderPanel.Location + new APoint(10, HeaderPanel.Height) };
-            StatsPanel = new AEmptyPanel(new ASize(Width - dWidth, 120)) { Parent = this, Location = InfoPanel.Location + new APoint(InfoPanel.Width + 10, 0) };
+            HeaderPanel = new APanel(new ASize(Width - 2, 50)) { Parent = this, Location = new APoint(1, 1) };
+            InfoPanel = new ACharacterInfoPanel(new ASize(Width - 2, 352)) { Parent = this, Location = HeaderPanel.Location + new APoint(0, HeaderPanel.Height - 1) };
+            //InfoPanel = new AEmptyPanel(new ASize(dWidth, 120)) { Parent = this, Location = HeaderPanel.Location + new APoint(10, HeaderPanel.Height) };
+            //StatsPanel = new AEmptyPanel(new ASize(Width - 20 - dWidth, 120)) { Parent = this, Location = InfoPanel.Location + new APoint(InfoPanel.Width + 10, 0) };
 
-            CharacterControlPanel = new ACharacterControlPanel(new ASize(Width - 20, Height - HeaderPanel.Height - InfoPanel.Height - 30)) { Parent = this, Location = InfoPanel.Location + new APoint(0, InfoPanel.Height + 10) };
+            CharacterControlPanel = new ACharacterControlPanel(new ASize(Width - 2, Height - HeaderPanel.Height - InfoPanel.Height - 22)) { Parent = this, Location = InfoPanel.Location + new APoint(0, InfoPanel.Height + 10) };
 
             CharacterControlPanel.MarryEvent += () => MarryEvent?.Invoke(Character);
             CharacterControlPanel.AgreementEvent += () => AgreementEvent?.Invoke(Character);
@@ -65,15 +68,17 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             CharacterControlPanel.UnionEvent += () => UnionEvent?.Invoke(Character);
             CharacterControlPanel.BreakUnionEvent += () => BreakUnionEvent?.Invoke(Character);
 
+            InfoPanel.SelectEvent += (character) => SelectRelativeEvent?.Invoke(character);
+
             HeaderPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
 
-            InfoPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
+            /*InfoPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
             InfoPanel.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
             InfoPanel.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 10);
 
             StatsPanel.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
             StatsPanel.TextLabel.VerticalAlign = ATextVerticalAlign.Top;
-            StatsPanel.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 10);
+            StatsPanel.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 10);*/
 
         }
 
@@ -85,14 +90,17 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             HeaderPanel.FillColor = TexturePack.Colors[character.OwnerId];
 
             HeaderPanel.Text = character.FullName + " (" + (character.IsOwned ? gameData.Players[character.OwnerId].Name : "Игрок отсутствует") + ")";
-            InfoPanel.Text =
+
+            InfoPanel.Update(gameData, character);
+
+            /*InfoPanel.Text =
                 "Статус: " + (character.IsAlive ? "жив" : "мертв") + (character.SexType.Equals(ASexType.Male) ? "" : "а") + "\n" +
                 "Год рождения: " + character.BirthDate + " (" + character.Age(gameData.CurrentTurn) + ")" + "\n" +
                 "Пол: " + GameLocalization.SexTypeName[character.SexType] + "\n" +
                 "Супруг" + (character.SexType.Equals(ASexType.Male) ? "а" : "") + ": " + (character.IsMarried && gameData.GetCharacter(character.SpouseId) is ICharacter spouse ? spouse.FullName : "Отсутствует") + "\n" +
                 "Отец: " + (character.FatherId > 0 ? gameData.GetCharacter(character.FatherId).FullName : "Неизвестно") + "\n" +
                 "Мать: " + (character.MotherId > 0 ? gameData.GetCharacter(character.MotherId).FullName : "Неизвестно");
-            StatsPanel.Text = string.Join("\n", typeof(ICharacterStats).GetProperties().Select(x => StringPad(GameLocalization.PlayerStatsName[x.Name] + ": ", 20) + x.GetValue(character)));
+            StatsPanel.Text = string.Join("\n", typeof(ICharacterStats).GetProperties().Select(x => StringPad(GameLocalization.PlayerStatsName[x.Name] + ": ", 20) + x.GetValue(character)));*/
             CharacterControlPanel.Update(gameData, character);
         }
 

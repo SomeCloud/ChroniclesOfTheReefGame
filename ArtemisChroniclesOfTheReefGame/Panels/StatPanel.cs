@@ -2,17 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using NetLibrary;
-
 using GraphicsLibrary;
 using GraphicsLibrary.Graphics;
-
-using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAlign;
 
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
 
-using GameLibrary;
 using GameLibrary.Player;
 
 namespace ArtemisChroniclesOfTheReefGame.Panels
@@ -25,6 +20,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public event OnAction MessageClickEvent;
         public event OnAction TurnClickEvent;
         public event OnAction PlayerClickEvent;
+        public event OnAction CharactersClickEvent;
 
         public APanel PlayerName;
         public APanel PlayerCoffers;
@@ -33,6 +29,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
         public AButton Turn;
         public AButton Mesages;
+        public AButton Characters;
 
         public StatPanel(ASize size) : base(size)
         {
@@ -45,7 +42,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             base.Initialize();
 
-            int dWidth = (Width - 180) / 3;
+            int dWidth = (Width - 190 - GraphicsExtension.DefaultButtonSize.Width) / 3;
 
             PlayerName = new APanel(new ASize(dWidth, Height - 20)) { Parent = this, Location = new APoint(10, 10) };
             PlayerCoffers = new APanel(new ASize(dWidth, Height - 20)) { Parent = this, Location = PlayerName.Location + new APoint(PlayerName.Width + 10, 0) };
@@ -53,6 +50,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             Turn = new AButton(new ASize(60, 60), TexturePack.MiniButtons_General_Turn) { Parent = this, Location = CurrntTurn.Location + new APoint(CurrntTurn.Width + 10, 0) };
             Mesages = new AButton(new ASize(60, 60), TexturePack.MiniButtons_Message) { Parent = this, Location = Turn.Location + new APoint(Turn.Width + 10, 0) };
+            Characters = new AButton(GraphicsExtension.DefaultButtonSize) { Parent = this, Location = Mesages.Location + new APoint(Mesages.Width + 10, 0), Text = "Персонажи" };
 
             PlayerName.MouseClickEvent += (state, mstate) =>
             {
@@ -67,6 +65,11 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             Mesages.MouseClickEvent += (state, mstate) =>
             {
                 MessageClickEvent?.Invoke();
+            };
+
+            Characters.MouseClickEvent += (state, mstate) =>
+            {
+                CharactersClickEvent?.Invoke();
             };
 
         }

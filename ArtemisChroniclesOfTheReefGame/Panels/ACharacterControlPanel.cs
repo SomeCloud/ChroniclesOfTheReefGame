@@ -123,7 +123,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             Buttons.Add((GameData gameData, ICharacter character) => War.Enabled = gameData.CharacterIsRuler(character, out Player) && !Player.Equals(gameData.ActivePlayer) && new ARelationshipType[] { ARelationshipType.Neutrality, ARelationshipType.None }.Contains(Player.Relationship(gameData.ActivePlayer)) && character.IsAlive ? true : false);
             Buttons.Add((GameData gameData, ICharacter character) => Peace.Enabled = gameData.CharacterIsRuler(character, out Player) && !Player.Equals(gameData.ActivePlayer) && Player.Relationship(gameData.ActivePlayer).Equals(ARelationshipType.War) && character.IsAlive ? true : false);
             Buttons.Add((GameData gameData, ICharacter character) => Union.Enabled = gameData.CharacterIsRuler(character, out Player) && !Player.Equals(gameData.ActivePlayer) && new ARelationshipType[] { ARelationshipType.Neutrality, ARelationshipType.None }.Contains(Player.Relationship(gameData.ActivePlayer)) && character.IsAlive ? true : false);
-            Buttons.Add((GameData gameData, ICharacter character) => Union.Enabled = gameData.CharacterIsRuler(character, out Player) && !Player.Equals(gameData.ActivePlayer) && Player.Relationship(gameData.ActivePlayer).Equals(ARelationshipType.Union) && character.IsAlive ? true : false);
+            Buttons.Add((GameData gameData, ICharacter character) => BreakUnion.Enabled = gameData.CharacterIsRuler(character, out Player) && !Player.Equals(gameData.ActivePlayer) && Player.Relationship(gameData.ActivePlayer).Equals(ARelationshipType.Union) && character.IsAlive ? true : false);
 
         }
 

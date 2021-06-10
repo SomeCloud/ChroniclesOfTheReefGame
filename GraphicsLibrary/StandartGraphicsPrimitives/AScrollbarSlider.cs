@@ -66,7 +66,19 @@ namespace GraphicsLibrary
             MoveEvent?.Invoke();
         }
 
-        public void ForciblySetLocation(APoint location) => SetLocation(location);
+        //public void ForciblySetLocation(APoint location) => SetLocation(location);
+        public void ForciblySetLocation(APoint location)
+        {
+            switch (ScrollbarAlign)
+            {
+                case AScrollbarAlign.Horizontal:
+                    SetLocation(new APoint(location.X > 2 ? location.X + Width < Parent.Width - 2 ? location.X: Parent.Width - Width - 2 : 2, 2));
+                    break;
+                case AScrollbarAlign.Vertical:
+                    SetLocation(new APoint(2, location.Y > 2 ? location.Y + Height < Parent.Height - 2 ? location.Y : Parent.Height - Height - 2 : 2));
+                    break;
+            }
+        }
 
         public override bool PreLocationChangeProcess(APoint point)
         {

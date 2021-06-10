@@ -69,7 +69,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             Enabled = true;
             Update(player);
 
-            Text = "Почта правителя";
+            Text = "Почта игрока " + player.Name;
         }
 
     }

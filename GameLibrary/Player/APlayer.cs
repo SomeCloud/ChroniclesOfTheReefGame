@@ -114,7 +114,10 @@ namespace GameLibrary.Player
         public void SetStatus(bool status) => _Status = status;
 
         public void SetName(string name) => _Name = name;
-        public void SetRuler(ICharacter character) { if (_Characters.Contains(character)) _Ruler = character; }
+        public void SetRuler(ICharacter character) {
+            ;
+            if (_Characters.Contains(character)) _Ruler = character; 
+        }
         public void SetHeir(ICharacter character) { if (_Characters.Contains(character)) _Heir = character; }
         public void SetRelationship(IPlayer player, ARelationshipType relationship) { 
             if (_Relationships.ContainsKey(player)) _Relationships[player] = relationship; 

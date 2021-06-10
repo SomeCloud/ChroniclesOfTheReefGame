@@ -63,7 +63,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             Enabled = true;
             Update(gameData, unit);
 
-            Text = unit.Name + " (" + unit.UnitTypeName + ">)";
+            Text = unit.Name + " (" + unit.UnitTypeName + ")";
 
         }
 

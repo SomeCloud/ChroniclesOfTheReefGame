@@ -46,6 +46,9 @@ namespace GraphicsLibrary.Graphics
         public ATextBox(ASize size) : base(size)
         {
 
+            IsCounting = true;
+            DTimer = 1;
+
             TimeEvent += () =>
             {
                 if (isActive)

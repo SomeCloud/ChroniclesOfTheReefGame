@@ -116,14 +116,13 @@ namespace GameLibrary
 
                 int gift = random.Next(50, 60);
 
-                newPlayer.SendMessage(new AMessage(newPlayer, newPlayer, "Да здравствует правитель!", 
+                newPlayer.SendMessage(new AMessageGift(newPlayer, newPlayer, "Да здравствует правитель!", 
                     "Спустя столетия безраздельного правления старейшин, народ решил избрать единого правителя,\n" +
                     "способного возглавить их на пути к процветанию. Этим правителем стали вы, " + newPlayer.Ruler.FullName + ".\n" +
                     "Сможете ли вы оправдать возложенные на вас надежды и обессмертить свое имя в истории,\n" +
                     "или же вашему роду суждено быть преданным забвению - все это, зависит от вас и ваших решений,\n" +
                     "совершайте их обдумано!\n\n" +
-                    "В качестве дара народ преподносит вам " + gift + " золота", 
-                    () => newPlayer.ChangeCoffers(gift), false));
+                    "В качестве дара народ преподносит вам " + gift + " золота", false, gift));
 
                 foreach (IPlayer player in _Players.Values)
                 {
@@ -207,6 +206,9 @@ namespace GameLibrary
         private static bool Probability(int value) => (float)value / 2 > new Random((int)DateTime.Now.Ticks).Next(value);
         private static bool Probability(int value, int extrValue) => new Random((int)DateTime.Now.Ticks).Next(value) > new Random((int)DateTime.Now.Ticks).Next(extrValue);
 
+        private int RandomValue(int min, int max) => new Random((int)DateTime.Now.Ticks).Next(min, max);
+        private int RandomValue(int value) => RandomValue(0, value);
+
         public void Turn()
         {
             Random random = new Random((int)DateTime.Now.Ticks);
@@ -239,28 +241,48 @@ namespace GameLibrary
                                 _Characters[character.IsMatrilinearMarriage ? character.OwnerId : father.OwnerId].Add(child);
                             }
                         }
-                        if (Probability(0.5f) && random.Next(Math.Max(elder - character.Age(CurrentTurn), 1)) == random.Next(character.Health))
+
+                        int dAge = Math.Max(Math.Max(elder, 55) - character.Age(CurrentTurn), 1);
+
+                        if (Enumerable.Range(0, character.Health).All(x => random.Next(dAge).Equals(RandomValue(dAge))))
                         {
                             character.Kill(CurrentTurn);
                             IPlayer player;
                             if (CharacterIsRuler(character, out player) && player.Status)
                             {
-                                player.SendMessage(new AMessage(player, player, "Король умер, да здравствует король!", "Прежний правитель " + player.Ruler + " скончался на " + player.Ruler.Age(CurrentTurn) + " году своей жизни.\n Народ с нетерпением ожидает вступления в права следующего монарха,\n в надежде что тот преумножит свершения своего предшественника.", () => { }, false));
+                                player.SendMessage(new AMessageNotification(player, player, "Король умер, да здравствует король!", "Прежний правитель " + player.Ruler + " скончался на " + player.Ruler.Age(CurrentTurn) + " году своей жизни.\n Народ с нетерпением ожидает вступления в права следующего монарха,\n в надежде что тот преумножит свершения своего предшественника."));
                                 if (player.Characters.Where(x => x.IsAlive).Count() > 0) player.UpdateRulerByHeir(CurrentTurn);
-                                else player.SetStatus(false);
+                                else
+                                {
+                                    player.SetStatus(false);
+                                    foreach (ISettlement settlement in new List<ISettlement>(player.Settlements))
+                                    {
+                                        settlement.SetOwner(null);
+                                        player.RemoveSettlement(settlement);
+                                    }
+                                    foreach (IUnit unit in new List<IUnit>(player.Units))
+                                    {
+                                        GetMapCell(unit.Homeland).Population.Add(unit.Squad.ToList());
+                                        AMapCell mapCell = GetMapCell(unit.Location);
+                                        unit.Owner.RemoveUnit(unit);
+                                        mapCell.SetActiveUnit(GetUnits(mapCell.Location) is List<IUnit> units && units.Count > 0 ? units.First() : null);
+                                        player.RemoveUnit(unit);
+                                    }
+                                }
                             }
                         }
                     }
 
                     Map.Values.ToList().ForEach(x => x.Turn());
                 }
-            if (!_ActivePlayer.Status) Turn();
 
             if (_Status && alive.Count <= 1)
             {
                 GameOverEvent?.Invoke(alive.FirstOrDefault());
                 _Status = false;
             }
+
+            if (!_ActivePlayer.Status && _Status) Turn();
 
         }
 
@@ -315,6 +337,14 @@ namespace GameLibrary
 
             return false;
 
+        }
+
+        public void Marry(ICharacter character, ICharacter spouse, bool isMatrilinearMarriage)
+        {
+            character.Marry(spouse.Id, isMatrilinearMarriage);
+            spouse.Marry(character.Id, isMatrilinearMarriage);
+            if (isMatrilinearMarriage) character.SetLocation(spouse.Location);
+            else spouse.SetLocation(character.Location);
         }
 
         public bool Attack(IUnit defender, IUnit attacker)
@@ -455,6 +485,38 @@ namespace GameLibrary
         }
 
         public void SetRelationship(IPlayer player, ARelationshipType relationshipType) => SetRelationship(player, _ActivePlayer, relationshipType);
+
+        public bool IsRelative(ICharacter character, ICharacter otherCharacter)
+        {
+            Dictionary<int, List<int>> characterParent = new Dictionary<int, List<int>>() { { 0, new List<int>() {character.FatherId, character.MotherId } } };
+            Dictionary<int, List<int>> otherCharacterParent = new Dictionary<int, List<int>>() { { 0, new List<int>() { otherCharacter.FatherId, otherCharacter.MotherId } } };
+            for (int i = 0; i < 2; i++)
+            {
+                foreach(int id in new List<int>(characterParent[i]))
+                {
+                    List<int> temp = new List<int>();
+                    if (id > 0)
+                    {
+                        ICharacter parent = GetCharacter(id);
+                        temp.AddRange(new int[] { parent.MotherId, parent.FatherId });
+                    }
+                    else characterParent[i].Remove(id);
+                    characterParent.Add(i + 1, temp);
+                }
+                foreach(int id in new List<int>(otherCharacterParent[i]))
+                {
+                    List<int> temp = new List<int>();
+                    if (id > 0)
+                    {
+                        ICharacter parent = GetCharacter(id);
+                        temp.AddRange(new int[] { parent.MotherId, parent.FatherId });
+                    }
+                    else characterParent[i].Remove(id);
+                    otherCharacterParent.Add(i + 1, temp);
+                }
+            }
+            return characterParent.Where(x => otherCharacterParent.Contains(x)).Count() > 0;
+        }
 
         public bool CharacterIsRuler(ICharacter character, out IPlayer player)
         {

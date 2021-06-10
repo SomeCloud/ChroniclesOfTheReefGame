@@ -37,13 +37,14 @@ namespace ArtemisChroniclesOfTheReefGame
 
         APageMainMenu PageMenu;
         APageSingleplayerGameSettings PageSingleplayerGameSettings;
+        APageCreateSinglePCGame PageCreateSinglePCGame;
         APageMultiplayer PageMultiplayerMenu;
         APageConnection PageConnection;
         APageWaitConnection PageWaitConnection;
         APageConnectionLobby PageConnectionLobby;
         APageCreateLobby PageCreateLobby;
         APageMultiplayerGame PageMultiplayerGame;
-        //APageGame PageGame;
+        APageGame PageGame;
 
         private Dictionary<Keys, AKeyboardKey> keys = new Dictionary<Keys, AKeyboardKey>()
                 {
@@ -98,13 +99,14 @@ namespace ArtemisChroniclesOfTheReefGame
 
             PageMenu = new APageMainMenu(Graphics) { Visible = true };
             PageSingleplayerGameSettings = new APageSingleplayerGameSettings(Graphics) { Visible = false };
+            PageCreateSinglePCGame = new APageCreateSinglePCGame(Graphics) { Visible = false };
             PageMultiplayerMenu = new APageMultiplayer(Graphics) { Visible = false };
             PageConnection = new APageConnection(Graphics) { Visible = false };
             PageWaitConnection = new APageWaitConnection(Graphics) { Visible = false };
             PageConnectionLobby = new APageConnectionLobby(Graphics) { Visible = false };
             PageCreateLobby = new APageCreateLobby(Graphics) { Visible = false };
-            PageMultiplayerGame = new APageMultiplayerGame(Graphics) { Visible = false };
-            //PageGame = new APageGame(Graphics) { Visible = false };
+            //PageMultiplayerGame = new APageMultiplayerGame(Graphics) { Visible = false };
+            PageGame = new APageGame(Graphics) { Visible = false };
 
             Graphics.SizeChangeEvent += (state, value) => {
                 PageMenu.Update();
@@ -113,12 +115,24 @@ namespace ArtemisChroniclesOfTheReefGame
             };
 
             PageMenu.SingleplayerGame.MouseClickEvent += (state, mstate) => {
-                PageMenu.Visible = false;
-                PageSingleplayerGameSettings.Visible = true; 
+                PageMenu.Hide();
+                PageCreateSinglePCGame.Show();
             };
             
+            PageGame.BackEvent+= () => {
+                PageGame.Hide();
+                PageMenu.Show();
+            };
+
+            PageCreateSinglePCGame.StartGameEvent += (names, characters, mapSize) =>
+            {
+                PageCreateSinglePCGame.Hide();
+                PageGame.Show();
+                PageGame.StartGame(names, characters, mapSize);
+            };
+
             PageMenu.MultiplayerGame.MouseClickEvent += (state, mstate) => {
-                PageMenu.Visible = false;
+                PageMenu.Hide();
                 PageMultiplayerMenu.Show(); 
             };
 
@@ -158,12 +172,12 @@ namespace ArtemisChroniclesOfTheReefGame
             
             PageSingleplayerGameSettings.Back.MouseClickEvent += (state, mstate) => {
                 PageSingleplayerGameSettings.Visible = false;
-                PageMenu.Visible = true;
+                PageMenu.Show();
             };
 
             PageMultiplayerMenu.Back.MouseClickEvent += (state, mstate) => {
                 PageMultiplayerMenu.Hide();
-                PageMenu.Visible = true;
+                PageMenu.Show();
             };
             
             PageMultiplayerMenu.CreateRoomEvent += (id, name) => {

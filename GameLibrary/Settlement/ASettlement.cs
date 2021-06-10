@@ -138,13 +138,13 @@ namespace GameLibrary.Settlement
         public void AddTerritory(AMapCell territory)
         {
             _Territories.Add(territory);
-            if (!_Owner.Territories.Contains(territory)) Owner.AddTerritory(territory);
+            if (_Owner is object && !_Owner.Territories.Contains(territory)) Owner.AddTerritory(territory);
         }
 
         public void RemoveTerritory(AMapCell territory)
         {
             if (_Territories.Contains(territory)) _Territories.Remove(territory);
-            if (_Owner.Territories.Contains(territory)) Owner.RemoveTerritory(territory);
+            if (_Owner is object && _Owner.Territories.Contains(territory)) Owner.RemoveTerritory(territory);
         }
 
         private void RecalculateCharacteristics()

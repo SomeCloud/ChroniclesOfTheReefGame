@@ -17,13 +17,14 @@ using GameLibrary.Settlement;
 using GameLibrary.Settlement.Building;
 using GameLibrary.Player;
 using GameLibrary.Character;
+using GameLibrary.Message;
 using GameLibrary.Map;
 
 using ArtemisChroniclesOfTheReefGame.Forms;
 
 namespace ArtemisChroniclesOfTheReefGame.Panels
 {
-    public class GamePanel: AEmptyPanel
+    public class GamePanel : AEmptyPanel
     {
 
         // delegates
@@ -41,8 +42,12 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public delegate void OnSelectBuilding(IBuilding building);
         public delegate void OnSelectInvestigatedTechnology(ISettlement settlement);
         public delegate void OnSelectUnitType(AUnitType unitType);
-        
+
         public delegate void OnMapCellSelect(APoint point);
+
+        public delegate void OnMessage(IMessage message);
+
+        public delegate void OnMarriage(ICharacter character, ICharacter spouse, bool isMatrilinearMarriage);
 
         // events
 
@@ -68,9 +73,14 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public event OnUnitClick GeneralEvent;
         public event OnUnitClick WorkEvent;
         public event OnUnitClick EstablishEvent;
-        
+
         public event OnMapCellSelect MapCellSelectEvent;
         public event OnMapCellSelect MoveUnitEvent;
+
+        public event OnMessage DoneMessageEvent;
+        public event OnMessage RenouncementMessageEvent;
+
+        public event OnMarriage MarriageEvent;
 
         // graphics
 
@@ -84,11 +94,13 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         private APlayerForm PlayerInfoForm;
         private ASettlementForm SettlementForm;
         private ABattleForm BattleForm;
+        private AMessageForm MessageForm;
 
         private AUnitForm UnitInfoForm;
+        private AMarryForm MarryForm;
         private ACharacterForm CharacterInfoForm;
         private AMessageListPanelForm MessageListForm;
-        private AMessageForm MessageForm;
+        private ACharactersForm CharactersList;
 
         private Dictionary<APoint, AMapCellView> Map;
 
@@ -98,7 +110,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         private string Name;
         private ASize MapSize;
 
-        public GamePanel(ASize size): base(size)
+        public GamePanel(ASize size) : base(size)
         {
 
             Map = new Dictionary<APoint, AMapCellView>();
@@ -110,10 +122,12 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             base.Initialize();
 
-            ASize dBigFormSize = new ASize(Convert.ToInt32(Width * (2 / 3f)), Convert.ToInt32(Height * (2 / 3f)));
-            ASize dMiddleFormSize = new ASize(600, 600);
+            ASize dBigFormSize = new ASize(Convert.ToInt32(Width * (2.5 / 3f)), Convert.ToInt32(Height * (2.5 / 3f)));
+            ASize dSmallFormSize = new ASize(Convert.ToInt32(Height * (2.5 / 3f)), Convert.ToInt32(Height * (2.5 / 3f)));
+            ASize dMiddleFormSize = new ASize(Convert.ToInt32(Width * (7 / 9f)), Convert.ToInt32(Height * (2.5 / 3f)));
 
             APoint dBigFormLocation = (Size - dBigFormSize).ToAPoint() / 2;
+            APoint dSmallFormLocation = (Size - dSmallFormSize).ToAPoint() / 2;
             APoint dMiddleFormLocation = (Size - dMiddleFormSize).ToAPoint() / 2;
 
             StatPanel = new StatPanel(new ASize(Width - 20, GraphicsExtension.DefaultMiniButtonSize.Height + 20)) { Parent = this, Location = new APoint(10, 10) };
@@ -123,17 +137,33 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             TechnologyTreePanel = new ATechnologyTreeForm(dBigFormSize) { Parent = this, Location = dBigFormLocation };
             PlayerInfoForm = new APlayerForm(dBigFormSize) { Parent = this, Location = dBigFormLocation };
-            SettlementForm = new ASettlementForm(dBigFormSize) { Parent = this, Location = dMiddleFormLocation };
-            BattleForm = new ABattleForm(dBigFormSize) { Parent = this, Location = dMiddleFormLocation };
+            SettlementForm = new ASettlementForm(dBigFormSize) { Parent = this, Location = dSmallFormLocation };
+            BattleForm = new ABattleForm(dBigFormSize) { Parent = this, Location = dSmallFormLocation };
 
-            UnitInfoForm = new AUnitForm(dMiddleFormSize) { Parent = this, Location = dMiddleFormLocation };
-            CharacterInfoForm = new ACharacterForm(dMiddleFormSize) { Parent = this, Location = dMiddleFormLocation };
-            MessageListForm = new AMessageListPanelForm(dMiddleFormSize) { Parent = this, Location = dMiddleFormLocation };
+            UnitInfoForm = new AUnitForm(dSmallFormSize) { Parent = this, Location = dSmallFormLocation };
+            MarryForm = new AMarryForm(dSmallFormSize) { Parent = this, Location = dSmallFormLocation };
+            CharactersList = new ACharactersForm(dSmallFormSize) { Parent = this, Location = dSmallFormLocation };
+            CharacterInfoForm = new ACharacterForm(dSmallFormSize) { Parent = this, Location = dSmallFormLocation };
+            MessageListForm = new AMessageListPanelForm(dSmallFormSize) { Parent = this, Location = dSmallFormLocation };
             MessageForm = new AMessageForm(dMiddleFormSize) { Parent = this, Location = dMiddleFormLocation };
 
-            StatPanel.PlayerClickEvent += () => PlayerInfoForm.Update(GameData, GameData.GetPlayer(Name));
-            StatPanel.MessageClickEvent += () => MessageListForm.Update(GameData.GetPlayer(Name));
+            MarryForm.SetCharactersForm(CharactersList);
+
+            StatPanel.PlayerClickEvent += () =>
+            {
+                if (PlayerInfoForm.Enabled) PlayerInfoForm.Update(GameData, /*GameData.GetPlayer(Name)*/GameData.ActivePlayer);
+                else PlayerInfoForm.Show(GameData, /*GameData.GetPlayer(Name)*/GameData.ActivePlayer);
+            };
+
+            StatPanel.MessageClickEvent += () =>
+            {
+                if (MessageListForm.Enabled) MessageListForm.Update(/*GameData.GetPlayer(Name)*/GameData.ActivePlayer);
+                else MessageListForm.Show(/*GameData.GetPlayer(Name)*/GameData.ActivePlayer);
+            };
+
             StatPanel.TurnClickEvent += () => TurnClickEvent?.Invoke();
+
+            StatPanel.CharactersClickEvent += () => CharactersList.Show(GameData.Characters.Values.SelectMany(x => x), GameData.CurrentTurn);
 
             ExtraSidePanel.SettlementPanelActivate += () =>
             {
@@ -145,17 +175,25 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             TechnologyTreePanel.SelectEvent += (technology) => SelectTechnologyEvent?.Invoke(technology);
 
-            PlayerInfoForm.MarryEvent += (character) => MarryEvent?.Invoke(character);
+            PlayerInfoForm.MarryEvent += (character) =>
+            {
+                MarryForm.Show(character, GameData);
+                //MarryEvent?.Invoke(character);
+            };
             PlayerInfoForm.AgreementEvent += (character) => AgreementEvent?.Invoke(character);
             PlayerInfoForm.HeirEvent += (character) => HeirEvent?.Invoke(character);
             PlayerInfoForm.WarEvent += (character) => WarEvent?.Invoke(character);
             PlayerInfoForm.PeaceEvent += (character) => PeaceEvent?.Invoke(character);
             PlayerInfoForm.UnionEvent += (character) => UnionEvent?.Invoke(character);
             PlayerInfoForm.BreakUnionEvent += (character) => BreakUnionEvent?.Invoke(character);
+            PlayerInfoForm.SelectRelativeEvent += (character) =>
+            {
+                CharacterInfoForm.Show(GameData, character);
+            };
 
             PlayerInfoForm.SettlementSelectEvent += (settlement) => SettlementForm.Show(settlement);
             PlayerInfoForm.PlayerSelectEvent += (player) => CharacterInfoForm.Show(GameData, player.Ruler);
-            
+
             SettlementForm.BuildingCreateEvent += (building) => BuildingCreateEvent?.Invoke(building);
             SettlementForm.TechnologySelectEvent += (settlement) => TechnologyTreePanel.Update(settlement.Owner);
             SettlementForm.UnitCreateEvent += (unit) => UnitCreateEvent?.Invoke(unit);
@@ -166,7 +204,11 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             UnitInfoForm.WorkEvent += (unit) => WorkEvent?.Invoke(unit);
             UnitInfoForm.EstablishEvent += (unit) => EstablishEvent?.Invoke(unit);
 
-            CharacterInfoForm.MarryEvent += (character) => MarryEvent?.Invoke(character);
+            CharacterInfoForm.MarryEvent += (character) =>
+            {
+                MarryForm.Show(character, GameData);
+                //MarryEvent?.Invoke(character);
+            };
             CharacterInfoForm.AgreementEvent += (character) => AgreementEvent?.Invoke(character);
             CharacterInfoForm.HeirEvent += (character) => HeirEvent?.Invoke(character);
             CharacterInfoForm.WarEvent += (character) => WarEvent?.Invoke(character);
@@ -175,6 +217,16 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             CharacterInfoForm.BreakUnionEvent += (character) => BreakUnionEvent?.Invoke(character);
 
             MessageListForm.SelectEvent += (message) => MessageForm.Show(message);
+
+            MessageForm.DoneEvent += (message) => DoneMessageEvent?.Invoke(message);
+            MessageForm.RenouncementEvent += (message) => RenouncementMessageEvent?.Invoke(message);
+
+            CharactersList.SelectEvent += (character) =>
+            {
+                if (!MarryForm.CharactersFormIsActive) CharacterInfoForm.Show(GameData, character);
+            };
+
+            MarryForm.DoneEvent += (character, spouse, isMatrilinearMarriage) => MarriageEvent?.Invoke(character, spouse, isMatrilinearMarriage);
 
             HideAll();
 
@@ -200,15 +252,17 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public void HideAll()
         {
 
-            if (ExtraSidePanel.Enabled) TechnologyTreePanel.Hide();
-            if (ExtraSidePanel.Enabled) PlayerInfoForm.Hide();
-            if (ExtraSidePanel.Enabled) SettlementForm.Hide();
-            if (ExtraSidePanel.Enabled) BattleForm.Hide();
+            if (TechnologyTreePanel.Enabled) TechnologyTreePanel.Hide();
+            if (PlayerInfoForm.Enabled) PlayerInfoForm.Hide();
+            if (SettlementForm.Enabled) SettlementForm.Hide();
+            if (BattleForm.Enabled) BattleForm.Hide();
 
-            if (ExtraSidePanel.Enabled) UnitInfoForm.Hide();
-            if (ExtraSidePanel.Enabled) CharacterInfoForm.Hide();
-            if (ExtraSidePanel.Enabled) MessageListForm.Hide();
-            if (ExtraSidePanel.Enabled) MessageForm.Hide();
+            if (UnitInfoForm.Enabled) UnitInfoForm.Hide();
+            if (CharacterInfoForm.Enabled) CharacterInfoForm.Hide();
+            if (MessageListForm.Enabled) MessageListForm.Hide();
+            if (MessageForm.Enabled) MessageForm.Hide();
+            if (CharactersList.Enabled) CharactersList.Hide();
+            if (MarryForm.Enabled) MarryForm.Hide();
 
         }
 
@@ -222,29 +276,96 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             if (ExtraSidePanel.Enabled && GameData.IsMapCellSelected) ExtraSidePanel.Update(GameData, GameData.SelectedMapCell);
             else ExtraSidePanel.Hide();
 
-            if (ExtraSidePanel.Enabled) TechnologyTreePanel.Update(player); 
+            if (TechnologyTreePanel.Enabled) TechnologyTreePanel.Update(player);
             else TechnologyTreePanel.Hide();
-            if (ExtraSidePanel.Enabled) PlayerInfoForm.Update();
+            if (PlayerInfoForm.Enabled) PlayerInfoForm.Update();
             else PlayerInfoForm.Hide();
-            if (ExtraSidePanel.Enabled && GameData.IsMapCellSelected && GameData.SelectedMapCell.IsSettlement && GameData.SelectedMapCell.Settlement.Owner.Equals(player)) SettlementForm.Update(GameData.SelectedMapCell.Settlement);
+            if (SettlementForm.Enabled && GameData.IsMapCellSelected && GameData.SelectedMapCell.IsSettlement && GameData.SelectedMapCell.Settlement.Owner.Equals(player)) SettlementForm.Update(GameData.SelectedMapCell.Settlement);
             else SettlementForm.Hide();
-            if (ExtraSidePanel.Enabled) BattleForm.Hide();
+            if (BattleForm.Enabled) BattleForm.Hide();
 
-            if (ExtraSidePanel.Enabled) UnitInfoForm.Hide();
-            if (ExtraSidePanel.Enabled) CharacterInfoForm.Hide();
-            if (ExtraSidePanel.Enabled) MessageListForm.Update(player);
-            if (ExtraSidePanel.Enabled) MessageForm.Hide();
+            if (UnitInfoForm.Enabled) UnitInfoForm.Hide();
+            if (CharacterInfoForm.Enabled) CharacterInfoForm.Hide();
+            if (MessageListForm.Enabled) MessageListForm.Update(player);
+            if (MessageForm.Enabled) MessageForm.Hide();
+            CharactersList.Update(GameData.Characters.Values.SelectMany(x => x), GameData.CurrentTurn);
+            if (MarryForm.Enabled) MarryForm.Hide();
 
+        }
+
+        public void Update(AGame game, string name)
+        {
+
+            if (GameData is null) GameData = new GameData(game);
+            else GameData.Update(game);
+
+            if (Name is null || !name.Equals(Name)) Name = name;
+
+            if (MapView is null || !game.GameMap.Size.Equals(MapSize))
+            {
+                MapSize = game.GameMap.Size;
+                MapView = new AMapView(CalculateMapViewSize(MapSize)) { Parent = MapField, Location = new APoint(10, 10), DragAndDrop = true };
+            }
+
+            UpdatePanels();
+
+            foreach (var e in game.GameMap.Map)
+            {
+
+                APoint location = e.Key;
+                AMapCell mapCell = e.Value;
+
+                if (Map.ContainsKey(location))
+                {
+                    Map[location].SetSourceMapCell(mapCell);
+                }
+                else
+                {
+
+                    APrimitiveTexture source = TexturePack.Hex[mapCell.OwnerId];
+                    AMapCellView mapCellView = new AMapCellView(mapCell, GameData, source) { Parent = MapView, Location = CalculateSpriteVector(e.Key) };
+
+                    mapCellView.MouseClickEvent += (state, mouseState) =>
+                    {
+                        if (mouseState.MouseButton.Equals(AMouseButton.Left))
+                        {
+                            ExtraSidePanel.Show(GameData, mapCellView.MapCell);
+                            MapCellSelectEvent?.Invoke(location);
+                        }
+                        else if (mouseState.MouseButton.Equals(AMouseButton.Right))
+                        {
+                            if (GameData.SelectedMapCell.ActiveUnit is object) MoveUnitEvent?.Invoke(location);
+                        }
+                    };
+
+                    mapCellView.KeyDownEvent += (state, kstate) =>
+                    {
+                        if (kstate.KeyboardKey.Equals(AKeyboardKey.E) && mapCell.IsSettlement && mapCell.Settlement.Owner.Name.Equals(GameData.ActivePlayer.Name))
+                        {
+                            SettlementForm.Show(mapCell.Settlement);
+                            SettlementForm.Location = MapField.Location + location;
+                        }
+                        else SettlementForm.Hide();
+                        if (kstate.KeyState.Equals(AKeyState.Exit)) ExtraSidePanel.Hide();
+                    };
+
+                    Map.Add(location, mapCellView);
+
+                }
+
+            }
         }
 
         public void Update(GameData gameData, string name)
         {
 
-            GameData = gameData;
+            if (GameData is null) GameData = gameData;
+            else GameData.Update(gameData);
 
             if (Name is null || !name.Equals(Name)) Name = name;
 
-            if (MapView is null || !gameData.GameMap.Size.Equals(MapSize)) {
+            if (MapView is null || !gameData.GameMap.Size.Equals(MapSize))
+            {
                 MapSize = gameData.GameMap.Size;
                 MapView = new AMapView(CalculateMapViewSize(MapSize)) { Parent = MapField, Location = new APoint(10, 10), DragAndDrop = true };
             }
@@ -259,10 +380,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
                 if (Map.ContainsKey(location))
                 {
-
-                    AMapCellView mapCellView = Map[location];
-                    mapCellView.SetSourceMapCell(mapCell);
-
+                    Map[location].SetSourceMapCell(mapCell);
                 }
                 else
                 {

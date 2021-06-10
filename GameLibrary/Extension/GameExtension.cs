@@ -13,7 +13,7 @@ namespace GameLibrary.Extension
     {
 
         public static int PlayerDefautStatsValue = 33;
-        public static int CharactersDefautStartValue = 1;
+        public static int CharactersDefautStartValue = 15;
 
         public static IReadOnlyDictionary<ABuildingType, int> BuildTime = new Dictionary<ABuildingType, int>() {
             { ABuildingType.TownHall, 0 },

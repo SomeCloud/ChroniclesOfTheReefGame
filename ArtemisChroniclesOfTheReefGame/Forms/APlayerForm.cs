@@ -38,6 +38,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
         public event OnClick PeaceEvent;
         public event OnClick UnionEvent;
         public event OnClick BreakUnionEvent;
+        public event OnClick SelectRelativeEvent;
 
         private ACharacterPanel CharacterPanel;
         private SettlementsListPanel SettlementsList;
@@ -57,11 +58,11 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             base.Initialize();
 
             int dWidth = (Content.Width - 12) / 2;
-            int dHeight = (Content.Height - 10) * 5 / 8;
+            int dHeight = Convert.ToInt32((Content.Height - 10) * 5f / 8);
 
-            CharacterPanel = new ACharacterPanel(new ASize(dWidth, dHeight)) { Location = new APoint(1, 1) };
-            RelationshipsList = new RelationshipsListPanel(new ASize(dWidth, Content.Height - dHeight - 12)) { Location = CharacterPanel.Location + new APoint(0, CharacterPanel.Height + 10) };
-            SettlementsList = new SettlementsListPanel(new ASize(dWidth, Content.Height - 2)) { Location = CharacterPanel.Location + new APoint(CharacterPanel.Width + 10, 0) };
+            CharacterPanel = new ACharacterPanel(new ASize(dWidth, Content.Height - 1)) { Location = new APoint(1, 1) };
+            RelationshipsList = new RelationshipsListPanel(new ASize(dWidth, dHeight - 2)) { Location = CharacterPanel.Location + new APoint(CharacterPanel.Width + 10, 1) };
+            SettlementsList = new SettlementsListPanel(new ASize(dWidth, Content.Height - dHeight - 22)) { Location = RelationshipsList.Location + new APoint(0, RelationshipsList.Height + 10) };
 
             CharacterPanel.MarryEvent += (character) => MarryEvent?.Invoke(character);
             CharacterPanel.AgreementEvent += (character) => AgreementEvent?.Invoke(character);
@@ -70,6 +71,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             CharacterPanel.PeaceEvent += (character) => PeaceEvent?.Invoke(character);
             CharacterPanel.UnionEvent += (character) => UnionEvent?.Invoke(character);
             CharacterPanel.BreakUnionEvent += (character) => BreakUnionEvent?.Invoke(character);
+            CharacterPanel.SelectRelativeEvent += (character) => SelectRelativeEvent?.Invoke(character);
 
             Add(CharacterPanel);
             Add(RelationshipsList);

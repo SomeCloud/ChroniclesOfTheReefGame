@@ -28,6 +28,8 @@ namespace ArtemisChroniclesOfTheReefGame
 
         public static Texture2D Empty;
 
+        public static Texture2D EmptyHex;
+
         // Biome
 
         public static Texture2D Biome_Mountain_Triple;
@@ -97,6 +99,7 @@ namespace ArtemisChroniclesOfTheReefGame
         public static Texture2D MiniButtons_General_Technology_Tree;
         public static Texture2D MiniButtons_General_Turn;
         public static Texture2D MiniButtons_Message;
+        public static Texture2D MiniButtons_Dice;
 
         public static Texture2D MiniButtons_Unit_Colonist;
         public static Texture2D MiniButtons_Unit_Spearman;
@@ -106,6 +109,9 @@ namespace ArtemisChroniclesOfTheReefGame
         public static Texture2D MiniButtons_Unit_Missionary;
         public static Texture2D MiniButtons_Unit_Axeman;
         public static Texture2D MiniButtons_Unit_Warrior;
+
+        public static Texture2D Checkbox_Active;
+        public static Texture2D Checkbox_NotActive;
 
         public TexturePack(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
@@ -225,6 +231,7 @@ namespace ArtemisChroniclesOfTheReefGame
             MiniButtons_General_Technology_Tree = contentManager.Load<Texture2D>("Inteface/MiniButtons_General_Technology_Tree");
             MiniButtons_General_Turn = contentManager.Load<Texture2D>("Inteface/MiniButtons_General_Turn");
             MiniButtons_Message = contentManager.Load<Texture2D>("Inteface/MiniButtons_Message");
+            MiniButtons_Dice = contentManager.Load<Texture2D>("Inteface/MiniButtons_Dice");
 
             MiniButtons_Unit_Colonist = contentManager.Load<Texture2D>("Inteface/MiniButtons_Unit_Colonist");
             MiniButtons_Unit_Spearman = contentManager.Load<Texture2D>("Inteface/MiniButtons_Unit_Spearman");
@@ -235,9 +242,14 @@ namespace ArtemisChroniclesOfTheReefGame
             MiniButtons_Unit_Axeman = contentManager.Load<Texture2D>("Inteface/MiniButtons_Unit_Axeman");
             MiniButtons_Unit_Warrior = contentManager.Load<Texture2D>("Inteface/MiniButtons_Unit_Warrior");
 
+            Checkbox_Active = contentManager.Load<Texture2D>("Inteface/Checkbox_Active");
+            Checkbox_NotActive = contentManager.Load<Texture2D>("Inteface/Checkbox_NotActive");
+
             // Extra
 
             ATexture texture = new ARectangleTexture(graphicsDevice, new ASize(GraphicsExtension.DefaultMapCellRadius, GraphicsExtension.DefaultMapCellRadius)) { IsDraw = true, IsFill = true };
+
+            EmptyHex = new AHexTexture(graphicsDevice, GraphicsExtension.DefaultMapCellRadius, Color.DarkGray, GraphicsExtension.DefaultDarkBorderColor) { IsDraw = true, IsFill = true };
 
             foreach (var value in _Colors)
             {

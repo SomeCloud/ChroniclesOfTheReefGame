@@ -73,7 +73,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             if (mapCell.IsSettlement)
             {
-                SettlementMiniPanel.Show(mapCell.Settlement, gameData.ActivePlayer.Equals(mapCell.Settlement.Owner));
+                SettlementMiniPanel.Show(mapCell.Settlement, mapCell.Settlement.Owner is object && gameData.ActivePlayer.Name.Equals(mapCell.Settlement.Owner.Name));
                 SettlementMiniPanel.Location = location;
                 SettlementMiniPanel.HeaderPanel.FillColor = mapCell.IsOwned ? TexturePack.Colors[mapCell.Owner.Id] : GraphicsExtension.DefaultFillColor;
                 location.Y += SettlementMiniPanel.Height + 10;

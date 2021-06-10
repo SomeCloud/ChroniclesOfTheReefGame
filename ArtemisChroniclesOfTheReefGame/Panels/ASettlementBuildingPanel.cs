@@ -38,7 +38,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             base.Initialize();
 
             BuildingsInConstruction = new AScrolleredPanel(AScrollbarAlign.Vertical, new ASize(Width - 20, 200)) { Parent = this, Location = new APoint(10, 10) };
-            BuildingPanel = new ABuildingPanel(new ASize(Width - 20, Height - BuildingsInConstruction.Height - 20)) { Parent = this, Location = BuildingsInConstruction.Location + new APoint(0, BuildingsInConstruction.Height + 10) };
+            BuildingPanel = new ABuildingPanel(new ASize(Width - 20, Height - BuildingsInConstruction.Height - 30)) { Parent = this, Location = BuildingsInConstruction.Location + new APoint(0, BuildingsInConstruction.Height + 10) };
 
             BuildingPanel.SelectEvent += (building) =>  BuildingSelectEvent?.Invoke(building);
 

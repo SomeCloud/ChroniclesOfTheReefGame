@@ -91,7 +91,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 if (Player is object)
                 {
                     IPlayer player = Game.ActivePlayer;
-                    IMessage message = new AMessage(Game.ActivePlayer, Player, "Объявление войны", "Игрок " + Game.ActivePlayer.Name + " объявляет войну игроку " + Player.Name, () => Game.SetRelationship(player, Player, ARelationshipType.War), false);
+                    IMessage message = new AMessageNotification(Game.ActivePlayer, player, "Объявление войны", "Игрок " + Game.ActivePlayer.Name + " объявляет войну игроку " + player.Name);
                     Player.SendMessage(message);
                     UpdateEvent?.Invoke();
                 }
@@ -101,7 +101,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 if (Player is object)
                 {
                     IPlayer player = Game.ActivePlayer;
-                    IMessage message = new AMessage(Game.ActivePlayer, Player, "Предложение союза", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить союз игроку " + Player.Name, () => Game.SetRelationship(player, Player, ARelationshipType.Union), true);
+                    IMessage message = new AMessageUnion(Game.ActivePlayer, player, "Предложение союза", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить союз игроку " + player.Name);
                     Player.SendMessage(message);
                     UpdateEvent?.Invoke();
                 }
@@ -111,7 +111,7 @@ namespace ArtemisChroniclesOfTheReefGame.Interface
                 if (Player is object)
                 {
                     IPlayer player = Game.ActivePlayer;
-                    IMessage message = new AMessage(Game.ActivePlayer, Player, "Предложение мира", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить мир игроку " + Player.Name, () => Game.SetRelationship(player, Player, ARelationshipType.Neutrality), true);
+                    IMessage message = new AMessagePeace(Game.ActivePlayer, player, "Предложение мира", "Игрок " + Game.ActivePlayer.Name + " предлагает заключить мир игроку " + player.Name);
                     Player.SendMessage(message);
                     UpdateEvent?.Invoke();
                 }

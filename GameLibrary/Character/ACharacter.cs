@@ -94,6 +94,15 @@ namespace GameLibrary.Character
             _IsMatrilinearMarriage = isMatrilinearMarriage;
         }
 
+        public void SetStats(int attractiveness, int education, int martialSkills, int health, int fertility)
+        {
+            _Attractiveness = attractiveness;
+            _Education = education;
+            _MartialSkills = martialSkills;
+            _Health = health;
+            _Fertility = fertility;
+        }
+
         private void SetRandomStats(int value)
         {
 

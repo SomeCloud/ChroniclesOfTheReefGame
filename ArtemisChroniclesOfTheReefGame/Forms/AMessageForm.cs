@@ -17,8 +17,8 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
     public class AMessageForm: AForm
     {
 
-        public delegate void OnDone();
-        public delegate void OnRenouncement();
+        public delegate void OnDone(IMessage message);
+        public delegate void OnRenouncement(IMessage message);
 
         public event OnDone DoneEvent;
         public event OnRenouncement RenouncementEvent;
@@ -41,13 +41,13 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
 
             MessagePanel.DoneEvent += () => {
                 Message.Recipient.RemoveMessage(Message);
-                DoneEvent?.Invoke();
+                DoneEvent?.Invoke(Message);
                 Hide();
             };
 
             MessagePanel.RenouncementEvent += () => {
                 Message.Recipient.RemoveMessage(Message);
-                RenouncementEvent?.Invoke();
+                RenouncementEvent?.Invoke(Message);
                 Hide();
             };
 

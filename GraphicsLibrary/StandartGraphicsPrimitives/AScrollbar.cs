@@ -25,7 +25,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
 
         private int _MaxValue;
         private int _MinValue;
-        private int _Value;
+        protected int _Value;
 
         public int MaxValue
         {
@@ -33,7 +33,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
             set
             {
                 _MaxValue = value;
-                SetValue(ProcessValue());
+                //SetValue(ProcessValue());
                 MaxValueChange?.Invoke(_MaxValue);
             }
         }
@@ -43,7 +43,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
             set
             {
                 _MinValue = value;
-                SetValue(ProcessValue());
+                //SetValue(ProcessValue());
                 MinValueChange?.Invoke(_MinValue);
             }
         }
@@ -53,7 +53,7 @@ namespace GraphicsLibrary.StandartGraphicsPrimitives
             set {
                 _Value = value;
                 ValueChange?.Invoke(_Value);
-                ScrollbarSlider.ForciblySetLocation(new APoint(2, ProcessLocation(value)));
+                //ScrollbarSlider.ForciblySetLocation(new APoint(2, ProcessLocation(value)));
             }
         }
 

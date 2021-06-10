@@ -51,9 +51,9 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             Building = new AButton(GraphicsExtension.DefaultButtonSize) { Parent = this, Location = Main.Location + new APoint(0, Main.Height + 10), Text = "Строительство" };
             Unit = new AButton(GraphicsExtension.DefaultButtonSize) { Parent = this, Location = Building.Location + new APoint(0, Building.Height + 10), Text = "Тренировать юнита" };
 
-            BuildingPanel = new ASettlementBuildingPanel(new ASize(Width - Main.Height - 30, Height - 20)) { Parent = this, Location = Main.Location + new APoint(Main.Width + 10, 0) };
-            InfoPanel = new ASettlementInfoPanel(new ASize(Width - Main.Height - 30, Height - 20)) { Parent = this, Location = Main.Location + new APoint(Main.Width + 10, 0) };
-            CreateUnitsPanel = new CreateUnitsPanel(new ASize(Width - Main.Height - 30, Height - 20)) { Parent = this, Location = Main.Location + new APoint(Main.Width + 10, 0) };
+            BuildingPanel = new ASettlementBuildingPanel(new ASize(Width - Main.Width - 30, Height - 20)) { Parent = this, Location = Main.Location + new APoint(Main.Width + 20, 0) };
+            InfoPanel = new ASettlementInfoPanel(new ASize(Width - Main.Width - 30, Height - 20)) { Parent = this, Location = Main.Location + new APoint(Main.Width + 10, 0) };
+            CreateUnitsPanel = new CreateUnitsPanel(new ASize(Width - Main.Width - 50, Height - 40)) { Parent = this, Location = Main.Location + new APoint(Main.Width + 10, 10) };
 
             BuildingPanel.BuildingSelectEvent += (building) => BuildingCreateEvent?.Invoke(building);
             InfoPanel.TechnologySelectEvent += () => TechnologySelectEvent?.Invoke(Settlement);

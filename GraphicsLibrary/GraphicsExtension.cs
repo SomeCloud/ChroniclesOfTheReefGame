@@ -32,6 +32,7 @@ namespace GraphicsLibrary
         public static ASize DefaultButtonSize = new ASize(250, 60);
         public static ASize DefaultMenuButtonSize = new ASize(300, 60);
         public static ASize DefaultFormSize = new ASize(600, 480);
+        public static ASize DefaultCheckboxSize = new ASize(20, 20);
 
         public static ASize DefaultMiniButtonSize = new ASize(60, 60);
         public static ASize DefaultInterfaceUnitButtonSize = new ASize(60, 92);

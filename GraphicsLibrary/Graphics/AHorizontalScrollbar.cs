@@ -29,6 +29,16 @@ namespace GraphicsLibrary.Graphics
         public new readonly bool IsDarkened;
         public new readonly string Text;
 
+        public new int Value
+        {
+            get => _Value;
+            set
+            {
+                base.Value = value;
+                ScrollbarSlider.ForciblySetLocation(new APoint(ProcessLocation(value), 2));
+            }
+        }
+
         public AHorizontalScrollbar(ASize size) : base(size)
         {
             base.DragAndDrop = false;
@@ -64,7 +74,7 @@ namespace GraphicsLibrary.Graphics
             return Convert.ToInt32(MinValue + (float)ScrollbarSlider.X / (float)(Width - ScrollbarSlider.Width) * (MaxValue - MinValue));
         }
 
-        protected override int ProcessLocation(int value) => Convert.ToInt32((value - MinValue) * (float)(Width - ScrollbarSlider.Width) / (MaxValue - MinValue));
+        protected override int ProcessLocation(int value) => Convert.ToInt32((value - MinValue) * (float)(Width - ScrollbarSlider.Width) / Math.Max(MaxValue - MinValue, 1));
         public new void Dispose()
         {
             Source.Dispose();

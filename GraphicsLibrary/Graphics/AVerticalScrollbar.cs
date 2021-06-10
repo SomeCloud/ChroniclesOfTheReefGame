@@ -29,6 +29,16 @@ namespace GraphicsLibrary.Graphics
         public new readonly bool IsDarkened;
         public new readonly string Text;
 
+        public new int Value
+        {
+            get => _Value;
+            set
+            {
+                base.Value = value;
+                ScrollbarSlider.ForciblySetLocation(new APoint(2, ProcessLocation(value)));
+            }
+        }
+
         public AVerticalScrollbar(ASize size) : base(size)
         {
             base.DragAndDrop = false;

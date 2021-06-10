@@ -34,6 +34,17 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
         }
 
+        public void Show()
+        {
+            Visible = true;
+            Update();
+        }
+
+        public void Hide()
+        {
+            Visible = false;
+        }
+
         public override void Update()
         {
             _SingleplayerGame.Location = new APoint((Parent.Width - GraphicsExtension.DefaultMenuButtonSize.Width) / 2, (Parent.Height - GraphicsExtension.DefaultMenuButtonSize.Height) / 2);

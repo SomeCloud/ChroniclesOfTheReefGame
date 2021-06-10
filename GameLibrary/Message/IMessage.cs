@@ -18,5 +18,7 @@ namespace GameLibrary.Message
 
         public bool IsRenouncement { get; }
 
+        public void Done(AGame game);
+        public void Renouncement(AGame game);
     }
 }
