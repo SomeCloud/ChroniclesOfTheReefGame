@@ -158,20 +158,10 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
                 }
             };
 
-            Male.MouseClickEvent += (state, mstate) =>
-            {
-                SexType = ASexType.Male;
-                Male.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
-                Female.BorderColor = GraphicsExtension.DefaultBorderColor;
-            };
+            Male.MouseClickEvent += (state, mstate) => SetSexType(ASexType.Male);
 
-            Female.MouseClickEvent += (state, mstate) =>
-            {
-                SexType = ASexType.Female;
-                Male.BorderColor = GraphicsExtension.DefaultBorderColor;
-                Female.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
-            };
-            
+            Female.MouseClickEvent += (state, mstate) => SetSexType(ASexType.Female);
+
             Done.MouseClickEvent += (state, mstate) =>
             {
                 DoneEvent?.Invoke(PlayerName.Text, CharacterName.Text, CharacterFamilyName.Text, - CharacterAge.Value, SexType, Attractiveness, Education, MartialSkills, Health, Fertility);
@@ -195,6 +185,23 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
         }
 
+        private void SetSexType(ASexType sexType)
+        {
+            switch (sexType)
+            {
+                case ASexType.Female:
+                    SexType = ASexType.Female;
+                    Male.BorderColor = GraphicsExtension.DefaultBorderColor;
+                    Female.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+                    break;
+                case ASexType.Male:
+                    SexType = ASexType.Male;
+                    Male.BorderColor = GraphicsExtension.DefaultDarkBorderColor;
+                    Female.BorderColor = GraphicsExtension.DefaultBorderColor;
+                    break;
+            }
+        }
+
         private void UpdateMaxValue()
         {
 
@@ -211,7 +218,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         private ICharacter CreateRandomCharacter()
         {
             Random random = new Random((int)DateTime.Now.Ticks);
-            return new ACharacter(GameExtension.CharacterName(SexType), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], SexType, random.Next(-55, -16), 0, 0, 0, 0);
+            return new ACharacter(GameExtension.CharacterName(SexType, random), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], SexType, random.Next(-55, -16), 0, 0, 0, 0);
         }
 
         public void Update() => Update(CreateRandomCharacter(), Environment.UserName);
@@ -223,6 +230,8 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             CharacterName.Text = character.Name;
             CharacterFamilyName.Text = character.FamilyName;
+
+            SetSexType(character.SexType);
 
             CharacterAge.Value = character.Age(0);
 

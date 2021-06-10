@@ -13,7 +13,7 @@ namespace GameLibrary.Extension
     {
 
         public static int PlayerDefautStatsValue = 33;
-        public static int CharactersDefautStartValue = 15;
+        public static int CharactersDefautStartValue = 25;
 
         public static IReadOnlyDictionary<ABuildingType, int> BuildTime = new Dictionary<ABuildingType, int>() {
             { ABuildingType.TownHall, 0 },
@@ -125,8 +125,8 @@ namespace GameLibrary.Extension
             "Лаур",
             "Аранд",
             "Иссарий",
-            "Риторден ",
-            "Эртранор ",
+            "Риторден",
+            "Эртранор",
             "Хореф",
             "Анвер",
             "Ваггор",
@@ -333,9 +333,8 @@ namespace GameLibrary.Extension
             { ATechnologyType.Education, new ATechnologyType[] { ATechnologyType.CodeOfLaws }  }
         };
 
-        public static string CharacterName(ASexType sexType)
+        public static string CharacterName(ASexType sexType, Random random)
         {
-            Random random = new Random((int)DateTime.Now.Ticks);
             return sexType.Equals(ASexType.Female)? DefaultFemaleName[random.Next(DefaultFemaleName.Count)]: DefaultMaleName[random.Next(DefaultMaleName.Count)];
         }
 

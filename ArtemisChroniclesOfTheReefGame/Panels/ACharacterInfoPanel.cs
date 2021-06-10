@@ -101,7 +101,9 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             string statText =
                 "Статус: " + (character.IsAlive ? "жив" : "мертв") + (character.SexType.Equals(ASexType.Male) ? "" : "а") + "\n" +
-                "Год рождения: " + character.BirthDate + " (" + character.Age(gameData.CurrentTurn) + ")" + "\n" +
+                "Игрок: " + (character.IsOwned? gameData.Players[character.OwnerId].Name : "игрок отсутствует") + "\n" +
+                "Год рождения: " + character.BirthDate + "\n"+ 
+                "Возраст: " + character.Age(gameData.CurrentTurn) + "\n" +
                 "Пол: " + GameLocalization.SexTypeName[character.SexType] + "\n" +
                 string.Join("\n", typeof(ICharacterStats).GetProperties().Select(x => StringPad(GameLocalization.PlayerStatsName[x.Name] + ": ", 20) + x.GetValue(character)));
             StatsPanel.Height = 20 + (statText.Count(x => x == '\n') + 1) * StatsPanel.TextLabel.Font.Height;
@@ -161,7 +163,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             else
             {
                 MotherButton = new AButton(bthSize) { Location = FatherButton.Location + new APoint(0, FatherButton.Height + 5), Text = "Мать: " + mother.FullName, IsInteraction = true };
-                MotherButton.MouseClickEvent += (state, mstate) => SelectEvent.Invoke(father);
+                MotherButton.MouseClickEvent += (state, mstate) => SelectEvent.Invoke(mother);
 
                 Add(MotherButton);
 
@@ -176,8 +178,8 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             if (spouse is object && Buttons.ContainsKey(character.SpouseId))
             {
                 SpouseButton = Buttons[character.SpouseId];
-                SpouseButton.Location = Location = MotherButton.Location + new APoint(0, MotherButton.Height + 5);
-                string text = "Супруг" + (character.SexType.Equals(ASexType.Male)? "а": "") + ": " + spouse.FullName;
+                SpouseButton.Location = MotherButton.Location + new APoint(0, MotherButton.Height + 5);
+                string text = "Супруг" + (character.SexType.Equals(ASexType.Male)? "а": "") + ": " + spouse.FullName + " (" + (character.IsMatrilinearMarriage ? "матрилинейный" : "патрилинейный") + ")";
                 if (!SpouseButton.Text.Equals(text)) SpouseButton.Text = text;
                 SpouseButton.IsInteraction = true;
                 SpouseButton.Enabled = true;
@@ -190,8 +192,8 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             }
             else
             {
-                SpouseButton = new AButton(bthSize) { Location = MotherButton.Location + new APoint(0, MotherButton.Height + 5), Text = "Супруг" + (character.SexType.Equals(ASexType.Male) ? "а" : "") + ": " + spouse.FullName, IsInteraction = true };
-                SpouseButton.MouseClickEvent += (state, mstate) => SelectEvent.Invoke(father);
+                SpouseButton = new AButton(bthSize) { Location = MotherButton.Location + new APoint(0, MotherButton.Height + 5), Text = "Супруг" + (character.SexType.Equals(ASexType.Male) ? "а" : "") + ": " + spouse.FullName + " (" + (character.IsMatrilinearMarriage? "матрилинейный": "патрилинейный") + ")", IsInteraction = true };
+                SpouseButton.MouseClickEvent += (state, mstate) => SelectEvent.Invoke(spouse);
 
                 Add(SpouseButton);
 
@@ -246,6 +248,11 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
         private string StringPad(string value, int width) => value + new String(' ', width - value.Length);
         private string StringPad(int value, int width) => StringPad(value.ToString(), width);
+
+        public override bool PreLocationChangeProcess(APoint point)
+        {
+            return base.PreLocationChangeProcess(point);
+        }
 
     }
 }

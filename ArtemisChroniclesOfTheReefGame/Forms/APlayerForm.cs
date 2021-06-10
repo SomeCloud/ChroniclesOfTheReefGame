@@ -32,6 +32,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
         public event OnPlayerSelect PlayerSelectEvent;
 
         public event OnClick MarryEvent;
+        public event OnClick DivorceEvent;
         public event OnClick AgreementEvent;
         public event OnClick HeirEvent;
         public event OnClick WarEvent;
@@ -65,6 +66,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             SettlementsList = new SettlementsListPanel(new ASize(dWidth, Content.Height - dHeight - 22)) { Location = RelationshipsList.Location + new APoint(0, RelationshipsList.Height + 10) };
 
             CharacterPanel.MarryEvent += (character) => MarryEvent?.Invoke(character);
+            CharacterPanel.DivorceEvent += (character) => DivorceEvent?.Invoke(character);
             CharacterPanel.AgreementEvent += (character) => AgreementEvent?.Invoke(character);
             CharacterPanel.HeirEvent += (character) => HeirEvent?.Invoke(character);
             CharacterPanel.WarEvent += (character) => WarEvent?.Invoke(character);

@@ -160,7 +160,7 @@ namespace GameLibrary
                 for (int i = 0; i < GameExtension.CharactersDefautStartValue * _Settlements.Values.Sum(x => x.Count); i++)
                 {
                     ASexType sexType = new[] { ASexType.Female, ASexType.Male }[random.Next(2)];
-                    ICharacter character = new ACharacter(GameExtension.CharacterName(sexType), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], sexType, random.Next(-45, -5), NewCharacterId, 0);
+                    ICharacter character = new ACharacter(GameExtension.CharacterName(sexType, random), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], sexType, random.Next(-45, -5), NewCharacterId, 0);
                     character.SetLocation(locations[random.Next(locations.Count)]);
                     _Characters[0].Add(character);
                 }
@@ -227,22 +227,43 @@ namespace GameLibrary
                     _Players.Values.ToList().ForEach(x => x.Turn());
                     _Settlements.SelectMany(x => x.Value).ToList().ForEach(x => x.Turn());
 
-                    foreach (ICharacter character in _Characters.SelectMany(x => x.Value).Where(x => x.IsAlive))
+                    foreach (ICharacter character in new List<ICharacter>(_Characters.SelectMany(x => x.Value).Where(x => x.IsAlive)))
                     {
+                        int dAge = Math.Max(Math.Max(elder, 55) - character.Age(CurrentTurn), 1);
+
                         if (character.SexType.Equals(ASexType.Female))
                         {
-                            if (character.IsMarried && Probability(character.Fertility, GetCharacter(character.SpouseId).Fertility))
+                            //if (character.IsMarried && character.Age(CurrentTurn) > 15 && Probability(character.Fertility, GetCharacter(character.SpouseId).Fertility))
+                            bool characterFertilityTest = Enumerable.Range(0, character.Fertility).Any(x => random.Next(dAge).Equals(RandomValue(dAge)));
+                            bool spouseFertilityTest = Enumerable.Range(0, character.Fertility).Any(x => random.Next(dAge).Equals(RandomValue(dAge)));
+                            if (character.IsMarried && character.Age(CurrentTurn) > 15 && characterFertilityTest && spouseFertilityTest)
                             {
                                 ICharacter father = GetCharacter(character.SpouseId);
                                 ASexType sexType = Probability(0.5f) ? ASexType.Male : ASexType.Female;
-                                ICharacter child = new ACharacter(GameExtension.CharacterName(sexType), character.IsMatrilinearMarriage ? character.FamilyName : father.FamilyName, sexType, CurrentTurn, _Characters.SelectMany(x => x.Value).Max(x => x.Id) + 1, character.Id, father.Id, character.Id);
+                                ICharacter child = new ACharacter(GameExtension.CharacterName(sexType, random), character.IsMatrilinearMarriage ? character.FamilyName : father.FamilyName, sexType, CurrentTurn, _Characters.SelectMany(x => x.Value).Max(x => x.Id) + 1, character.IsMatrilinearMarriage ? character.Id: father.Id, father.Id, character.Id);
                                 character.AddChild(child.Id);
                                 father.AddChild(child.Id);
+                                child.SetLocation(character.IsMatrilinearMarriage ? character.Location : father.Location);
                                 _Characters[character.IsMatrilinearMarriage ? character.OwnerId : father.OwnerId].Add(child);
                             }
                         }
-
-                        int dAge = Math.Max(Math.Max(elder, 55) - character.Age(CurrentTurn), 1);
+                        else
+                        {
+                            if (!character.IsMarried)
+                            {
+                                ICharacter intendedSpouse = Characters.Values.SelectMany(x => x).OrderBy(x => Math.Abs(character.Attractiveness - x.Attractiveness)).Where(x => IsRelative(character, x).Equals(false) && !character.SexType.Equals(x.SexType) && x.Age(CurrentTurn) > 15 && !x.IsMarried).FirstOrDefault();
+                                if (intendedSpouse is object && intendedSpouse.IsOwned)
+                                {
+                                    IPlayer player = Players[intendedSpouse.OwnerId];
+                                    IMessage message = new AMessageMarriage(player, player, "Заключение брака", character.FullName + " предалагает игроку " + player.Name + " заключить брак между персонажами: \n" + character.FullName + " и " + intendedSpouse.FullName + "(" + player.Name + ")\n с условием наследования по линии " + (intendedSpouse.SexType.Equals(ASexType.Female) ? "матери" : "отца"), character, intendedSpouse, intendedSpouse.SexType.Equals(ASexType.Female));
+                                    player.SendMessage(message);
+                                }
+                                else if (intendedSpouse is object && random.Next(character.Attractiveness).Equals(RandomValue(intendedSpouse.Attractiveness)))
+                                {
+                                    Marry(character, intendedSpouse, Probability(0.5f));
+                                }
+                            }
+                        }
 
                         if (Enumerable.Range(0, character.Health).All(x => random.Next(dAge).Equals(RandomValue(dAge))))
                         {
@@ -345,6 +366,12 @@ namespace GameLibrary
             spouse.Marry(character.Id, isMatrilinearMarriage);
             if (isMatrilinearMarriage) character.SetLocation(spouse.Location);
             else spouse.SetLocation(character.Location);
+        }
+        
+        public void Divorce(ICharacter character)
+        {
+            GetCharacter(character.SpouseId).Divorce();
+            character.Divorce();
         }
 
         public bool Attack(IUnit defender, IUnit attacker)
@@ -488,34 +515,39 @@ namespace GameLibrary
 
         public bool IsRelative(ICharacter character, ICharacter otherCharacter)
         {
-            Dictionary<int, List<int>> characterParent = new Dictionary<int, List<int>>() { { 0, new List<int>() {character.FatherId, character.MotherId } } };
+            if (character is null || otherCharacter is null || character.Equals(otherCharacter)) return false;
+
+            Dictionary<int, List<int>> characterParent = new Dictionary<int, List<int>>() { { 0, new List<int>() { character.FatherId, character.MotherId } } };
             Dictionary<int, List<int>> otherCharacterParent = new Dictionary<int, List<int>>() { { 0, new List<int>() { otherCharacter.FatherId, otherCharacter.MotherId } } };
+
             for (int i = 0; i < 2; i++)
             {
-                foreach(int id in new List<int>(characterParent[i]))
+                List<int> temp = new List<int>();
+                foreach (int id in new List<int>(characterParent[i]))
                 {
-                    List<int> temp = new List<int>();
                     if (id > 0)
                     {
                         ICharacter parent = GetCharacter(id);
                         temp.AddRange(new int[] { parent.MotherId, parent.FatherId });
                     }
                     else characterParent[i].Remove(id);
-                    characterParent.Add(i + 1, temp);
                 }
-                foreach(int id in new List<int>(otherCharacterParent[i]))
+                characterParent.Add(i + 1, temp);
+                temp.Clear();
+                foreach (int id in new List<int>(otherCharacterParent[i]))
                 {
-                    List<int> temp = new List<int>();
                     if (id > 0)
                     {
                         ICharacter parent = GetCharacter(id);
                         temp.AddRange(new int[] { parent.MotherId, parent.FatherId });
                     }
-                    else characterParent[i].Remove(id);
-                    otherCharacterParent.Add(i + 1, temp);
+                    else otherCharacterParent[i].Remove(id);
                 }
+                otherCharacterParent.Add(i + 1, temp);
             }
-            return characterParent.Where(x => otherCharacterParent.Contains(x)).Count() > 0;
+
+            return characterParent.Values.SelectMany(x => x).Where(x => otherCharacterParent.Values.SelectMany(y => y).Contains(x)).Count() > 0;
+
         }
 
         public bool CharacterIsRuler(ICharacter character, out IPlayer player)

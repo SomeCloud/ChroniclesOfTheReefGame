@@ -21,12 +21,14 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
         public delegate void OnClick(ICharacter character);
 
         public event OnClick MarryEvent;
+        public event OnClick DivorceEvent;
         public event OnClick AgreementEvent;
         public event OnClick HeirEvent;
         public event OnClick WarEvent;
         public event OnClick PeaceEvent;
         public event OnClick UnionEvent;
         public event OnClick BreakUnionEvent;
+        public event OnClick SelectRelativeEvent;
 
         private ACharacterPanel CharacterPanel;
 
@@ -43,12 +45,14 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             CharacterPanel = new ACharacterPanel(Content.Size - 2) { Location = new APoint(1, 1) };
 
             CharacterPanel.MarryEvent += (character) => MarryEvent?.Invoke(character);
+            CharacterPanel.DivorceEvent += (character) => DivorceEvent?.Invoke(character);
             CharacterPanel.AgreementEvent += (character) => AgreementEvent?.Invoke(character);
             CharacterPanel.HeirEvent += (character) => HeirEvent?.Invoke(character);
             CharacterPanel.WarEvent += (character) => WarEvent?.Invoke(character);
             CharacterPanel.PeaceEvent += (character) => PeaceEvent?.Invoke(character);
             CharacterPanel.UnionEvent += (character) => UnionEvent?.Invoke(character);
             CharacterPanel.BreakUnionEvent += (character) => BreakUnionEvent?.Invoke(character);
+            CharacterPanel.SelectRelativeEvent += (character) => SelectRelativeEvent?.Invoke(character);
 
             Add(CharacterPanel);
 

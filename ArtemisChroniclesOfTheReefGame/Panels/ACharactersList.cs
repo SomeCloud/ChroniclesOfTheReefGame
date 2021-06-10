@@ -10,7 +10,9 @@ using AScrollbarAlign = GraphicsLibrary.StandartGraphicsPrimitives.AScrollbarAli
 using APoint = CommonPrimitivesLibrary.APoint;
 using ASize = CommonPrimitivesLibrary.ASize;
 
+using GameLibrary;
 using GameLibrary.Character;
+using GameLibrary.Settlement;
 
 namespace ArtemisChroniclesOfTheReefGame.Panels
 {
@@ -44,7 +46,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             Buttons.Clear();
         }
 
-        public void Update(IEnumerable<ICharacter> characters, int currentTurn)
+        public void Update(IEnumerable<ICharacter> characters, GameData gameData)
         {
 
             Scrollbar.Value = Scrollbar.MinValue;
@@ -61,7 +63,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
                 if (Buttons.Keys.Where(x => x.Equals(character)).Count() != 0)
                 {
                     button = Buttons[Buttons.Keys.Where(x => x.Equals(character)).First()];
-                    string text = character.FullName + " (" + character.Age(currentTurn) + ")";
+                    string text = character.FullName + " (" + character.Age(gameData.CurrentTurn) + "), " + (gameData.Settlements.Values.SelectMany(x => x).Where(x => x.Location.Equals(character.Location)).FirstOrDefault() is ISettlement settlement && settlement is object ? settlement.Name: "город не определен") + " - " + (character.IsOwned? gameData.Players[character.OwnerId].Name : "игрок отсутствует");
                     if (!button.Text.Equals(text)) button.Text = text;
                     button.Enabled = true;
                 }
@@ -71,7 +73,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
                     Add(button);
                     Buttons.Add(character, button);
 
-                    button.Text = character.FullName + " (" + character.Age(currentTurn) + ")";
+                    button.Text = character.FullName + " (" + character.Age(gameData.CurrentTurn) + "), " + (gameData.Settlements.Values.SelectMany(x => x).Where(x => x.Location.Equals(character.Location)).FirstOrDefault() is ISettlement settlement && settlement is object ? settlement.Name : "город не определен") + " - " + (character.IsOwned ? gameData.Players[character.OwnerId].Name : "игрок отсутствует");
 
                     button.TextLabel.HorizontalAlign = ATextHorizontalAlign.Left;
                     button.TextLabel.Font = new System.Drawing.Font(GraphicsExtension.ExtraFontFamilyName, 14);

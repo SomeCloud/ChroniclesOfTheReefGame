@@ -38,6 +38,7 @@ namespace GameLibrary.Character
         public void SetLocation(APoint location);
 
         public void Marry(int spouse, bool isMatrilinearMarriage);
+        public void Divorce();
 
         public void AddChild(int childId);
 

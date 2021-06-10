@@ -58,6 +58,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public event OnSelectTechnology SelectTechnologyEvent;
 
         public event OnCharacterClick MarryEvent;
+        public event OnCharacterClick DivorceEvent;
         public event OnCharacterClick AgreementEvent;
         public event OnCharacterClick HeirEvent;
         public event OnCharacterClick WarEvent;
@@ -163,7 +164,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             StatPanel.TurnClickEvent += () => TurnClickEvent?.Invoke();
 
-            StatPanel.CharactersClickEvent += () => CharactersList.Show(GameData.Characters.Values.SelectMany(x => x), GameData.CurrentTurn);
+            StatPanel.CharactersClickEvent += () => CharactersList.Show(GameData.Characters.Values.SelectMany(x => x), GameData);
 
             ExtraSidePanel.SettlementPanelActivate += () =>
             {
@@ -180,6 +181,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
                 MarryForm.Show(character, GameData);
                 //MarryEvent?.Invoke(character);
             };
+            PlayerInfoForm.DivorceEvent += (character) => DivorceEvent?.Invoke(character);
             PlayerInfoForm.AgreementEvent += (character) => AgreementEvent?.Invoke(character);
             PlayerInfoForm.HeirEvent += (character) => HeirEvent?.Invoke(character);
             PlayerInfoForm.WarEvent += (character) => WarEvent?.Invoke(character);
@@ -215,6 +217,10 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             CharacterInfoForm.PeaceEvent += (character) => PeaceEvent?.Invoke(character);
             CharacterInfoForm.UnionEvent += (character) => UnionEvent?.Invoke(character);
             CharacterInfoForm.BreakUnionEvent += (character) => BreakUnionEvent?.Invoke(character);
+            CharacterInfoForm.SelectRelativeEvent += (character) =>
+            {
+                CharacterInfoForm.Show(GameData, character);
+            };
 
             MessageListForm.SelectEvent += (message) => MessageForm.Show(message);
 
@@ -288,7 +294,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             if (CharacterInfoForm.Enabled) CharacterInfoForm.Hide();
             if (MessageListForm.Enabled) MessageListForm.Update(player);
             if (MessageForm.Enabled) MessageForm.Hide();
-            CharactersList.Update(GameData.Characters.Values.SelectMany(x => x), GameData.CurrentTurn);
+            CharactersList.Update(GameData.Characters.Values.SelectMany(x => x), GameData);
             if (MarryForm.Enabled) MarryForm.Hide();
 
         }

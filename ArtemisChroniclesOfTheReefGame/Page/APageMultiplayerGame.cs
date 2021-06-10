@@ -448,7 +448,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                 for (int i = 0; i < Room.Players.Count; i++)
                 {
                     ASexType sexType = new[] { ASexType.Female, ASexType.Male }[random.Next(2)];
-                    ICharacter character = new ACharacter(GameExtension.CharacterName(sexType), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], sexType, random.Next(-16, -5), i, i);
+                    ICharacter character = new ACharacter(GameExtension.CharacterName(sexType, random), GameExtension.DefaultFamily[random.Next(GameExtension.DefaultFamily.Count)], sexType, random.Next(-16, -5), i, i);
                     characters.Add(character);
                 }
 

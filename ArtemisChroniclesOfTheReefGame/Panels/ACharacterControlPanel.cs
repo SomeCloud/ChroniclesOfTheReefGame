@@ -27,6 +27,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public delegate void OnClick();
 
         public event OnClick MarryEvent;
+        public event OnClick DivorceEvent;
         public event OnClick AgreementEvent;
         public event OnClick HeirEvent;
         public event OnClick WarEvent;
@@ -35,6 +36,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public event OnClick BreakUnionEvent;
 
         private AButton Marry;
+        private AButton Divorce;
         private AButton Agreement;
         private AButton Heir;
         private AButton War;
@@ -59,6 +61,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             ASize size = new ASize(ContentSize.Width - 20, 50);
 
             Marry = new AButton(size) { Text = "Заключить брак" };
+            Divorce = new AButton(size) { Text = "Расторгнуть брак" };
             Agreement = new AButton(size) { Text = "Заключить соглшаение" };
             Heir = new AButton(size) { Text = "Назначить наследника" };
             War = new AButton(size) { Text = "Объявить войну" };
@@ -69,6 +72,11 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             Marry.MouseClickEvent += (state, mstate) =>
             {
                 MarryEvent?.Invoke();
+            };
+
+            Divorce.MouseClickEvent += (state, mstate) =>
+            {
+                DivorceEvent?.Invoke();
             };
 
             Agreement.MouseClickEvent += (state, mstate) =>
@@ -102,6 +110,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             };
 
             Add(Marry);
+            Add(Divorce);
             Add(Agreement);
             Add(Heir);
             Add(War);
@@ -117,7 +126,8 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
 
             Player = null;
 
-            Buttons.Add((GameData gameData, ICharacter character) => Marry.Enabled = character.SpouseId == 0 && character.IsAlive ? true : false);
+            Buttons.Add((GameData gameData, ICharacter character) => Marry.Enabled = character.Age(gameData.CurrentTurn) > 15 && !character.IsMarried && character.IsAlive ? true : false);
+            Buttons.Add((GameData gameData, ICharacter character) => Divorce.Enabled = character.IsOwned && gameData.Players[character.OwnerId].Equals(gameData.ActivePlayer) && character.IsMarried && character.IsAlive ? true : false);
             Buttons.Add((GameData gameData, ICharacter character) => Agreement.Enabled = gameData.Players.Values.Select(x => x.Ruler).Contains(character) && !gameData.ActivePlayer.Characters.Contains(character) && character.IsAlive ? true : false);
             Buttons.Add((GameData gameData, ICharacter character) => Heir.Enabled = gameData.ActivePlayer.Characters.Contains(character) && character.IsAlive ? true : false);
             Buttons.Add((GameData gameData, ICharacter character) => War.Enabled = gameData.CharacterIsRuler(character, out Player) && !Player.Equals(gameData.ActivePlayer) && new ARelationshipType[] { ARelationshipType.Neutrality, ARelationshipType.None }.Contains(Player.Relationship(gameData.ActivePlayer)) && character.IsAlive ? true : false);

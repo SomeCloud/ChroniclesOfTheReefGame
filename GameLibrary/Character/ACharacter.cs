@@ -52,7 +52,7 @@ namespace GameLibrary.Character
         public IReadOnlyList<int> ChildId { get => _ChildId; }
 
         public bool IsAlive { get => _Alive; }
-        public bool IsMarried { get => _SpouseId != 0; }
+        public bool IsMarried { get => _SpouseId > 0; }
         public bool IsChild { get => _ChildId.Count > 0; }
         public bool IsOwned { get => _OwnerId > 0; }
         public bool IsMatrilinearMarriage { get => _IsMatrilinearMarriage; }
@@ -92,6 +92,11 @@ namespace GameLibrary.Character
         {
             _SpouseId = spouse;
             _IsMatrilinearMarriage = isMatrilinearMarriage;
+        }
+        public void Divorce()
+        {
+            _SpouseId = 0;
+            _IsMatrilinearMarriage = false;
         }
 
         public void SetStats(int attractiveness, int education, int martialSkills, int health, int fertility)

@@ -24,6 +24,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
         public delegate void OnClick(ICharacter character);
 
         public event OnClick MarryEvent;
+        public event OnClick DivorceEvent;
         public event OnClick AgreementEvent;
         public event OnClick HeirEvent;
         public event OnClick WarEvent;
@@ -61,6 +62,7 @@ namespace ArtemisChroniclesOfTheReefGame.Panels
             CharacterControlPanel = new ACharacterControlPanel(new ASize(Width - 2, Height - HeaderPanel.Height - InfoPanel.Height - 22)) { Parent = this, Location = InfoPanel.Location + new APoint(0, InfoPanel.Height + 10) };
 
             CharacterControlPanel.MarryEvent += () => MarryEvent?.Invoke(Character);
+            CharacterControlPanel.DivorceEvent += () => DivorceEvent?.Invoke(Character);
             CharacterControlPanel.AgreementEvent += () => AgreementEvent?.Invoke(Character);
             CharacterControlPanel.HeirEvent += () => HeirEvent?.Invoke(Character);
             CharacterControlPanel.WarEvent += () => WarEvent?.Invoke(Character);

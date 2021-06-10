@@ -51,6 +51,13 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
 
             MarryPanel = new AMarryPanel(Content.Size - 2) { Location = new APoint(1, 1) };
 
+            CloseEvent += () => {
+
+                isFirstCandidateSelect = false;
+                isSecondCandidateSelect = false;
+
+            };
+
             MarryPanel.DoneEvent += (firstCandidate, secondCandidate, isMatrilinearMarriage) =>
             {
                 DoneEvent?.Invoke(firstCandidate, secondCandidate, isMatrilinearMarriage);
@@ -62,7 +69,7 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
 
             MarryPanel.FirstCandidateSelectEvent += () =>
             {
-                _CharactersForm.Show(GameData.Characters.Values.SelectMany(x => x).OrderBy(x => x.OwnerId.Equals(GameData.ActivePlayer.Id)).Where(x => GameData.IsRelative(x, MarryPanel.SecondCandidate).Equals(false) && !x.SexType.Equals(MarryPanel.SecondCandidate.SexType)), GameData.CurrentTurn);
+                _CharactersForm.Show(GameData.Characters.Values.SelectMany(x => x).OrderBy(x => x.OwnerId.Equals(GameData.ActivePlayer.Id)).Where(x => GameData.IsRelative(x, MarryPanel.SecondCandidate).Equals(false) && !MarryPanel.SecondCandidate.SexType.Equals(x.SexType) && x.Age(GameData.CurrentTurn) > 15 && !x.IsMarried), GameData);
                 isFirstCandidateSelect = true;
                 isSecondCandidateSelect = false;
                 FirstCandidateSelectEvent?.Invoke();
@@ -70,10 +77,10 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
 
             MarryPanel.SecondCandidateSelectEvent += () =>
             {
-                _CharactersForm.Show(GameData.Characters.Values.SelectMany(x => x).OrderBy(x => x.OwnerId.Equals(GameData.ActivePlayer.Id)).Where(x => GameData.IsRelative(MarryPanel.FirstCandidate, x).Equals(false) && !x.SexType.Equals(MarryPanel.FirstCandidate.SexType)), GameData.CurrentTurn);
+                _CharactersForm.Show(GameData.Characters.Values.SelectMany(x => x).OrderBy(x => x.OwnerId.Equals(GameData.ActivePlayer.Id)).Where(x => GameData.IsRelative(MarryPanel.FirstCandidate, x).Equals(false) && !MarryPanel.FirstCandidate.SexType.Equals(x.SexType) && x.Age(GameData.CurrentTurn) > 15 && !x.IsMarried), GameData);
                 isFirstCandidateSelect = false;
                 isSecondCandidateSelect = true;
-                FirstCandidateSelectEvent?.Invoke();
+                SecondCandidateSelectEvent?.Invoke();
             };
 
             CharacterSelect = new ACharactersForm.OnSelect(
@@ -110,7 +117,14 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
             MarryPanel.SetFirstCandidate(character);
         }
 
-        public void Hide() => Enabled = false;
+        public void Hide()
+        {
+
+            isFirstCandidateSelect = false;
+            isSecondCandidateSelect = false;
+
+            Enabled = false;
+        }
 
         public void Show(ICharacter character, GameData gameData)
         {

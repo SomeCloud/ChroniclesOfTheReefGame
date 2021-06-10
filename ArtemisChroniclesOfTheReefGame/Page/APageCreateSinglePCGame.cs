@@ -89,7 +89,8 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             PlayerCreateForm.DoneEvent += (playerName, characterName, characterFamilyName, age, sexType, attractiveness, education, martialSkills, health, fertility) =>
             {
-                ICharacter character = new ACharacter(characterName, characterFamilyName, sexType, age, Players.Count + 1, Players.Count + 1);
+                int id = SelectedPlyaer is object ? Players[playerName].Id : Players.Count + 1;
+                ICharacter character = new ACharacter(characterName, characterFamilyName, sexType, age, id, id);
                 character.SetStats(attractiveness, education, martialSkills, health, fertility);
                 if (SelectedPlyaer is object)
                 {

@@ -61,7 +61,7 @@ namespace GameLibrary.Map
             foreach (IPlayer player in players)
             {
                 AMapCell cell = Map.Values.ToList()[random.Next(Map.Count)];
-                while (!cell.IsEmpty || !cell.NeighboringCellsIsEmpty || cell.BiomeType == ABiomeType.Sea)
+                while (!cell.IsEmpty || !NeighboringCellsIsEmpty(cell.Location, 4) || cell.BiomeType == ABiomeType.Sea)
                 {
                     cell = Map.Values.ToList()[random.Next(Map.Count)];
                 }
@@ -71,6 +71,26 @@ namespace GameLibrary.Map
                 count++;
             }
             return Settlements;
+        }
+
+        public bool NeighboringCellsIsEmpty(APoint location, int radius)
+        {
+            List<APoint> points = new List<APoint>(Map[location].NeighboringCells.Select(x => x.Location));
+
+            if (points.Select(x => Map[x]).Any(x => !x.IsEmpty)) return false;
+
+            for (int i = 0; i < radius - 1; i++)
+            {
+                List<APoint> temp = new List<APoint>(points);
+                points.Clear();
+                foreach (APoint point in temp)
+                {
+                    points.AddRange(Map[point].NeighboringCells.Select(x => x.Location));
+                }
+                if (points.Select(x => Map[x]).Any(x => !x.IsEmpty)) return false;
+            }
+
+            return true;
         }
 
         private void SetNeighbors(APoint location)

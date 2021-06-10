@@ -41,18 +41,18 @@ namespace ArtemisChroniclesOfTheReefGame.Forms
 
         }
 
-        public void Update(IEnumerable<ICharacter> characters, int currentTurn)
+        public void Update(IEnumerable<ICharacter> characters, GameData gameData)
         {
-            CharactersList.Update(characters, currentTurn);
+            CharactersList.Update(characters, gameData);
         }
 
         public void Hide() => Enabled = false;
 
-        public void Show(IEnumerable<ICharacter> characters, int currentTurn)
+        public void Show(IEnumerable<ICharacter> characters, GameData gameData)
         {
 
             Enabled = true;
-            Update(characters, currentTurn);
+            Update(characters, gameData);
 
             Text = "Персонажи";
 

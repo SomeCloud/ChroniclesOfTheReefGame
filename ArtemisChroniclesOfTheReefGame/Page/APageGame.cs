@@ -57,7 +57,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
 
             GamePanel.TurnClickEvent += () => {
                 Game.Turn();
-                Console.WriteLine("SERVER: Переход хода к игроку " + Game.ActivePlayer.Name);
+                //Console.WriteLine("SERVER: Переход хода к игроку " + Game.ActivePlayer.Name);
                 GamePanel.Update(Game, Game.ActivePlayer.Name);
             };
 
@@ -80,6 +80,9 @@ namespace ArtemisChroniclesOfTheReefGame.Page
             };
 
             GamePanel.MarryEvent += (character) => { /* nothing */ };
+            GamePanel.DivorceEvent += (character) => {
+                Game.Divorce(character);
+            };
             GamePanel.AgreementEvent += (character) => { /* nothing */ };
             GamePanel.HeirEvent += (character) => { /* nothing */ };
             GamePanel.WarEvent += (character) =>
@@ -216,18 +219,18 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                     }
                     else if (characterOwner.Equals(Game.ActivePlayer))
                     {
-                        IMessage message = new AMessageMarriage(Game.ActivePlayer, spouseOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + spouseOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\n с условием наследования по линии " + (isMatrilinearMarriage? "матери": "отца"), character, spouse, isMatrilinearMarriage);
+                        IMessage message = new AMessageMarriage(Game.ActivePlayer, spouseOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + spouseOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\nс условием наследования по линии " + (isMatrilinearMarriage? "матери": "отца"), character, spouse, isMatrilinearMarriage);
                         spouseOwner.SendMessage(message);
                     }
                     else if (spouseOwner.Equals(Game.ActivePlayer))
                     {
-                        IMessage message = new AMessageMarriage(Game.ActivePlayer, characterOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + characterOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\n с условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage);
+                        IMessage message = new AMessageMarriage(Game.ActivePlayer, characterOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + characterOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\nс условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage);
                         characterOwner.SendMessage(message);
                     }
                     else
                     {
-                        characterOwner.SendMessage(new AMessageMarriage(Game.ActivePlayer, characterOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + characterOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\n с условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage));
-                        spouseOwner.SendMessage(new AMessageMarriage(Game.ActivePlayer, spouseOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + spouseOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\n с условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage));
+                        characterOwner.SendMessage(new AMessageMarriage(Game.ActivePlayer, characterOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + characterOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\nс условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage));
+                        spouseOwner.SendMessage(new AMessageMarriage(Game.ActivePlayer, spouseOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + spouseOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "(" + spouseOwner.Name + ")\nс условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage));
                     }
                 }
                 else
@@ -240,7 +243,7 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                         }
                         else
                         {
-                            IMessage message = new AMessageMarriage(Game.ActivePlayer, characterOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + characterOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "\n с условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage);
+                            IMessage message = new AMessageMarriage(Game.ActivePlayer, characterOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + characterOwner.Name + " заключить брак между персонажами: \n" + character.FullName + "(" + characterOwner.Name + ") и " + spouse.FullName + "\nс условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage);
                             characterOwner.SendMessage(message);
                         }
                     }
@@ -255,6 +258,10 @@ namespace ArtemisChroniclesOfTheReefGame.Page
                             IMessage message = new AMessageMarriage(Game.ActivePlayer, spouseOwner, "Заключение брака", "Игрок " + Game.ActivePlayer.Name + " предалагает игроку " + spouseOwner.Name + " заключить брак между персонажами: \n" + character.FullName + " и " + spouse.FullName + "(" + spouseOwner.Name + ")\n с условием наследования по линии " + (isMatrilinearMarriage ? "матери" : "отца"), character, spouse, isMatrilinearMarriage);
                             spouseOwner.SendMessage(message);
                         }
+                    }
+                    else if (Game.ActivePlayer.Characters.Contains(character) || Game.ActivePlayer.Characters.Contains(spouse))
+                    {
+                        Game.Marry(character, spouse, isMatrilinearMarriage);
                     }
                     else if (Math.Abs(character.Attractiveness - spouse.Attractiveness) is int dt && (dt.Equals(0) || random.Next().Equals(0))) Game.Marry(character, spouse, isMatrilinearMarriage);
                 }
